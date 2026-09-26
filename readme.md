@@ -105,12 +105,16 @@ Berikut adalah struktur folder utama dari project ini beserta file-file yang ada
 - [worker/worker.js](worker/worker.js)
 
 ### Folder [exams/](exams/)
-
-- [exams/index.html](exams/index.html)
-- [exams/results.html](exams/results.html)
-- [exams/akhir_exam.html](exams/akhir_exam.html)
-- [exams/exam_html](exams/exam_html)
-- [exams/exam--_lctp.html](exams/exam--_lctp.html)
+- [exams/soal_ujicoba/](exams/soal_ujicoba/)                      #ini dibuat sebagai kelanjutan halaman exam ujicoba (tapi belum fiks)
+- [exams/soalipa/](exams/soalipa/)                      #ini dibuat sebagai kelanjutan halaman exam ipa dan soal soal (tapi belum fiks)
+- [exams/soalips/](exams/soalips/)                      #ini dibuat sebagai kelanjutan halaman exam ips dan soal soal (tapi belum fiks)
+- [exams/soallctp/](exams/soallctp/)                      #ini dibuat sebagai kelanjutan halaman exam lctp dan soal soal  (tapi belum fiks)
+- [exams/soalmath/](exams/soalmath/)                      #ini dibuat sebagai kelanjutan halaman exam math dan soal soal  (tapi belum fiks)
+- [exams/index.html](exams/index.html)                    #halaman akhir ketika ujian sudah selesai
+- [exams/results.html](exams/results.html)                #halam akhir setelah ujian tetapi menampilkan nilai (kemarin tidak di gunakan)
+- [exams/akhir_exam.html](exams/akhir_exam.html)          #halaman blank putih terbuka setelah beberapa detik di halaman index.html
+- [exams/exam_html.html](exams/exam_html,html)            #file exam dengan soal didalam
+- [exams/exam--_lctp.html](exams/exam--_lctp.html)        
 - [exams/exam_lctp.html](exams/exam_lctp.html)
 - [exams/exam_lctp_2.html](exams/exam_lctp_2.html)
 - [exams/exam_olimpiade_ipa.html](exams/exam_olimpiade_ipa.html)
@@ -139,7 +143,7 @@ Berikut adalah struktur folder utama dari project ini beserta file-file yang ada
 - [exams/soal_ujicoba.zip](exams/soal_ujicoba.zip)
 - [exams/ujicobaexam.html](exams/ujicobaexam.html)
 - [_index.html](_index.html)
-- [__exam_olimpiade_ipa_2.html](__exam_olimpiade_ipa_2.html)
+- [__exam_olimpiade_ipa_2.html](__exam_olimpiade_ipa_2.html)          #untuk file file ini sampai kebawah merupakan halaman tunggu dan fakta integritas.
 - [__exam_olimpiade_ips_2.html](__exam_olimpiade_ips_2.html)
 - [__exam_olimpiade_math_2.html](__exam_olimpiade_math_2.html)
 - [____exam_lctp.html](____exam_lctp.html)
@@ -154,7 +158,9 @@ Berikut adalah struktur folder utama dari project ini beserta file-file yang ada
 - [PAI/exam_olimpiade_pai.html](PAI/exam_olimpiade_pai.html)
 - [PAI/paiexam.html](PAI/paiexam.html)
 
-### Folder [ujian/](ujian/)
+### Folder [ujian/](ujian/) 
+
+ini adalah halaman ujian pertamakali yang kita buat
 
 - [ujian/IPA/](ujian/IPA/)
 - [ujian/IPS/](ujian/IPS/)
