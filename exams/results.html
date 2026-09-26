@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hasil Ujian - TIMAC FEST 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #f9a825 0%, #f57f17 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .user-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+            border-left: 4px solid #667eea;
+        }
+        
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .result-card {
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            border-top: 4px solid #667eea;
+        }
+        
+        .result-value {
+            font-size: 2em;
+            font-weight: bold;
+            color: #667eea;
+            margin: 10px 0;
+        }
+        
+        .result-label {
+            color: #666;
+            font-size: 0.9em;
+        }
+        
+        .actions {
+            text-align: center;
+            margin-top: 30px;
+        }
+        
+        .btn {
+            padding: 12px 30px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 0 10px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+        }
+        
+        .error {
+            background: #fee;
+            color: #c33;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 1px solid #fcc;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>HASIL UJIAN</h1>
+            <p>TIMAC FEST 2025 - Olimpiade IPA</p>
+        </div>
+        
+        <div class="content">
+            <div class="error" id="error-message"></div>
+            
+            <div class="user-info" id="user-info">
+                Memuat informasi peserta...
+            </div>
+            
+            <div class="results-grid">
+                <div class="result-card">
+                    <div class="result-label">Nilai Akhir</div>
+                    <div class="result-value" id="final-score">0</div>
+                    <div class="result-label">Dari 100 soal</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Soal Terjawab</div>
+                    <div class="result-value" id="answered-count">0</div>
+                    <div class="result-label">Soal</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Waktu Digunakan</div>
+                    <div class="result-value" id="time-used">00:00</div>
+                    <div class="result-label">Dari 120 menit</div>
+                </div>
+                
+                <div class="result-card">
+                    <div class="result-label">Status Pengiriman</div>
+                    <div class="result-value" id="submission-status">-</div>
+                    <div class="result-label">Ke Sistem</div>
+                </div>
+            </div>
+            
+            <div class="actions">
+                <button class="btn" onclick="viewLeaderboard()">Lihat Leaderboard</button>
+                <button class="btn" onclick="logout()">Keluar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // =============================================
+    // RESULTS PAGE - ULTIMATE BACK BUTTON PROTECTION
+    // =============================================
+
+    console.log('🔍 RESULTS PAGE LOADED');
+    console.log('🔍 Current auth_origin:', localStorage.getItem('auth_origin'));
+    console.log('🔍 Current examResults:', localStorage.getItem('examResults') ? 'EXISTS' : 'MISSING');
+    
+    // Validasi akses - hanya bisa diakses setelah ujian
+    const currentAuthOrigin = localStorage.getItem('auth_origin');
+    console.log('🔍 Validating auth_origin:', currentAuthOrigin);
+    
+    if (currentAuthOrigin !== 'exam_completed') {
+        console.log('❌ INVALID ACCESS - Redirecting to login');
+        console.log('❌ Expected: exam_completed, Got:', currentAuthOrigin);
+        redirectToLogin();
+    } else {
+        console.log('✅ VALID ACCESS - Setting up back button protection');
+        
+        // Setup ULTIMATE back button protection
+        setupUltimateBackButtonProtection();
+        
+        // Tampilkan hasil ujian
+        displayResults();
+    }
+
+    function setupUltimateBackButtonProtection() {
+        console.log('🛡️ Setting up ultimate back button protection');
+        
+        // HAPUS SEMUA HISTORY dan BUAT state baru
+        window.history.replaceState(null, null, window.location.href);
+        window.history.pushState(null, null, window.location.href);
+        console.log('📝 History state pushed');
+        
+        let backButtonPressed = false;
+        
+        window.addEventListener('popstate', function(event) {
+            if (backButtonPressed) {
+                console.log('🛑 Back button already handled, ignoring...');
+                return;
+            }
+            
+            backButtonPressed = true;
+            console.log('🔙 BACK BUTTON DETECTED IN RESULTS PAGE');
+            console.log('🔙 Current URL:', window.location.href);
+            
+            // LANGSUNG redirect ke login tanpa delay
+            console.log('🚀 Immediate redirect to login');
+            redirectToLogin();
+            
+            // BLOCK FURTHER BACK NAVIGATION
+            window.history.pushState(null, null, window.location.href);
+        });
+        
+        // Tambahkan protection untuk sebelumunload juga
+        window.addEventListener('beforeunload', function(event) {
+            console.log('🏃 User trying to leave results page');
+            // Clear data ketika user mencoba close tab/window
+            localStorage.removeItem('auth_origin');
+        });
+    }
+
+    function displayResults() {
+        console.log('📊 Displaying exam results');
+        
+        const examResults = JSON.parse(localStorage.getItem('examResults'));
+        const userData = JSON.parse(localStorage.getItem('user_data') || '{}');
+        
+        if (!examResults) {
+            console.log('❌ No exam results found');
+            showError('Data hasil ujian tidak ditemukan.');
+            return;
+        }
+        
+        console.log('✅ Exam results found:', examResults);
+        
+        // Display user info
+        if (userData && userData.nama) {
+            document.getElementById('user-info').innerHTML = `
+                <strong>${userData.nama}</strong><br>
+                ${userData.sekolah || 'Sekolah tidak diketahui'}<br>
+                Lomba: ${userData.lomba || 'IPA'}
+            `;
+        } else {
+            // Fallback jika user_data tidak ada
+            const fallbackUser = {
+                nama: localStorage.getItem('user_name') || 'Peserta',
+                sekolah: localStorage.getItem('user_school') || 'Sekolah tidak diketahui',
+                lomba: localStorage.getItem('user_lomba') || 'IPA'
+            };
+            document.getElementById('user-info').innerHTML = `
+                <strong>${fallbackUser.nama}</strong><br>
+                ${fallbackUser.sekolah}<br>
+                Lomba: ${fallbackUser.lomba}
+            `;
+        }
+        
+        // Display results
+        document.getElementById('final-score').textContent = examResults.score || 0;
+        document.getElementById('answered-count').textContent = examResults.answeredQuestions || 0;
+        
+        // Calculate time used
+        let timeSpent = examResults.time_spent;
+        if (!timeSpent && examResults.timestamp) {
+            // Calculate from timestamp jika time_spent tidak ada
+            const startTime = localStorage.getItem('exam_start_time');
+            if (startTime) {
+                const start = new Date(startTime);
+                const end = new Date(examResults.timestamp);
+                timeSpent = Math.floor((end - start) / 1000);
+            }
+        }
+        
+        const minutes = Math.floor((timeSpent || 0) / 60);
+        const seconds = (timeSpent || 0) % 60;
+        document.getElementById('time-used').textContent = 
+            `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        
+        // Display submission status
+        const submissionStatus = examResults.cloudflareSubmitted ? 'Berhasil' : 
+                               (examResults.forced ? 'Auto Submit' : 'Offline');
+        document.getElementById('submission-status').textContent = submissionStatus;
+        
+        if (examResults.cloudflareSubmitted) {
+            document.getElementById('submission-status').style.color = '#27ae60';
+        } else if (examResults.forced) {
+            document.getElementById('submission-status').style.color = '#f39c12';
+        } else {
+            document.getElementById('submission-status').style.color = '#e74c3c';
+        }
+        
+        // Tampilkan info jika forced submit
+        if (examResults.forced) {
+            const errorDiv = document.getElementById('error-message');
+            errorDiv.innerHTML = `
+                <strong>Informasi:</strong> Ujian dikumpulkan secara otomatis.<br>
+                <small>Alasan: ${examResults.reason || 'Tidak diketahui'}</small>
+            `;
+            errorDiv.style.display = 'block';
+            errorDiv.style.background = '#fff3cd';
+            errorDiv.style.color = '#856404';
+            errorDiv.style.borderColor = '#ffeaa7';
+        }
+    }
+
+    function viewLeaderboard() {
+        console.log('📈 Redirecting to leaderboard');
+        // Redirect to leaderboard page
+        window.location.href = 'leaderboard.html';
+    }
+
+    function logout() {
+        console.log('🚪 Logging out...');
+        redirectToLogin();
+    }
+
+    function showError(message) {
+        console.log('❌ Error:', message);
+        const errorDiv = document.getElementById('error-message');
+        errorDiv.textContent = message;
+        errorDiv.style.display = 'block';
+    }
+
+    function redirectToLogin() {
+        console.log('🔒 STARTING REDIRECT TO LOGIN');
+        console.log('🔒 Clearing all session data...');
+        
+        // CLEAR SEMUA DATA SESSION secara eksplisit
+        const keysToRemove = [
+            'auth_origin', 'exam_session', 'examProgress', 
+            'user_data', 'user_id', 'username', 'user_name', 
+            'user_school', 'user_lomba', 'login_time', 'exam_start_time'
+        ];
+        
+        keysToRemove.forEach(key => {
+            if (localStorage.getItem(key)) {
+                localStorage.removeItem(key);
+                console.log('🗑️ Removed:', key);
+            }
+        });
+        
+        // Jangan hapus examResults dan userAnswers untuk backup
+        console.log('💾 Keeping examResults and userAnswers for backup');
+        
+        console.log('🔄 Redirecting to login page...');
+        
+        // GUNAKAN location.replace() untuk menghapus history
+        window.location.replace('../index.html');
+    }
+    </script>
+    <script>
+    // Enhanced Results Protection
+    class ResultsSecurity {
+        constructor() {
+            this.init();
+        }
+
+        init() {
+            this.setupResultsProtection();
+            this.validateAccess();
+        }
+
+        setupResultsProtection() {
+            // Set flag bahwa exam sudah completed
+            localStorage.setItem('exam_completed', 'true');
+            localStorage.setItem('auth_origin', 'exam_completed');
+            
+            // Clear exam session
+            localStorage.removeItem('exam_session');
+            localStorage.removeItem('exam_start_time');
+            localStorage.removeItem('examProgress');
+            
+            // Block back navigation ke halaman exam
+            window.history.replaceState(null, null, window.location.href);
+            window.history.pushState(null, null, window.location.href);
+            
+            window.addEventListener('popstate', (event) => {
+                console.log('🔙 Back button di results - Redirect ke login');
+                // Redirect ke login jika back button ditekan
+                window.location.href = '../index.html';
+            });
+        }
+
+        validateAccess() {
+            // Hanya boleh akses results jika exam completed
+            if (localStorage.getItem('auth_origin') !== 'exam_completed' && 
+                localStorage.getItem('exam_completed') !== 'true') {
+                console.log('🚨 Invalid access to results - redirecting to login');
+                window.location.href = '../index.html';
+                return;
+            }
+
+            // Cek jika ada hasil exam
+            const examResults = localStorage.getItem('examResults');
+            if (!examResults) {
+                console.log('⚠️ No exam results found');
+                // Tetap biarkan akses, mungkin dari direct link
+            }
+        }
+    }
+
+    // Initialize results security
+    const resultsSecurity = new ResultsSecurity();
+</script>
+</body>
+</html>

@@ -1,0 +1,1561 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengumpulan Gambar ACEFEST</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Sora', sans-serif;
+        }
+
+        :root {
+            --primary: #8B4513;
+            --secondary: #A0522D;
+            --accent: #D2691E;
+            --light: #F5F5DC;
+            --dark: #2F2F2F;
+            --success: #32CD32;
+            --danger: #FF6B6B;
+            --gray: #666666;
+            --shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        body {
+            background: linear-gradient(135deg, #8B4513 0%, #A0522D 50%, #D2691E 100%);
+            color: var(--dark);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+        }
+
+        .bg-element {
+            position: absolute;
+            border-radius: 50%;
+            opacity: 0.1;
+            z-index: 0;
+            animation: float 6s ease-in-out infinite;
+        }
+
+        .bg-element-1 {
+            width: 200px;
+            height: 200px;
+            background: var(--light);
+            top: 10%;
+            left: 5%;
+            animation-delay: 0s;
+        }
+
+        .bg-element-2 {
+            width: 150px;
+            height: 150px;
+            background: var(--light);
+            bottom: 10%;
+            right: 5%;
+            animation-delay: 2s;
+        }
+
+        .bg-element-3 {
+            width: 100px;
+            height: 100px;
+            background: var(--light);
+            top: 50%;
+            left: 10%;
+            animation-delay: 4s;
+        }
+
+        .bg-element-4 {
+            width: 120px;
+            height: 120px;
+            background: var(--light);
+            bottom: 20%;
+            left: 20%;
+            animation-delay: 1s;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(0deg); }
+            50% { transform: translateY(-20px) rotate(180deg); }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1000px;
+            min-height: 600px;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            display: flex;
+            position: relative;
+            z-index: 1;
+        }
+
+        .left-panel {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .right-panel {
+            flex: 1;
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            overflow-y: auto;
+            position: relative;
+        }
+
+        .user-header {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            z-index: 1000;
+            min-width: 200px;
+            backdrop-filter: blur(10px);
+        }
+
+        .logo {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            text-align: center;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        h1 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 25px;
+            text-align: center;
+            line-height: 1.3;
+            white-space: nowrap;
+            position: relative;
+        }
+
+        h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 25%;
+            width: 50%;
+            height: 3px;
+            background: white;
+            border-radius: 2px;
+            animation: slideIn 2s ease-out;
+        }
+
+        @keyframes slideIn {
+            from { width: 0; left: 50%; }
+            to { width: 50%; left: 25%; }
+        }
+
+        .countdown {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .countdown:hover {
+            transform: translateY(-5px);
+        }
+
+        .countdown h3 {
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .countdown-timer {
+            display: flex;
+            justify-content: space-around;
+        }
+
+        .countdown-item {
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+
+        .countdown-item:hover {
+            transform: scale(1.1);
+        }
+
+        .countdown-value {
+            font-size: 1.8rem;
+            font-weight: 700;
+            margin-bottom: 5px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .countdown-label {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .competition-info {
+            background: rgba(255, 255, 255, 0.2);
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            transition: transform 0.3s ease;
+        }
+
+        .competition-info:hover {
+            transform: translateY(-5px);
+        }
+
+        .competition-info h3 {
+            margin-bottom: 15px;
+            text-align: center;
+            font-size: 1.1rem;
+        }
+
+        .competition-info ul {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .competition-info li {
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.9rem;
+            transition: transform 0.2s ease;
+        }
+
+        .competition-info li:hover {
+            transform: translateX(10px);
+        }
+
+        .card-title {
+            margin-bottom: 25px;
+            color: var(--dark);
+            font-size: 1.4rem;
+            text-align: center;
+            position: relative;
+        }
+
+        .card-title::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 35%;
+            width: 30%;
+            height: 3px;
+            background: var(--primary);
+            border-radius: 2px;
+            animation: slideIn 2s ease-out;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 0.95rem;
+            transition: color 0.3s ease;
+        }
+
+        input, textarea {
+            width: 100%;
+            padding: 14px 16px;
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            resize: vertical;
+        }
+
+        textarea {
+            min-height: 100px;
+        }
+
+        input:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(139, 69, 19, 0.2);
+            transform: translateY(-2px);
+        }
+
+        .upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            padding: 40px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(139, 69, 19, 0.05);
+        }
+
+        .upload-area.dragover {
+            border-color: var(--success);
+            background: rgba(50, 205, 50, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-icon {
+            font-size: 3rem;
+            color: var(--primary);
+            margin-bottom: 15px;
+        }
+
+        .upload-text {
+            margin-bottom: 10px;
+            color: var(--gray);
+        }
+
+        .file-info {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        .image-preview {
+            margin-top: 20px;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+            position: relative;
+        }
+
+        .preview-image {
+            max-width: 100%;
+            max-height: 200px;
+            border-radius: 8px;
+            border: 2px solid var(--primary);
+            transition: transform 0.3s ease;
+        }
+
+        .preview-image:hover {
+            transform: scale(1.02);
+        }
+
+        .btn {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .btn:hover::before {
+            left: 100%;
+        }
+
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 8px 20px rgba(139, 69, 19, 0.4);
+        }
+
+        .btn:active {
+            transform: translateY(-1px);
+        }
+
+        .btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: none;
+            animation: slideDown 0.5s ease-out;
+        }
+
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .alert-success {
+            background: #E8F5E9;
+            color: #2E7D32;
+            border-left: 4px solid var(--success);
+        }
+
+        .alert-error {
+            background: #FFEBEE;
+            color: #C62828;
+            border-left: 4px solid var(--danger);
+        }
+
+        .confetti {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: var(--accent);
+            border-radius: 50%;
+            opacity: 0;
+        }
+
+        .footer {
+            text-align: center;
+            padding: 15px;
+            color: white;
+            font-size: 0.8rem;
+            background: rgba(0, 0, 0, 0.2);
+            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+        }
+
+        .character-count {
+            text-align: right;
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 5px;
+            transition: color 0.3s ease;
+        }
+
+        .character-count.warning {
+            color: var(--danger);
+            animation: shake 0.5s ease-in-out;
+        }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .particle {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            animation: floatParticle 8s linear infinite;
+        }
+
+        @keyframes floatParticle {
+            0% { transform: translateY(100vh) rotate(0deg); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(-100px) rotate(360deg); opacity: 0; }
+        }
+
+        .typewriter {
+            overflow: hidden;
+            border-right: 2px solid var(--primary);
+            white-space: nowrap;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes typing {
+            from { width: 0 }
+            to { width: 100% }
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent }
+            50% { border-color: var(--primary) }
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            margin-top: 10px;
+            overflow: hidden;
+            display: none;
+        }
+
+        .progress {
+            height: 100%;
+            background: linear-gradient(90deg, var(--primary), var(--accent));
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .file-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+            margin-top: 15px;
+        }
+
+        .btn-action {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #e05555;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--gray);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #5a5a5a;
+            transform: translateY(-2px);
+        }
+
+        .integrity-section {
+            margin-top: 25px;
+            padding: 20px;
+            background: rgba(139, 69, 19, 0.05);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+        }
+
+        .integrity-section h3 {
+            margin-bottom: 15px;
+            color: var(--dark);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .integrity-status {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: white;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+        }
+
+        .status-badge {
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-completed {
+            background: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .status-pending {
+            background: #FFF3E0;
+            color: #EF6C00;
+        }
+
+        .integrity-actions {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .btn-integrity {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-fill {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-fill:hover {
+            background: var(--secondary);
+            transform: translateY(-2px);
+        }
+
+        .btn-download {
+            background: var(--light);
+            color: var(--dark);
+            border: 1px solid #ddd;
+        }
+
+        .btn-download:hover {
+            background: #e8e8c8;
+            transform: translateY(-2px);
+        }
+
+        .integrity-upload-area {
+            border: 2px dashed #ddd;
+            border-radius: 10px;
+            padding: 25px 20px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: rgba(255, 255, 255, 0.9);
+            margin-bottom: 15px;
+            display: none;
+        }
+
+        .integrity-upload-area:hover {
+            border-color: var(--primary);
+            background: rgba(139, 69, 19, 0.05);
+        }
+
+        .integrity-upload-area.dragover {
+            border-color: var(--success);
+            background: rgba(50, 205, 50, 0.1);
+            transform: scale(1.02);
+        }
+
+        .integrity-file-info {
+            font-size: 0.8rem;
+            color: var(--gray);
+            margin-top: 10px;
+        }
+
+        .integrity-preview {
+            margin-top: 15px;
+            text-align: center;
+            display: none;
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .integrity-preview-item {
+            background: white;
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #ddd;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .integrity-file-name {
+            font-weight: 500;
+            color: var(--dark);
+        }
+
+        .integrity-file-size {
+            font-size: 0.8rem;
+            color: var(--gray);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+                height: auto;
+                max-height: none;
+            }
+            
+            .left-panel, .right-panel {
+                flex: none;
+            }
+            
+            .left-panel {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.3rem;
+                white-space: normal;
+            }
+
+            .integrity-actions {
+                flex-direction: column;
+            }
+
+            .integrity-preview-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 5px;
+            }
+            
+            .user-header {
+                position: relative;
+                top: auto;
+                right: auto;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="bg-element bg-element-1"></div>
+    <div class="bg-element bg-element-2"></div>
+    <div class="bg-element bg-element-3"></div>
+    <div class="bg-element bg-element-4"></div>
+
+    <div id="particles-container"></div>
+
+    <!-- User Header -->
+    <div class="user-header">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+            <div class="user-avatar-mini" style="
+                width: 40px;
+                height: 40px;
+                background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%);
+                border-radius: 50%;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: white;
+                font-weight: bold;
+                font-size: 16px;
+            " id="user-avatar-mini">U</div>
+            <div>
+                <div style="font-weight: 600; color: var(--dark);" id="header-user-name">Memuat...</div>
+                <div style="font-size: 12px; color: var(--gray);" id="header-user-school">Memuat...</div>
+            </div>
+        </div>
+        <button onclick="logout()" style="
+            width: 100%;
+            padding: 8px;
+            background: rgba(231, 76, 60, 0.1);
+            color: #e74c3c;
+            border: 1px solid #e74c3c;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 12px;
+            margin-top: 8px;
+        ">
+            <i class="fas fa-sign-out-alt"></i> Keluar
+        </button>
+    </div>
+
+    <div class="container">
+        <div class="left-panel" id="confetti-container">
+            <div>
+                <div class="logo">
+                    <i class="fas fa-image"></i>
+                </div>
+                <h1 class="typewriter">PENGUMPULAN LOMBA POSTER</h1>
+                
+                <!-- User Info akan dimasukkan di sini oleh JavaScript -->
+                <div id="user-info-container"></div>
+                
+                <div class="countdown">
+                    <h3>Sisa Waktu Pengumpulan</h3>
+                    <div class="countdown-timer">
+                        <div class="countdown-item">
+                            <div class="countdown-value" id="days">00</div>
+                            <div class="countdown-label">Hari</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div class="countdown-value" id="hours">00</div>
+                            <div class="countdown-label">Jam</div>
+                        </div>
+                        <div class="countdown-item">
+                            <div class="countdown-value" id="minutes">00</div>
+                            <div class="countdown-label">Menit</div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="competition-info">
+                    <h3>Ketentuan Gambar</h3>
+                    <ul>
+                        <li><i class="fas fa-check-circle"></i> Format: JPG, PNG, atau GIF</li>
+                        <li><i class="fas fa-check-circle"></i> Maksimal ukuran: 10MB</li>
+                        <li><i class="fas fa-check-circle"></i> Resolusi minimal: 800x600</li>
+                        <li><i class="fas fa-check-circle"></i> Gambar harus orisinal</li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="footer">
+                <p>&copy; 2025 TIM IT ACEFEST | Made with ❤️ & 🎶 </p>
+            </div>
+        </div>
+
+        <div class="right-panel">
+            <div class="card-title">
+                <h2>Pengiriman Gambar</h2>
+            </div>
+
+            <div class="alert alert-success" id="success-alert">
+                <i class="fas fa-check-circle"></i> Gambar berhasil dikirim! Terima kasih atas partisipasinya.
+            </div>
+            
+            <div class="alert alert-error" id="error-alert">
+                <i class="fas fa-exclamation-circle"></i> Terjadi kesalahan. Pastikan semua field telah diisi dengan benar.
+            </div>
+
+            <form id="image-form" enctype="multipart/form-data">
+                <div class="form-group">
+                    <label for="image-title"><i class="fas fa-heading"></i> Judul Gambar</label>
+                    <input type="text" id="image-title" placeholder="Masukkan judul gambar" required>
+                    <div class="character-count" id="title-count">0/50</div>
+                </div>
+
+                <div class="form-group">
+                    <label for="image-description"><i class="fas fa-comment-alt"></i> Makna dan Penjelasan Gambar</label>
+                    <textarea id="image-description" placeholder="Jelaskan makna, konsep, dan pesan yang ingin disampaikan melalui gambar ini..." required></textarea>
+                    <div class="character-count" id="description-count">0/500</div>
+                </div>
+
+                <div class="form-group" id="upload-container">
+                    <label><i class="fas fa-camera"></i> Unggah Gambar</label>
+                    <div class="upload-area" id="upload-area">
+                        <div class="upload-icon">
+                            <i class="fas fa-cloud-upload-alt"></i>
+                        </div>
+                        <div class="upload-text">
+                            Klik atau drag & drop gambar di sini
+                        </div>
+                        <div class="file-info">
+                            Format: JPG, PNG, GIF | Maks: 10MB
+                        </div>
+                    </div>
+                    <input type="file" id="image-file" accept=".jpg,.jpeg,.png,.gif" style="display: none;">
+                    <div class="progress-bar" id="progress-bar">
+                        <div class="progress" id="progress"></div>
+                    </div>
+                </div>
+                
+                <div class="image-preview" id="image-preview">
+                    <h4><i class="fas fa-eye"></i> Pratinjau Gambar</h4>
+                    <img id="preview-image" class="preview-image" src="" alt="Pratinjau Gambar">
+                    <div class="file-info" id="file-info"></div>
+                    <div class="file-actions" id="file-actions">
+                        <button type="button" class="btn-action btn-danger" id="remove-file">
+                            <i class="fas fa-trash"></i> Hapus File
+                        </button>
+                        <button type="button" class="btn-action btn-secondary" id="change-file">
+                            <i class="fas fa-exchange-alt"></i> Ganti File
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Section Surat Integritas -->
+                <div class="integrity-section">
+                    <h3><i class="fas fa-file-contract"></i> Surat Integritas & Orisinalitas</h3>
+                    
+                    <div class="integrity-status" id="integrity-status">
+                        <i class="fas fa-clock"></i>
+                        <span>Status: </span>
+                        <span class="status-badge status-pending">Belum Diunggah</span>
+                    </div>
+                    
+                    <div class="integrity-actions">
+                        <button type="button" class="btn-integrity btn-download" id="download-integrity">
+                            <i class="fas fa-download"></i> Download Surat Integritas
+                        </button>
+                    </div>
+
+                    <div class="integrity-upload-area" id="integrity-upload-area">
+                        <div class="upload-icon">
+                            <i class="fas fa-file-upload"></i>
+                        </div>
+                        <div class="upload-text">
+                            Klik atau drag & drop Surat Integritas yang sudah diisi
+                        </div>
+                        <div class="file-info">
+                            Format: PDF, JPG, PNG | Maks: 5MB
+                        </div>
+                    </div>
+                    <input type="file" id="integrity-file" accept=".pdf,.jpg,.jpeg,.png" style="display: none;">
+
+                    <div class="integrity-preview" id="integrity-preview">
+                        <h4><i class="fas fa-file-check"></i> Surat Integritas Terunggah</h4>
+                        <div class="integrity-preview-item">
+                            <div>
+                                <div class="integrity-file-name" id="integrity-file-name"></div>
+                                <div class="integrity-file-size" id="integrity-file-size"></div>
+                            </div>
+                            <button type="button" class="btn-action btn-danger" id="remove-integrity-file">
+                                <i class="fas fa-trash"></i> Hapus
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <button type="submit" class="btn" id="submit-btn" disabled>
+                    <i class="fas fa-paper-plane"></i> Kirim Gambar & Surat Integritas
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://exam-system-backend.timacefest2025.workers.dev';
+
+        class ImageSubmissionSystem {
+            constructor() {
+                this.userData = null;
+                this.uploadedFile = null;
+                this.integrityFile = null;
+                this.integrityCompleted = false;
+                this.hasSubmitted = false;
+            }
+
+            async initialize() {
+                if (!this.validateAccess()) {
+                    return;
+                }
+
+                await this.loadUserData();
+                this.displayUserInfo();
+                await this.checkExistingSubmission();
+                this.setupEventListeners();
+                this.createParticles();
+                this.initializeIntegritySection();
+                
+                console.log('✅ Image submission system initialized');
+            }
+
+            validateAccess() {
+                this.userData = JSON.parse(localStorage.getItem('user_data'));
+                
+                if (!this.userData) {
+                    alert('Sesi telah berakhir. Silakan login kembali.');
+                    window.location.href = '../index.html';
+                    return false;
+                }
+
+                // Validasi lomba
+                const userLomba = this.userData.lomba.toLowerCase();
+                if (userLomba !== 'desain_poster') {
+                    alert('Akses ditolak. Hanya peserta desain poster yang dapat mengakses halaman ini.');
+                    window.location.href = '../index.html';
+                    return false;
+                }
+
+                return true;
+            }
+
+            async loadUserData() {
+                console.log('✅ User data loaded:', this.userData);
+            }
+
+            displayUserInfo() {
+                // Update header user info
+                document.getElementById('header-user-name').textContent = this.userData.nama;
+                document.getElementById('header-user-school').textContent = this.userData.sekolah;
+                document.getElementById('user-avatar-mini').textContent = this.userData.nama.charAt(0).toUpperCase();
+
+                // Add user info to left panel
+                const userInfoHTML = `
+                    <div class="user-info" style="
+                        display: flex; 
+                        align-items: center; 
+                        gap: 15px; 
+                        color: white;
+                        margin-bottom: 20px;
+                        padding: 15px;
+                        background: rgba(255,255,255,0.1);
+                        border-radius: 10px;
+                        backdrop-filter: blur(10px);
+                    ">
+                        <div class="user-avatar" style="
+                            width: 50px; 
+                            height: 50px; 
+                            background: linear-gradient(135deg, var(--primary) 0%, var(--secondary) 100%); 
+                            border-radius: 50%; 
+                            display: flex; 
+                            align-items: center; 
+                            justify-content: center; 
+                            color: white; 
+                            font-weight: bold; 
+                            font-size: 20px; 
+                        ">
+                            ${this.userData.nama.charAt(0).toUpperCase()}
+                        </div>
+                        <div class="user-details">
+                            <div style="font-weight: 600; font-size: 16px;">${this.userData.nama}</div>
+                            <div style="font-size: 14px; opacity: 0.9;">${this.userData.sekolah}</div>
+                            <div style="font-size: 12px; opacity: 0.7; margin-top: 2px;">Lomba: ${this.userData.lomba.toUpperCase()}</div>
+                        </div>
+                    </div>
+                `;
+
+                const userInfoContainer = document.getElementById('user-info-container');
+                userInfoContainer.innerHTML = userInfoHTML;
+            }
+
+            async checkExistingSubmission() {
+                try {
+                    console.log('🔍 Checking existing submission for user:', this.userData.id);
+                    
+                    const response = await fetch(`${API_BASE}/api/images/check?user_id=${this.userData.id}&lomba=desain_poster`);
+                    
+                    if (!response.ok) {
+                        console.warn('Check submission failed with status:', response.status);
+                        return;
+                    }
+                    
+                    const data = await response.json();
+                    console.log('🔍 Check submission response:', data);
+
+                    if (data.success && data.has_submitted) {
+                        this.hasSubmitted = true;
+                        this.showAlreadySubmittedWarning(data.submission);
+                    }
+                } catch (error) {
+                    console.error('Error checking submission:', error);
+                }
+            }
+
+            showAlreadySubmittedWarning(submission) {
+                const warningHTML = `
+                    <div class="alert alert-warning" style="
+                        background: #fff3cd;
+                        color: #856404;
+                        padding: 20px;
+                        border-radius: 10px;
+                        margin-bottom: 20px;
+                        border-left: 4px solid #ffc107;
+                    ">
+                        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 10px;">
+                            <i class="fas fa-check-circle" style="color: #28a745;"></i>
+                            <strong>Gambar Sudah Dikirim</strong>
+                        </div>
+                        <p style="margin: 5px 0;">Anda sudah mengirimkan gambar untuk lomba ini.</p>
+                        <div style="background: white; padding: 15px; border-radius: 8px; margin-top: 10px;">
+                            <strong>Judul:</strong> ${submission.image_title}<br>
+                            <strong>Deskripsi:</strong> ${submission.image_description || 'Tidak ada deskripsi'}<br>
+                            <strong>Dikirim:</strong> ${new Date(submission.submitted_at).toLocaleString('id-ID')}
+                        </div>
+                    </div>
+                `;
+
+                const form = document.getElementById('image-form');
+                if (form) {
+                    form.style.display = 'none';
+                }
+
+                const rightPanel = document.querySelector('.right-panel');
+                const cardTitle = rightPanel.querySelector('.card-title');
+                
+                if (cardTitle) {
+                    cardTitle.insertAdjacentHTML('afterend', warningHTML);
+                }
+            }
+
+            createParticles() {
+                const container = document.getElementById('particles-container');
+                const colors = ['#8B4513', '#A0522D', '#D2691E', '#FFFFFF'];
+                
+                for (let i = 0; i < 15; i++) {
+                    const particle = document.createElement('div');
+                    particle.className = 'particle';
+                    
+                    const size = Math.random() * 10 + 5;
+                    particle.style.width = `${size}px`;
+                    particle.style.height = `${size}px`;
+                    particle.style.left = `${Math.random() * 100}%`;
+                    particle.style.background = colors[Math.floor(Math.random() * colors.length)];
+                    particle.style.animationDelay = `${Math.random() * 8}s`;
+                    particle.style.animationDuration = `${Math.random() * 10 + 8}s`;
+                    
+                    container.appendChild(particle);
+                }
+            }
+
+            setupEventListeners() {
+                const form = document.getElementById('image-form');
+                if (form && !this.hasSubmitted) {
+                    form.addEventListener('submit', (e) => this.handleSubmit(e));
+                }
+
+                // Character count
+                document.getElementById('image-title').addEventListener('input', () => this.updateCharacterCount('title-count', 50));
+                document.getElementById('image-description').addEventListener('input', () => this.updateCharacterCount('description-count', 500));
+
+                // File upload functionality
+                const uploadArea = document.getElementById('upload-area');
+                const fileInput = document.getElementById('image-file');
+                const removeFileBtn = document.getElementById('remove-file');
+                const changeFileBtn = document.getElementById('change-file');
+
+                uploadArea.addEventListener('click', () => fileInput.click());
+                uploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.add('dragover');
+                });
+                uploadArea.addEventListener('dragleave', () => uploadArea.classList.remove('dragover'));
+                uploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    uploadArea.classList.remove('dragover');
+                    if (e.dataTransfer.files.length > 0) {
+                        this.handleFile(e.dataTransfer.files[0]);
+                    }
+                });
+                fileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        this.handleFile(e.target.files[0]);
+                    }
+                });
+                removeFileBtn.addEventListener('click', () => this.resetFileUpload());
+                changeFileBtn.addEventListener('click', () => fileInput.click());
+            }
+
+            updateCharacterCount(counterId, maxLength) {
+                const input = event.target;
+                const counter = document.getElementById(counterId);
+                const count = input.value.length;
+                
+                counter.textContent = `${count}/${maxLength}`;
+                
+                if (count > maxLength) {
+                    counter.classList.add('warning');
+                } else {
+                    counter.classList.remove('warning');
+                }
+
+                this.updateSubmitButton();
+            }
+
+            handleFile(file) {
+                // Validate file type
+                const validTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/gif'];
+                if (!validTypes.includes(file.type)) {
+                    this.showError('Format file tidak didukung. Gunakan JPG, PNG, atau GIF.');
+                    return;
+                }
+
+                // Validate file size (10MB)
+                if (file.size > 10 * 1024 * 1024) {
+                    this.showError('Ukuran file terlalu besar. Maksimal 10MB.');
+                    return;
+                }
+
+                // Store the file
+                this.uploadedFile = file;
+
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    document.getElementById('preview-image').src = e.target.result;
+                    document.getElementById('file-info').textContent = `${file.name} (${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                    document.getElementById('image-preview').style.display = 'block';
+                    
+                    // Hide upload area after successful upload
+                    document.getElementById('upload-container').style.display = 'none';
+                    
+                    this.updateSubmitButton();
+                };
+                reader.readAsDataURL(file);
+            }
+
+            initializeIntegritySection() {
+                const integrityUploadArea = document.getElementById('integrity-upload-area');
+                const integrityFileInput = document.getElementById('integrity-file');
+                const removeIntegrityFileBtn = document.getElementById('remove-integrity-file');
+                const downloadIntegrityBtn = document.getElementById('download-integrity');
+
+                integrityUploadArea.style.display = 'block';
+                integrityUploadArea.addEventListener('click', () => integrityFileInput.click());
+                integrityUploadArea.addEventListener('dragover', (e) => {
+                    e.preventDefault();
+                    integrityUploadArea.classList.add('dragover');
+                });
+                integrityUploadArea.addEventListener('dragleave', () => integrityUploadArea.classList.remove('dragover'));
+                integrityUploadArea.addEventListener('drop', (e) => {
+                    e.preventDefault();
+                    integrityUploadArea.classList.remove('dragover');
+                    if (e.dataTransfer.files.length > 0) {
+                        this.handleIntegrityFile(e.dataTransfer.files[0]);
+                    }
+                });
+                integrityFileInput.addEventListener('change', (e) => {
+                    if (e.target.files.length > 0) {
+                        this.handleIntegrityFile(e.target.files[0]);
+                    }
+                });
+                removeIntegrityFileBtn.addEventListener('click', () => this.resetIntegrityFile());
+                downloadIntegrityBtn.addEventListener('click', () => this.downloadIntegrityForm());
+            }
+
+            handleIntegrityFile(file) {
+                // Validate file type
+                const validTypes = ['application/pdf', 'image/jpeg', 'image/jpg', 'image/png'];
+                if (!validTypes.includes(file.type)) {
+                    this.showError('Format file tidak didukung. Gunakan PDF, JPG, atau PNG.');
+                    return;
+                }
+
+                // Validate file size (5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    this.showError('Ukuran file terlalu besar. Maksimal 5MB.');
+                    return;
+                }
+
+                // Store the file
+                this.integrityFile = file;
+                this.integrityCompleted = true;
+
+                // Update UI
+                document.getElementById('integrity-file-name').textContent = file.name;
+                document.getElementById('integrity-file-size').textContent = `(${(file.size / 1024 / 1024).toFixed(2)} MB)`;
+                document.getElementById('integrity-preview').style.display = 'block';
+                document.getElementById('integrity-upload-area').style.display = 'none';
+
+                // Update status
+                document.getElementById('integrity-status').innerHTML = `
+                    <i class="fas fa-check-circle" style="color: #2E7D32;"></i>
+                    <span>Status: </span>
+                    <span class="status-badge status-completed">Telah Diunggah</span>
+                `;
+
+                // Update submit button
+                this.updateSubmitButton();
+
+                this.showSuccess('Surat Integritas berhasil diunggah!');
+            }
+
+            resetFileUpload() {
+                this.uploadedFile = null;
+                document.getElementById('image-file').value = '';
+                document.getElementById('image-preview').style.display = 'none';
+                document.getElementById('upload-container').style.display = 'block';
+                this.updateSubmitButton();
+            }
+
+            resetIntegrityFile() {
+                this.integrityFile = null;
+                this.integrityCompleted = false;
+                document.getElementById('integrity-file').value = '';
+                document.getElementById('integrity-preview').style.display = 'none';
+                document.getElementById('integrity-upload-area').style.display = 'block';
+                document.getElementById('integrity-status').innerHTML = `
+                    <i class="fas fa-clock"></i>
+                    <span>Status: </span>
+                    <span class="status-badge status-pending">Belum Diunggah</span>
+                `;
+                this.updateSubmitButton();
+            }
+
+            updateSubmitButton() {
+                const titleValue = document.getElementById('image-title').value.trim();
+                const descriptionValue = document.getElementById('image-description').value.trim();
+                
+                if (titleValue && descriptionValue && this.uploadedFile && this.integrityCompleted) {
+                    document.getElementById('submit-btn').disabled = false;
+                } else {
+                    document.getElementById('submit-btn').disabled = true;
+                }
+            }
+
+            downloadIntegrityForm() {
+                const fileUrl = './SURAT_INTEGRITAS_DAN_ORISINALITAS_DESAIN_POSTER.pdf';
+                const a = document.createElement('a');
+                a.href = fileUrl;
+                a.download = 'Surat_Integritas_dan_Orisinalitas_ACEFEST.pdf';
+                a.target = '_blank';
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                
+                this.showSuccess('Surat Integritas berhasil diunduh! Silakan isi, tanda tangani, dan unggah kembali.');
+            }
+
+            async handleSubmit(e) {
+  e.preventDefault();
+  
+  const imageTitle = document.getElementById('image-title').value.trim();
+  const imageDescription = document.getElementById('image-description').value.trim();
+  
+  if (!imageTitle || !imageDescription || !this.uploadedFile || !this.integrityCompleted) {
+    this.showError('Harap lengkapi semua field dan unggah file yang diperlukan.');
+    return;
+  }
+
+  // Show loading
+  this.showLoading('Mengirim gambar...');
+
+  try {
+    const formData = new FormData();
+    formData.append('user_id', this.userData.id);
+    formData.append('username', this.userData.username);
+    formData.append('nama', this.userData.nama);
+    formData.append('sekolah', this.userData.sekolah);
+    formData.append('lomba', 'desain_poster');
+    formData.append('image_title', imageTitle);
+    formData.append('image_description', imageDescription);
+    formData.append('image_file', this.uploadedFile);
+    
+    if (this.integrityFile) {
+      formData.append('integrity_file', this.integrityFile);
+    }
+
+    console.log('📤 Sending submission...');
+    
+    const response = await fetch(`${API_BASE}/api/images/submit`, {
+      method: 'POST',
+      body: formData,
+      // Tambahkan timeout
+      signal: AbortSignal.timeout(30000) // 30 detik timeout
+    });
+
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
+    }
+
+    const result = await response.json();
+    console.log('🔍 Submission response:', result);
+
+    if (result.success) {
+      this.showSuccess('Gambar dan surat integritas berhasil dikirim!');
+      this.hasSubmitted = true;
+      this.createConfetti();
+      
+      // Reload page after 3 seconds to show submission status
+      setTimeout(() => {
+        window.location.reload();
+      }, 3000);
+      
+    } else {
+      this.showError(result.error || 'Gagal mengirim gambar.');
+    }
+    
+  } catch (error) {
+    console.error('Submit error:', error);
+    
+    if (error.name === 'AbortError') {
+      this.showError('Waktu pengiriman habis. Silakan coba lagi.');
+    } else if (error.name === 'TypeError' && error.message.includes('fetch')) {
+      this.showError('Gagal terhubung ke server. Periksa koneksi internet Anda.');
+    } else {
+      this.showError('Gagal mengirim gambar: ' + error.message);
+    }
+  } finally {
+    this.hideLoading();
+  }
+}
+
+            showLoading(message = 'Memuat...') {
+                this.hideLoading();
+                
+                const loadingDiv = document.createElement('div');
+                loadingDiv.id = 'image-loading-overlay';
+                loadingDiv.style.cssText = `
+                    position: fixed;
+                    top: 0;
+                    left: 0;
+                    width: 100%;
+                    height: 100%;
+                    background: rgba(0,0,0,0.7);
+                    display: flex;
+                    flex-direction: column;
+                    justify-content: center;
+                    align-items: center;
+                    z-index: 9999;
+                    color: white;
+                    font-family: Arial, sans-serif;
+                `;
+                
+                loadingDiv.innerHTML = `
+                    <div style="text-align: center; background: white; padding: 30px; border-radius: 10px; color: #333;">
+                        <div class="spinner" style="
+                            border: 4px solid #f3f3f3;
+                            border-top: 4px solid var(--primary);
+                            border-radius: 50%;
+                            width: 40px;
+                            height: 40px;
+                            animation: spin 1s linear infinite;
+                            margin: 0 auto 15px;
+                        "></div>
+                        <div>${message}</div>
+                    </div>
+                `;
+                
+                document.body.appendChild(loadingDiv);
+            }
+
+            hideLoading() {
+                const existing = document.getElementById('image-loading-overlay');
+                if (existing) {
+                    existing.remove();
+                }
+            }
+
+            showSuccess(message) {
+                const successAlert = document.getElementById('success-alert');
+                if (successAlert) {
+                    successAlert.innerHTML = `<i class="fas fa-check-circle"></i> ${message}`;
+                    successAlert.style.display = 'block';
+                    
+                    const errorAlert = document.getElementById('error-alert');
+                    if (errorAlert) {
+                        errorAlert.style.display = 'none';
+                    }
+                }
+            }
+
+            showError(message) {
+                const errorAlert = document.getElementById('error-alert');
+                if (errorAlert) {
+                    errorAlert.innerHTML = `<i class="fas fa-exclamation-circle"></i> ${message}`;
+                    errorAlert.style.display = 'block';
+                    
+                    const successAlert = document.getElementById('success-alert');
+                    if (successAlert) {
+                        successAlert.style.display = 'none';
+                    }
+                }
+            }
+
+            createConfetti() {
+                const container = document.getElementById('confetti-container');
+                const colors = ['#8B4513', '#A0522D', '#D2691E', '#32CD32', '#FFFFFF'];
+                
+                for (let i = 0; i < 50; i++) {
+                    const confetti = document.createElement('div');
+                    confetti.className = 'confetti';
+                    confetti.style.left = Math.random() * 100 + '%';
+                    confetti.style.top = Math.random() * 100 + '%';
+                    confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                    confetti.style.width = Math.random() * 10 + 5 + 'px';
+                    confetti.style.height = confetti.style.width;
+                    confetti.style.opacity = '1';
+                    
+                    container.appendChild(confetti);
+                    
+                    const animation = confetti.animate([
+                        { transform: 'translateY(0) rotate(0deg)', opacity: 1 },
+                        { transform: `translateY(${Math.random() * 300 + 100}px) rotate(${Math.random() * 360}deg)`, opacity: 0 }
+                    ], {
+                        duration: Math.random() * 2000 + 1000,
+                        easing: 'cubic-bezier(0.215, 0.61, 0.355, 1)'
+                    });
+                    
+                    animation.onfinish = () => {
+                        confetti.remove();
+                    };
+                }
+            }
+        }
+
+        // =============================================
+        // COUNTDOWN TIMER
+        // =============================================
+
+        function updateCountdown() {
+            const deadline = new Date('December 31, 2025 23:59:59').getTime();
+            const now = new Date().getTime();
+            const timeLeft = deadline - now;
+
+            if (timeLeft > 0) {
+                const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+                const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+                const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+
+                document.getElementById('days').textContent = days.toString().padStart(2, '0');
+                document.getElementById('hours').textContent = hours.toString().padStart(2, '0');
+                document.getElementById('minutes').textContent = minutes.toString().padStart(2, '0');
+            } else {
+                document.getElementById('days').textContent = '00';
+                document.getElementById('hours').textContent = '00';
+                document.getElementById('minutes').textContent = '00';
+            }
+        }
+
+        // =============================================
+        // LOGOUT FUNCTION
+        // =============================================
+
+        function logout() {
+            if (confirm('Apakah Anda yakin ingin keluar?')) {
+                localStorage.clear();
+                window.location.href = '../index.html';
+            }
+        }
+
+        // =============================================
+        // INITIALIZATION
+        // =============================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize countdown timer
+            updateCountdown();
+            setInterval(updateCountdown, 60000);
+
+            // Initialize image submission system
+            const imageSystem = new ImageSubmissionSystem();
+            imageSystem.initialize();
+        });
+    </script>
+</body>
+</html>

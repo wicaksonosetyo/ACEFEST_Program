@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lomba Selesai</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #1a2a6c, #b21f1f, #fdbb2d);
+            background-size: 400% 400%;
+            animation: gradientBG 15s ease infinite;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            overflow: hidden;
+        }
+        
+        @keyframes gradientBG {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        
+        .container {
+            text-align: center;
+            max-width: 800px;
+            padding: 40px;
+            background: rgba(0, 0, 0, 0.7);
+            border-radius: 20px;
+            box-shadow: 0 15px 30px rgba(0, 0, 0, 0.5);
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .container::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 70%);
+            z-index: -1;
+        }
+        
+        h1 {
+            font-size: 4.5rem;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 5px;
+            text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+            background: linear-gradient(to right, #ffd700, #ff8c00, #ff4500);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            animation: glow 2s ease-in-out infinite alternate;
+        }
+        
+        @keyframes glow {
+            from { text-shadow: 0 0 10px rgba(255, 215, 0, 0.5); }
+            to { text-shadow: 0 0 20px rgba(255, 140, 0, 0.8), 0 0 30px rgba(255, 69, 0, 0.6); }
+        }
+        
+        .subtitle {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            color: #f0f0f0;
+            font-weight: 300;
+        }
+        
+        .message {
+            font-size: 1.2rem;
+            line-height: 1.6;
+            margin-bottom: 30px;
+            color: #e0e0e0;
+        }
+        
+        .celebration {
+            display: flex;
+            justify-content: center;
+            margin: 30px 0;
+        }
+        
+        .confetti {
+            width: 15px;
+            height: 15px;
+            background-color: #f0f;
+            position: absolute;
+            left: 50%;
+            opacity: 0;
+        }
+        
+        .firework {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            border-radius: 50%;
+            box-shadow: 0 0 10px #fff;
+            animation: firework 2s ease-out infinite;
+        }
+        
+        @keyframes firework {
+            0% { transform: translate(var(--x), var(--y)); width: 5px; opacity: 1; }
+            50% { width: 10px; opacity: 1; }
+            100% { width: 200px; opacity: 0; }
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 15px 40px;
+            background: linear-gradient(to right, #ff8c00, #ff4500);
+            color: white;
+            text-decoration: none;
+            border-radius: 50px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(255, 69, 0, 0.4);
+            margin-top: 20px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(255, 69, 0, 0.6);
+        }
+        
+        .trophy {
+            font-size: 5rem;
+            margin-bottom: 20px;
+            animation: bounce 2s infinite;
+        }
+        
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+        
+        @media (max-width: 768px) {
+            h1 { font-size: 3rem; }
+            .subtitle { font-size: 1.4rem; }
+            .message { font-size: 1rem; }
+            .container { padding: 20px; margin: 20px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="trophy">🏆</div>
+        <h1>LOMBA SUDAH SELESAI</h1>
+        <p class="subtitle">Terima kasih atas partisipasi Anda!</p>
+        <p class="message">Lomba telah berakhir dengan sukses. Kami mengucapkan terima kasih kepada semua peserta yang telah berpartisipasi dengan semangat dan antusiasme. Pemenang akan diumumkan segera melalui media resmi kami.</p>
+        
+        <div class="celebration" id="celebration">
+            <!-- Confetti dan firework akan dibuat dengan JavaScript -->
+        </div>
+        
+        <a href="#" class="btn">Baik</a>
+    </div>
+
+    <script>
+        // Membuat efek confetti
+        function createConfetti() {
+            const celebration = document.getElementById('celebration');
+            const colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff'];
+            
+            for (let i = 0; i < 50; i++) {
+                const confetti = document.createElement('div');
+                confetti.className = 'confetti';
+                confetti.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                confetti.style.left = Math.random() * 100 + 'vw';
+                confetti.style.animationDelay = Math.random() * 5 + 's';
+                confetti.style.animation = `fall ${Math.random() * 3 + 2}s linear infinite`;
+                
+                document.body.appendChild(confetti);
+                
+                // Style untuk animasi jatuh
+                const style = document.createElement('style');
+                style.textContent = `
+                    @keyframes fall {
+                        0% { transform: translateY(-100vh) rotate(0deg); opacity: 1; }
+                        100% { transform: translateY(100vh) rotate(360deg); opacity: 0; }
+                    }
+                `;
+                document.head.appendChild(style);
+            }
+        }
+        
+        // Membuat efek kembang api
+        function createFireworks() {
+            for (let i = 0; i < 10; i++) {
+                setTimeout(() => {
+                    const firework = document.createElement('div');
+                    firework.className = 'firework';
+                    firework.style.setProperty('--x', Math.random() * 100 - 50 + 'vw');
+                    firework.style.setProperty('--y', Math.random() * 100 - 50 + 'vh');
+                    firework.style.backgroundColor = `hsl(${Math.random() * 360}, 100%, 50%)`;
+                    document.body.appendChild(firework);
+                    
+                    // Hapus elemen setelah animasi selesai
+                    setTimeout(() => {
+                        firework.remove();
+                    }, 2000);
+                }, i * 500);
+            }
+        }
+        
+        // Jalankan efek setelah halaman dimuat
+        window.onload = function() {
+            createConfetti();
+            setInterval(createFireworks, 2000);
+        };
+    </script>
+</body>
+</html>

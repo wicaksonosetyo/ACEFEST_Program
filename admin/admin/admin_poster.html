@@ -1,0 +1,931 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Panitia - View Karya Desain Poster</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #2C3E50, #4A235A);
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .header p {
+            color: #bdc3c7;
+            margin-top: 0.5rem;
+        }
+
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin: 1.5rem 0;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+        }
+
+        .stat-label {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .stat-pending { border-left: 4px solid #f39c12; }
+        .stat-approved { border-left: 4px solid #27ae60; }
+        .stat-rejected { border-left: 4px solid #e74c3c; }
+        .stat-total { border-left: 4px solid #3498db; }
+
+        .controls {
+            background: white;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #2C3E50;
+            font-size: 0.9rem;
+        }
+
+        select, input {
+            padding: 0.6rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            min-width: 200px;
+        }
+
+        .btn {
+            padding: 0.6rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .btn-success {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #219653;
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            overflow: hidden;
+            margin-bottom: 2rem;
+            max-height: 70vh;
+            overflow-y: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 1000px;
+        }
+
+        thead {
+            background: #2C3E50;
+            color: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        th {
+            font-weight: 600;
+            font-size: 0.9rem;
+        }
+
+        tbody tr:hover {
+            background: #f8f9fa;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .action-btn {
+            padding: 0.4rem 0.8rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .view-btn {
+            background: #3498db;
+            color: white;
+        }
+
+        .view-btn:hover {
+            background: #2980b9;
+        }
+
+        .approve-btn {
+            background: #27ae60;
+            color: white;
+        }
+
+        .approve-btn:hover {
+            background: #219653;
+        }
+
+        .reject-btn {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .reject-btn:hover {
+            background: #c0392b;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            color: white;
+            font-size: 2.5rem;
+            cursor: pointer;
+            z-index: 1001;
+            background: rgba(0,0,0,0.5);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .export-btn {
+            background: #9b59b6;
+            color: white;
+        }
+
+        .export-btn:hover {
+            background: #8e44ad;
+        }
+
+        .summary-info {
+            background: #e8f4fd;
+            padding: 1rem;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+            font-size: 0.9rem;
+            color: #2C3E50;
+        }
+
+        .review-modal {
+            display: none;
+            position: fixed;
+            z-index: 1001;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(5px);
+        }
+
+        .review-modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: white;
+            padding: 2rem;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 500px;
+            box-shadow: 0 5px 30px rgba(0,0,0,0.3);
+        }
+
+        .review-modal h3 {
+            margin-bottom: 1.5rem;
+            color: #2C3E50;
+        }
+
+        .review-modal textarea {
+            width: 100%;
+            padding: 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 120px;
+            margin-bottom: 1.5rem;
+        }
+
+        .review-modal-actions {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div>
+                    <h1>Dashboard Panitia - View Karya Desain Poster</h1>
+                    <p>Kelola dan review hasil karya desain poster peserta</p>
+                </div>
+                <div>
+                    <button class="btn btn-primary" onclick="loadSubmissions()">
+                        🔄 Refresh Data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="stats-container" id="stats-container">
+            <div class="stat-card stat-total">
+                <div class="stat-value" id="total-submissions">0</div>
+                <div class="stat-label">Total Pengumpulan</div>
+            </div>
+            <div class="stat-card stat-pending">
+                <div class="stat-value" id="pending-submissions">0</div>
+                <div class="stat-label">Menunggu Review</div>
+            </div>
+            <div class="stat-card stat-approved">
+                <div class="stat-value" id="approved-submissions">0</div>
+                <div class="stat-label">Disetujui</div>
+            </div>
+            <div class="stat-card stat-rejected">
+                <div class="stat-value" id="rejected-submissions">0</div>
+                <div class="stat-label">Ditolak</div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <div class="filter-group">
+                <label for="statusFilter">Filter Status</label>
+                <select id="statusFilter">
+                    <option value="all">Semua Status</option>
+                    <option value="pending">Menunggu Review</option>
+                    <option value="approved">Disetujui</option>
+                    <option value="rejected">Ditolak</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="searchFilter">Cari Peserta</label>
+                <input type="text" id="searchFilter" placeholder="Nama, sekolah, atau judul...">
+            </div>
+            
+            <button class="btn export-btn" onclick="exportToExcel()">
+                📊 Export ke Excel
+            </button>
+        </div>
+
+        <div class="summary-info" id="summary-info" style="display: none;">
+            Menampilkan <strong id="display-count">0</strong> dari <strong id="total-count">0</strong> pengumpulan
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Peserta</th>
+                        <th>Sekolah</th>
+                        <th>Judul Karya</th>
+                        <th>Deskripsi</th>
+                        <th>Tanggal Submit</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="submissions-table-body">
+                    <tr>
+                        <td colspan="8" class="loading">
+                            <h3>Memuat data karya peserta...</h3>
+                            <p>Sedang mengambil data dari database</p>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Modal untuk gambar besar -->
+    <div id="imageModal" class="modal">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <!-- Modal untuk review -->
+    <div id="reviewModal" class="review-modal">
+        <div class="review-modal-content">
+            <h3 id="reviewModalTitle">Review Karya</h3>
+            <textarea id="rejectionReason" placeholder="Masukkan alasan penolakan (jika menolak)"></textarea>
+            <div class="review-modal-actions">
+                <button class="btn btn-secondary" onclick="closeReviewModal()">Batal</button>
+                <button class="btn btn-success" onclick="approveSubmission()">Setujui</button>
+                <button class="btn btn-danger" onclick="rejectSubmission()">Tolak</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://exam-system-backend.timacefest2025.workers.dev';
+        let allSubmissions = [];
+        let currentReviewId = null;
+
+        // Load data saat halaman dibuka
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSubmissions();
+            
+            // Event listeners untuk filter
+            document.getElementById('statusFilter').addEventListener('change', filterSubmissions);
+            document.getElementById('searchFilter').addEventListener('input', filterSubmissions);
+        });
+
+        // Fungsi utama untuk load submissions
+        async function loadSubmissions() {
+            const container = document.getElementById('submissions-table-body');
+            
+            try {
+                container.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="loading">
+                            <h3>Memuat data karya peserta...</h3>
+                            <p>Sedang mengambil data dari database</p>
+                        </td>
+                    </tr>
+                `;
+
+                // Load semua data sekaligus tanpa pagination
+                const response = await fetch(`${API_BASE_URL}/api/admin/desain-poster?limit=1000`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    allSubmissions = result.submissions;
+                    updateStats(allSubmissions);
+                    renderTable(allSubmissions);
+                    updateSummary(allSubmissions.length, allSubmissions.length);
+                } else {
+                    throw new Error(result.error || 'Gagal memuat data');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                container.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="error">
+                            <h3>Gagal Memuat Data</h3>
+                            <p>${error.message}</p>
+                            <button class="btn btn-primary" onclick="loadSubmissions()" style="margin-top: 1rem;">
+                                Coba Lagi
+                            </button>
+                        </td>
+                    </tr>
+                `;
+            }
+        }
+
+        // Update statistik
+        function updateStats(submissions) {
+            const total = submissions.length;
+            const pending = submissions.filter(s => s.status === 'pending').length;
+            const approved = submissions.filter(s => s.status === 'approved').length;
+            const rejected = submissions.filter(s => s.status === 'rejected').length;
+
+            document.getElementById('total-submissions').textContent = total;
+            document.getElementById('pending-submissions').textContent = pending;
+            document.getElementById('approved-submissions').textContent = approved;
+            document.getElementById('rejected-submissions').textContent = rejected;
+        }
+
+        // Update summary info
+        function updateSummary(displayCount, totalCount) {
+            const summary = document.getElementById('summary-info');
+            if (totalCount > 0) {
+                summary.style.display = 'block';
+                document.getElementById('display-count').textContent = displayCount;
+                document.getElementById('total-count').textContent = totalCount;
+            } else {
+                summary.style.display = 'none';
+            }
+        }
+
+        // Render table
+        function renderTable(submissions) {
+            const tbody = document.getElementById('submissions-table-body');
+            
+            if (submissions.length === 0) {
+                tbody.innerHTML = `
+                    <tr>
+                        <td colspan="8" class="empty-state">
+                            <div>📭</div>
+                            <h3>Belum Ada Karya</h3>
+                            <p>Belum ada peserta yang mengumpulkan karya desain poster</p>
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+
+            // Render semua rows sekaligus
+            tbody.innerHTML = submissions.map((submission, index) => {
+                return `
+                    <tr>
+                        <td>${index + 1}</td>
+                        <td>
+                            <strong>${escapeHtml(submission.nama)}</strong><br>
+                            <small style="color: #7f8c8d;">${escapeHtml(submission.username)}</small>
+                        </td>
+                        <td>${escapeHtml(submission.sekolah)}</td>
+                        <td>
+                            <strong>${escapeHtml(submission.image_title)}</strong>
+                            ${submission.image_description ? `<br><small>${escapeHtml(submission.image_description.substring(0, 50))}${submission.image_description.length > 50 ? '...' : ''}</small>` : ''}
+                        </td>
+                        <td>${submission.image_description ? escapeHtml(submission.image_description.substring(0, 100)) + (submission.image_description.length > 100 ? '...' : '') : '-'}</td>
+                        <td>${new Date(submission.submitted_at).toLocaleString('id-ID')}</td>
+                        <td>
+                            <div class="status-badge status-${submission.status}">
+                                ${getStatusText(submission.status)}
+                                ${submission.reviewed_by ? `<br><small>Oleh: ${escapeHtml(submission.reviewed_by)}</small>` : ''}
+                            </div>
+                            ${submission.rejection_reason ? `
+                                <div style="margin-top: 0.5rem; font-size: 0.8rem; color: #e74c3c;">
+                                    <strong>Alasan:</strong> ${escapeHtml(submission.rejection_reason)}
+                                </div>
+                            ` : ''}
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="action-btn view-btn" onclick="viewSubmission('${submission.image_filename}')" title="Lihat Gambar">
+                                    👁️ Lihat
+                                </button>
+                                ${submission.integrity_filename ? `
+                                    <button class="action-btn view-btn" onclick="viewSubmission('${submission.integrity_filename}')" title="Lihat Surat Integritas">
+                                        📄 Integritas
+                                    </button>
+                                ` : ''}
+                                ${submission.status === 'pending' ? `
+                                    <button class="action-btn approve-btn" onclick="openReviewModal(${submission.id}, 'approve')" title="Setujui Karya">
+                                        ✓ Setujui
+                                    </button>
+                                    <button class="action-btn reject-btn" onclick="openReviewModal(${submission.id}, 'reject')" title="Tolak Karya">
+                                        ✕ Tolak
+                                    </button>
+                                ` : `
+                                    <button class="action-btn view-btn" onclick="openReviewModal(${submission.id}, '${submission.status}')" title="Lihat Detail Review">
+                                        📋 Detail
+                                    </button>
+                                `}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // Filter submissions
+        function filterSubmissions() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+            
+            let filtered = allSubmissions;
+            
+            // Filter by status
+            if (statusFilter !== 'all') {
+                filtered = filtered.filter(s => s.status === statusFilter);
+            }
+            
+            // Filter by search
+            if (searchFilter) {
+                filtered = filtered.filter(s => 
+                    s.nama.toLowerCase().includes(searchFilter) ||
+                    s.sekolah.toLowerCase().includes(searchFilter) ||
+                    s.username.toLowerCase().includes(searchFilter) ||
+                    s.image_title.toLowerCase().includes(searchFilter) ||
+                    (s.image_description && s.image_description.toLowerCase().includes(searchFilter))
+                );
+            }
+            
+            updateSummary(filtered.length, allSubmissions.length);
+            renderTable(filtered);
+        }
+
+        // Modal functions
+        function viewSubmission(imageFilename) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            
+            modalImg.src = `${API_BASE_URL}/api/images/${imageFilename}`;
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        // Review modal functions
+        function openReviewModal(submissionId, action) {
+            currentReviewId = submissionId;
+            const modal = document.getElementById('reviewModal');
+            const title = document.getElementById('reviewModalTitle');
+            const textarea = document.getElementById('rejectionReason');
+            const actions = document.querySelector('.review-modal-actions');
+            
+            const submission = allSubmissions.find(s => s.id === submissionId);
+            
+            if (action === 'approve') {
+                title.textContent = 'Setujui Karya?';
+                textarea.placeholder = 'Opsional: Berikan catatan untuk peserta';
+                textarea.value = '';
+                actions.innerHTML = `
+                    <button class="btn btn-secondary" onclick="closeReviewModal()">Batal</button>
+                    <button class="btn btn-success" onclick="approveSubmission()">Setujui</button>
+                `;
+                textarea.style.display = 'block';
+            } else if (action === 'reject') {
+                title.textContent = 'Tolak Karya?';
+                textarea.placeholder = 'Wajib: Berikan alasan penolakan';
+                textarea.value = '';
+                actions.innerHTML = `
+                    <button class="btn btn-secondary" onclick="closeReviewModal()">Batal</button>
+                    <button class="btn btn-danger" onclick="rejectSubmission()">Tolak</button>
+                `;
+                textarea.style.display = 'block';
+            } else {
+                // View details mode
+                title.textContent = 'Detail Review';
+                textarea.value = submission.rejection_reason || 'Tidak ada catatan';
+                textarea.placeholder = '';
+                textarea.readOnly = true;
+                textarea.style.display = 'block';
+                actions.innerHTML = `
+                    <button class="btn btn-secondary" onclick="closeReviewModal()">Tutup</button>
+                `;
+            }
+            
+            modal.style.display = 'block';
+        }
+
+        function closeReviewModal() {
+            document.getElementById('reviewModal').style.display = 'none';
+            document.getElementById('rejectionReason').value = '';
+            document.getElementById('rejectionReason').readOnly = false;
+            document.getElementById('rejectionReason').style.display = 'block';
+            currentReviewId = null;
+        }
+
+        // Approve submission
+        async function approveSubmission() {
+            if (!currentReviewId) return;
+            
+            const reason = document.getElementById('rejectionReason').value;
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/admin/desain-poster/review`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        submission_id: currentReviewId,
+                        status: 'approved',
+                        review_notes: reason,
+                        reviewed_by: 'Admin'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Update data lokal
+                    const submission = allSubmissions.find(s => s.id === currentReviewId);
+                    if (submission) {
+                        submission.status = 'approved';
+                        submission.rejection_reason = reason || null;
+                        submission.reviewed_at = new Date().toISOString();
+                        submission.reviewed_by = 'Admin';
+                        
+                        updateStats(allSubmissions);
+                        renderTable(getFilteredSubmissions());
+                    }
+                    
+                    closeReviewModal();
+                    alert('Karya berhasil disetujui!');
+                } else {
+                    throw new Error(result.error);
+                }
+                
+            } catch (error) {
+                console.error('Error approving submission:', error);
+                alert('Gagal menyetujui karya: ' + error.message);
+            }
+        }
+
+        // Reject submission
+        async function rejectSubmission() {
+            if (!currentReviewId) return;
+            
+            const reason = document.getElementById('rejectionReason').value;
+            
+            if (!reason.trim()) {
+                alert('Harap berikan alasan penolakan');
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_BASE_URL}/api/admin/desain-poster/review`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        submission_id: currentReviewId,
+                        status: 'rejected',
+                        review_notes: reason,
+                        reviewed_by: 'Admin'
+                    })
+                });
+                
+                const result = await response.json();
+                
+                if (result.success) {
+                    // Update data lokal
+                    const submission = allSubmissions.find(s => s.id === currentReviewId);
+                    if (submission) {
+                        submission.status = 'rejected';
+                        submission.rejection_reason = reason;
+                        submission.reviewed_at = new Date().toISOString();
+                        submission.reviewed_by = 'Admin';
+                        
+                        updateStats(allSubmissions);
+                        renderTable(getFilteredSubmissions());
+                    }
+                    
+                    closeReviewModal();
+                    alert('Karya berhasil ditolak!');
+                } else {
+                    throw new Error(result.error);
+                }
+                
+            } catch (error) {
+                console.error('Error rejecting submission:', error);
+                alert('Gagal menolak karya: ' + error.message);
+            }
+        }
+
+        // Export to Excel
+        function exportToExcel() {
+            const filteredSubmissions = getFilteredSubmissions();
+            
+            if (filteredSubmissions.length === 0) {
+                alert('Tidak ada data untuk diexport');
+                return;
+            }
+            
+            const statusFilter = document.getElementById('statusFilter').value;
+            const searchFilter = document.getElementById('searchFilter').value;
+            
+            const params = new URLSearchParams({
+                status: statusFilter,
+                search: searchFilter
+            });
+
+            window.open(`${API_BASE_URL}/api/admin/desain-poster/export?${params}`, '_blank');
+        }
+
+        // Mendapatkan submissions yang sudah difilter
+        function getFilteredSubmissions() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+            
+            let filtered = allSubmissions;
+            
+            if (statusFilter !== 'all') {
+                filtered = filtered.filter(s => s.status === statusFilter);
+            }
+            
+            if (searchFilter) {
+                filtered = filtered.filter(s => 
+                    s.nama.toLowerCase().includes(searchFilter) ||
+                    s.sekolah.toLowerCase().includes(searchFilter) ||
+                    s.username.toLowerCase().includes(searchFilter) ||
+                    s.image_title.toLowerCase().includes(searchFilter) ||
+                    (s.image_description && s.image_description.toLowerCase().includes(searchFilter))
+                );
+            }
+            
+            return filtered;
+        }
+
+        // Utility functions
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': '🕐 Menunggu Review',
+                'approved': '✅ Disetujui',
+                'rejected': '❌ Ditolak'
+            };
+            return statusMap[status] || status;
+        }
+
+        function escapeHtml(unsafe) {
+            if (!unsafe) return '';
+            return unsafe.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('imageModal');
+            const reviewModal = document.getElementById('reviewModal');
+            
+            if (event.target === modal) {
+                closeModal();
+            }
+            
+            if (event.target === reviewModal) {
+                closeReviewModal();
+            }
+        }
+    </script>
+</body>
+</html>

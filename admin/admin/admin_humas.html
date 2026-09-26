@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin Peserta - TIMAC FEST 2025</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        .loading {
+            text-align: center;
+            padding: 50px;
+        }
+        .error-message {
+            background-color: #f8d7da;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 5px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container">
+            <span class="navbar-brand mb-0 h1">Dashboard Admin - TIMAC FEST 2025</span>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <h2>Data Peserta</h2>
+        
+        <div class="card mt-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Daftar Peserta</h5>
+            </div>
+            <div class="card-body">
+                <div id="loading" class="loading">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">Loading...</span>
+                    </div>
+                    <p class="mt-2">Memuat data peserta...</p>
+                </div>
+                
+                <div id="error-message" class="error-message" style="display: none;"></div>
+                
+                <div id="success-content" style="display: none;">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            Menampilkan <span id="participant-count">0</span> peserta
+                        </div>
+                        <button id="refresh-btn" class="btn btn-sm btn-outline-primary">
+                            Refresh Data
+                        </button>
+                    </div>
+                    
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover">
+                            <thead class="table-dark">
+                                <tr>
+                                    <th>No</th>
+                                    <th>ID</th>
+                                    <th>Username</th>
+                                    <th>Nama</th>
+                                    <th>Sekolah</th>
+                                    <th>Lomba</th>
+                                </tr>
+                            </thead>
+                            <tbody id="participants-table">
+                                <!-- Data akan diisi oleh JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://exam-system-backend.timacefest2025.workers.dev';
+        
+        async function loadPeserta() {
+            const loadingElement = document.getElementById('loading');
+            const errorElement = document.getElementById('error-message');
+            const successElement = document.getElementById('success-content');
+            const tableBody = document.getElementById('participants-table');
+            const countElement = document.getElementById('participant-count');
+            
+            try {
+                loadingElement.style.display = 'block';
+                errorElement.style.display = 'none';
+                successElement.style.display = 'none';
+                
+                console.log('Mencoba mengakses:', `${API_BASE_URL}/api/peserta`);
+                
+                const response = await fetch(`${API_BASE_URL}/api/peserta`);
+                
+                console.log('Response status:', response.status);
+                console.log('Response ok:', response.ok);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Data diterima:', data);
+                
+                if (data.success) {
+                    displayPeserta(data.peserta || []);
+                    countElement.textContent = data.peserta?.length || 0;
+                    successElement.style.display = 'block';
+                } else {
+                    throw new Error(data.error || 'Gagal memuat data peserta');
+                }
+                
+            } catch (error) {
+                console.error('Error:', error);
+                errorElement.innerHTML = `
+                    <strong>Error:</strong> ${error.message}
+                    <br><br>
+                    <small>
+                        Pastikan endpoint /api/peserta tersedia di backend.
+                        <br>
+                        URL yang dicoba: ${API_BASE_URL}/api/peserta
+                    </small>
+                `;
+                errorElement.style.display = 'block';
+                successElement.style.display = 'none';
+            } finally {
+                loadingElement.style.display = 'none';
+            }
+        }
+        
+        function displayPeserta(peserta) {
+            const tableBody = document.getElementById('participants-table');
+            tableBody.innerHTML = '';
+            
+            if (peserta.length === 0) {
+                tableBody.innerHTML = `
+                    <tr>
+                        <td colspan="6" class="text-center text-muted">
+                            Tidak ada data peserta
+                        </td>
+                    </tr>
+                `;
+                return;
+            }
+            
+            peserta.forEach((p, index) => {
+                const row = document.createElement('tr');
+                
+                // Tentukan badge class berdasarkan lomba
+                let badgeClass = 'badge bg-secondary';
+                if (p.lomba.includes('ipa') || p.lomba.includes('lps')) {
+                    badgeClass = 'badge bg-danger';
+                } else if (p.lomba.includes('math') || p.lomba.includes('matematika')) {
+                    badgeClass = 'badge bg-primary';
+                } else if (p.lomba.includes('ips')) {
+                    badgeClass = 'badge bg-success';
+                } else if (p.lomba.includes('pai')) {
+                    badgeClass = 'badge bg-warning';
+                } else if (p.lomba.includes('lctp')) {
+                    badgeClass = 'badge bg-info';
+                }
+                
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${p.id || '-'}</td>
+                    <td>${p.username}</td>
+                    <td>${p.nama}</td>
+                    <td>${p.sekolah}</td>
+                    <td><span class="${badgeClass}">${p.lomba}</span></td>
+                `;
+                
+                tableBody.appendChild(row);
+            });
+        }
+        
+        // Event listeners
+        document.getElementById('refresh-btn').addEventListener('click', loadPeserta);
+        
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', loadPeserta);
+    </script>
+</body>
+</html>

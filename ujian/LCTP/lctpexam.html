@@ -1,0 +1,2521 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACEFEST - LCTP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Sora', sans-serif;
+        }
+        
+        body {
+            background: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            display: flex;
+            height: 100vh;
+            max-width: 100%;
+            margin: 0;
+            background: white;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #8B4513 0%, #5D4037 100%);
+            color: white;
+            padding: 20px 15px;
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #A0522D;
+            font-weight: 600;
+            color: white;
+        }
+        
+        .question-grid-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        
+        .question-number {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2c3e50;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 500;
+            border: 3px solid transparent;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .question-number:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .question-number.active {
+            background: #3498db;
+            border-color: #ffffff;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.5);
+            transform: scale(1.1);
+            color: white;
+        }
+        
+        .question-number.answered {
+            background: #27ae60;
+            color: white;
+            border: 3px solid transparent;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #8B4513 0%, #5D4037 100%);
+            color: white;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+        
+        .exam-info {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        
+        .progress-bar {
+            width: 180px;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: #2ecc71;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            width: 0%;
+        }
+        
+        .answered-info {
+            color: white;
+            font-weight: 600;
+            font-size: 15px;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+        
+        .timer {
+            font-weight: 700;
+            font-size: 20px;
+            color: white;
+            background: rgba(255, 255, 255, 0.2);
+            padding: 8px 16px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .question-container {
+            flex: 1;
+            padding: 25px 30px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .question-content {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 15px;
+            border-left: 4px solid #8B4513;
+            flex: 1;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        
+        .question-content.slide-left {
+            animation: slideLeft 0.3s ease;
+        }
+        
+        .question-content.slide-right {
+            animation: slideRight 0.3s ease;
+        }
+        
+        @keyframes slideLeft {
+            from {
+                transform: translateX(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideRight {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .question-counter {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .question-text {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding: 12px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border-left: 3px solid #8B4513;
+        }
+        
+        .question-image-container {
+            margin: 20px 0;
+            text-align: center;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px dashed #e9ecef;
+        }
+        
+        .question-image {
+            max-width: 100%;
+            max-height: 400px;
+            height: auto;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .image-placeholder {
+            padding: 40px;
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 2px dashed #bdc3c7;
+        }
+        
+        .options {
+            margin: 25px 0;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .option:hover {
+            border-color: #8B4513;
+            background: #f8f9fa;
+            transform: translateX(5px);
+        }
+        
+        .option input {
+            margin-right: 15px;
+            transform: scale(1.3);
+        }
+        
+        .option-label {
+            font-weight: 700;
+            margin-right: 15px;
+            color: #333;
+            font-size: 16px;
+            min-width: 25px;
+            background: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .option-text {
+            color: #333;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 30px;
+            background: white;
+            border-top: 2px solid #e9ecef;
+            flex-shrink: 0;
+        }
+        
+        .nav-button {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #8B4513 0%, #5D4037 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(139, 69, 19, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(139, 69, 19, 0.4);
+        }
+        
+        .nav-button:active {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(139, 69, 19, 0.3);
+        }
+        
+        .nav-button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            color: #7f8c8d;
+        }
+        
+        .submit-btn {
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #27ae60 0%, #219a52 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(39, 174, 96, 0.3);
+        }
+        
+        /* Popup Styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .popup-overlay.show {
+            opacity: 1;
+            display: flex;
+        }
+        
+        .popup-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            transform: scale(0.8);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .popup-overlay.show .popup-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        .popup-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .popup-message {
+            margin-bottom: 25px;
+            color: #555;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+        
+        .popup-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .popup-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            min-width: 100px;
+        }
+        
+        .popup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .popup-confirm {
+            background: linear-gradient(135deg, #27ae60 0%, #219a52 100%);
+            color: white;
+        }
+        
+        .popup-cancel {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        /* Scrollbar styling */
+        .question-grid-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .question-grid-container::-webkit-scrollbar-track {
+            background: #A0522D;
+            border-radius: 3px;
+        }
+        
+        .question-grid-container::-webkit-scrollbar-thumb {
+            background: #8B4513;
+            border-radius: 3px;
+        }
+        
+        .question-grid-container::-webkit-scrollbar-thumb:hover {
+            background: #5D4037;
+        }
+
+        /* Responsive design untuk gambar */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 200px;
+            }
+            
+            .question-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 8px;
+            }
+            
+            .question-number {
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
+            }
+            
+            .question-image {
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-title">DAFTAR SOAL</div>
+            <div class="question-grid-container">
+                <div class="question-grid" id="question-grid">
+                    <!-- Soal akan di-generate oleh JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="header">
+                <div class="exam-info">
+                    <div class="progress-bar">
+                        <div class="progress" id="progress-bar"></div>
+                    </div>
+                    <div class="answered-info" id="answered-count">0/58 Terjawab</div>
+                </div>
+                <div class="timer" id="timer">02:00:00</div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-content" id="question-content">
+                    <!-- Konten soal akan diisi oleh JavaScript -->
+                </div>
+            </div>
+            
+            <div class="navigation">
+                <button class="nav-button" id="prev-btn">
+                    <span>◀</span> SOAL SEBELUMNYA
+                </button>
+                <div id="navigation-buttons">
+                    <button class="nav-button" id="next-btn">
+                        SOAL SELANJUTNYA <span>▶</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Konfirmasi -->
+    <div class="popup-overlay" id="submit-popup">
+        <div class="popup-content">
+            <div class="popup-title">Konfirmasi Pengiriman</div>
+            <div class="popup-message">
+                Apakah Anda yakin ingin mengirim jawaban?<br>
+                Setelah dikirim, Anda tidak dapat mengubah jawaban.
+            </div>
+            <div class="popup-buttons">
+                <button class="popup-btn popup-confirm" id="confirm-submit">YA, KIRIM</button>
+                <button class="popup-btn popup-cancel" id="cancel-submit">BATAL</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            // SOAL NOMOR 1
+            {
+                id: 1,
+                content: `
+                    <div class="question-counter">Soal Nomor 1</div>
+                    <div class="question-text">
+                        Kapan Jambore pertama di dunia dilaksanakan?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer1" value="1">
+                            <span class="option-label">A</span> 1920
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer1" value="2">
+                            <span class="option-label">B</span> 1908
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer1" value="3">
+                            <span class="option-label">C</span> 1945
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer1" value="4">
+                            <span class="option-label">D</span> 2000
+                        </label>
+                    </div>
+                `
+            },
+            
+            // SOAL NOMOR 2
+            {
+                id: 2,
+                content: `
+                    <div class="question-counter">Soal Nomor 2</div>
+                    <div class="question-text">
+                        Apa nama kepanduan di Malaysia?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer2" value="1">
+                            <span class="option-label">A</span> Scouting Malaysian
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer2" value="2">
+                            <span class="option-label">B</span>  Malaysian Scout Association
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer2" value="3">
+                            <span class="option-label">C</span> Persekutuan Pengakap Malaysia
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer2" value="4">
+                            <span class="option-label">D</span> Kepanduan Malaysia
+                        </label>
+                    </div>
+                `
+            },
+            
+            // SOAL NOMOR 3
+            {
+                id: 3,
+                content: `
+                    <div class="question-counter">Soal Nomor 3</div>
+                    <div class="question-text">
+                        Lambang dari Gerakan Pramuka adalah Tunas Kelapa yang ditetapkan dalam Anggaran Dasar Gerakan Pramuka pasal... dan Anggaran Rumah Tangga Gerakan Pramuka Bab... Pasal...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer3" value="1">
+                            <span class="option-label">A</span> AD Gerakan Pramuka pasal 48 dan ART Gerakan Pramuka Bab VII Pasal 120
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer3" value="2">
+                            <span class="option-label">B</span> AD Gerakan Pramuka pasal 24 dan ART Gerakan Pramuka Bab VII Pasal 120
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer3" value="3">
+                            <span class="option-label">C</span> AD Gerakan Pramuka pasal 48 dan ART Gerakan Pramuka Bab VII Pasal 119
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer3" value="4">
+                            <span class="option-label">D</span> AD Gerakan Pramuka pasal 24 dan ART Gerakan Pramuka Bab VII Pasal 119
+                        </label>
+                    </div>
+                `
+            },
+            
+            // SOAL NOMOR 4
+            {
+                id: 4,
+                content: `
+                    <div class="question-counter">Soal Nomor 4</div>
+                    <div class="question-text">
+                        Apa judul buku yang ditulis oleh Baden Powell pada 1908?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer4" value="1">
+                            <span class="option-label">A</span> Scouting For Boys
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer4" value="2">
+                            <span class="option-label">B</span> Aids to Scouting
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer4" value="3">
+                            <span class="option-label">C</span> Boys Brigade
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer4" value="4">
+                            <span class="option-label">D</span> London's boy'
+                        </label>
+                    </div>
+                `
+            },
+            
+            // SOAL NOMOR 5
+            {
+                id: 5,
+                content: `
+                    <div class="question-counter">Soal Nomor 5</div>
+                    <div class="question-text">
+                        Berdasarkan resolusi Konferensi Kepanduan Sedunia tahun 1924 di Kopenhagen, Denmark, Kepanduan memiliki 3 sifat, yaitu...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer5" value="1">
+                            <span class="option-label">A</span> Nasional, Kekeluargaan, Abadi
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer5" value="2">
+                            <span class="option-label">B</span>  Nasional, Liberal, Universal
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer5" value="3">
+                            <span class="option-label">C</span> Nasional, Internasional, Universal
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer5" value="4">
+                            <span class="option-label">D</span> Nasional, Liberal, Menyeluruh
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 6
+            {
+                id: 6,
+                content: `
+                    <div class="question-counter">Soal Nomor 6</div>
+                    <div class="question-text">
+                       Berapa ukuran bendera semaphore?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer6" value="1">
+                            <span class="option-label">A</span> 45 cm x 45 cm
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer6" value="2">
+                            <span class="option-label">B</span> 60 cm x 60 cm
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer6" value="3">
+                            <span class="option-label">C</span> 40 cm x 40 cm
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer6" value="4">
+                            <span class="option-label">D</span>  45m x 45 m
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 7
+            {
+                id: 7,
+                content: `
+                    <div class="question-counter">Soal Nomor 7</div>
+                    <div class="question-text">
+                       Presiden Soekarno mengeluarkan Keputusan Presiden Nomor 238 tahun 1961 tentang Gerakan Pramuka untuk....
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer7" value="1">
+                            <span class="option-label">A</span> Menjelaskan terkait tata tertib Gerakan Kepramukaan yang harus diikuti oleh seluruh Anggota Pramuka sebagai Tanda kehormatan
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer7" value="2">
+                            <span class="option-label">B</span> Keharusan bahwa JAMBORE harus dilaksanakan 5 tahun sekali
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer7" value="3">
+                            <span class="option-label">C</span> Menetapkan Gerakan Pramuka sebagai satu-satunya badan yang diizinkan untuk menyelenggarakan pendidikan Kepanduan
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer7" value="4">
+                            <span class="option-label">D</span> Menetapkan Tunas Kelapa sebagai Lambang resmi gerakan Pramuka di Indonesia mempertimbangkan maknanya
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 8 (SOAL BERGAMBAR)
+            {
+                id: 8,
+                content: `
+                    <div class="question-counter">Soal Nomor 8</div>
+                    <div class="question-text">
+                        Sandi Huruf berjasa termasuk sandi yang sangat mudah untuk dipecahkan. Sandi ini dapat kita bongkar apabila susunan huruf-hurufnya membentuk suatu bentuk huruf yang dimaksudkan oleh kunci, misalnya Z, N, L, V, W, C, M, dan sebagainya. Kalimat yang disampaikan di Sandi huruf berjasa di bawah adalah...
+                    </div>
+                    
+                    <div class="question-image-container">
+                        <img src="soal/kodemorse.png" 
+                            alt="Soal LCTP 8" 
+                            class="question-image"
+                            onerror="handleImageError(8)">
+                        <div id="placeholder-8" class="image-placeholder" style="display: none;">
+                            📷 Gambar soal tidak dapat dimuat<br>
+                            <small>Pastikan file <strong>soal/kodemorse.png</strong> tersedia</small>
+                        </div>
+                    </div>
+                    
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer8" value="1">
+                            <span class="option-label">A</span> ISTILAH RANJAU BANYAK
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer8" value="2">
+                            <span class="option-label">B</span> KOPI JIKA
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer8" value="3">
+                            <span class="option-label">C</span> BERHATI HATILAH BANYAK RANJAU
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer8" value="4">
+                            <span class="option-label">D</span> HATI HATI BANYAK RANJAU
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 9
+            {
+                id: 9,
+                content: `
+                    <div class="question-counter">Soal Nomor 9</div>
+                    <div class="question-text">
+                        Kapan Baden Powell meninggal?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer9" value="1">
+                            <span class="option-label">A</span> 8 Januari 1941
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer9" value="2">
+                            <span class="option-label">B</span> 17 Agustus 1945
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer9" value="3">
+                            <span class="option-label">C</span> 1 Juni 1945
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer9" value="4">
+                            <span class="option-label">D</span> 8 Februari 1941
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 10
+            {
+                id: 10,
+                content: `
+                    <div class="question-counter">Soal Nomor 10</div>
+                    <div class="question-text">
+                        Ilmu membuat peta disebut...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer10" value="1">
+                            <span class="option-label">A</span> Oseanografi
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer10" value="2">
+                            <span class="option-label">B</span> Kartografi
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer10" value="3">
+                            <span class="option-label">C</span> Emulsifier
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer10" value="4">
+                            <span class="option-label">D</span> Kaligrafi
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 11
+            {
+                id: 11,
+                content: `
+                    <div class="question-counter">Soal Nomor 11</div>
+                    <div class="question-text">
+                        organisasi internasional yang mengorganisir organisasi-organisasi kepanduan yang ada di dunia dan beranggotakan 31 juta orang adalah..
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer11" value="1">
+                            <span class="option-label">A</span> UNICEF
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer11" value="2">
+                            <span class="option-label">B</span> WOSM
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer11" value="3">
+                            <span class="option-label">C</span> PBB
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer11" value="4">
+                            <span class="option-label">D</span> IMF
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 12
+            {
+                id: 12,
+                content: `
+                    <div class="question-counter">Soal Nomor 12</div>
+                    <div class="question-text">
+                        Dimana Jambore pertama yang diikuti oleh kepanduan Indonesia?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer12" value="1">
+                            <span class="option-label">A</span> Volegenzang, Belanda
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer12" value="2">
+                            <span class="option-label">B</span> Jakarta, Indonesia
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer12" value="3">
+                            <span class="option-label">C</span> Olympia, Inggris
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer12" value="4">
+                            <span class="option-label">D</span> New York, USA
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 13
+            {
+                id: 13,
+                content: `
+                    <div class="question-counter">Soal Nomor 13</div>
+                    <div class="question-text">
+                        Dimana Jambore Nasional Kepanduan pertama dilaksanakan?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer13" value="1">
+                            <span class="option-label">A</span> Bekasi, Indonesia
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer13" value="2">
+                            <span class="option-label">B</span> Bogor, Indonesia
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer13" value="3">
+                            <span class="option-label">C</span> Palembang, Indonesia
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer13" value="4">
+                            <span class="option-label">D</span> Cibubur, Jakarta, Indonesia
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 14
+            {
+                id: 14,
+                content: `
+                    <div class="question-counter">Soal Nomor 14</div>
+                    <div class="question-text">
+                        Kapan Samuel Morse pertama kali menemukan sandi Morse?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer14" value="1">
+                            <span class="option-label">A</span> 1830an
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer14" value="2">
+                            <span class="option-label">B</span> 1900an
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer14" value="3">
+                            <span class="option-label">C</span> 1945an
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer14" value="4">
+                            <span class="option-label">D</span> 1820an
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 15
+            {
+                id: 15,
+                content: `
+                    <div class="question-counter">Soal Nomor 15</div>
+                    <div class="question-text">
+                        Sikap yang sesuai dengan Darma ke 1 adalah...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer15" value="1">
+                            <span class="option-label">A</span> Menolong ibu di rumah
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer15" value="2">
+                            <span class="option-label">B</span> Mengganggu ibadah teman yang beda keyakinan
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer15" value="3">
+                            <span class="option-label">C</span> Melaksanakan ibadah sesuai keyakinan pribadi tanpa memaksa orang lain untuk mengikuti keyakinan yang sama
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer15" value="4">
+                            <span class="option-label">D</span> Seorang Muslim meninggalkan shalat dengan sengaja
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 16
+            {
+                id: 16,
+                content: `
+                    <div class="question-counter">Soal Nomor 16</div>
+                    <div class="question-text">
+                        Siapakah nama lengkap Baden Powell?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer16" value="1">
+                            <span class="option-label">A</span> Robert Powell Stephenson Smyth Baden-Powell
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer16" value="2">
+                            <span class="option-label">B</span> Baden Greek Powell
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer16" value="3">
+                            <span class="option-label">C</span> Heather Baden Powell
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer16" value="4">
+                            <span class="option-label">D</span> Olave Clair Powell
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 17
+            {
+                id: 17,
+                content: `
+                    <div class="question-counter">Soal Nomor 17</div>
+                    <div class="question-text">
+                        Dalam Lomba Tingkat (LT), regu yang mewakili gugus depan ditentukan berdasarkan hasil penilaian keaktifan dan prestasi selama latihan rutin. Regu tersebut disebut...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer17" value="1">
+                            <span class="option-label">A</span> Regu Unggulan Gugus Depan
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer17" value="2">
+                            <span class="option-label">B</span> Regu Pilihan Pembina
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer17" value="3">
+                            <span class="option-label">C</span> Regu Tergiat
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer17" value="4">
+                            <span class="option-label">D</span> Regu Perwakilan Latihan
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 18
+            {
+                id: 18,
+                content: `
+                    <div class="question-counter">Soal Nomor 18</div>
+                    <div class="question-text">
+                        Ikatan yang digunakan untuk mengikat 2 buah tongkat yang posisinya berpalangan, menyiku (tegak lurus 90°) adalah...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer18" value="1">
+                            <span class="option-label">A</span> Ikatan Palang
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer18" value="2">
+                            <span class="option-label">B</span> Ikatan Pangkal
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer18" value="3">
+                            <span class="option-label">C</span> Ikatan kaki tiga
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer18" value="4">
+                            <span class="option-label">D</span> Ikatan kuat
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 19
+            {
+                id: 19,
+                content: `
+                    <div class="question-counter">Soal Nomor 19</div>
+                    <div class="question-text">
+                        Siapakah pencipta Hymne Pramuka?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer19" value="1">
+                            <span class="option-label">A</span> WR Supratman
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer19" value="2">
+                            <span class="option-label">B</span> Husein Mutahar
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer19" value="3">
+                            <span class="option-label">C</span> KH Agus Salim
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer19" value="4">
+                            <span class="option-label">D</span> Fatmawati Soekarno
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 20
+            {
+                id: 20,
+                content: `
+                    <div class="question-counter">Soal Nomor 20</div>
+                    <div class="question-text">
+                        Bagian kompas yang digunakan untuk membidik sasaran adalah...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer20" value="1">
+                            <span class="option-label">A</span> Dial
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer20" value="2">
+                            <span class="option-label">B</span> Visir
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer20" value="3">
+                            <span class="option-label">C</span> Kaca Pembesar
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer20" value="4">
+                            <span class="option-label">D</span> Jarum kompas
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 21
+            {
+                id: 21,
+                content: `
+                    <div class="question-counter">Soal Nomor 21</div>
+                    <div class="question-text">
+                        Gambaran dari suatu daerah geografis yang biasanya merupakan bagian dari permukaan bumi yang digambar atau dicetak dalam sebuah bidang datar disebut...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer21" value="1">
+                            <span class="option-label">A</span> Peta
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer21" value="2">
+                            <span class="option-label">B</span> Atlas
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer21" value="3">
+                            <span class="option-label">C</span> Globe
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer21" value="4">
+                            <span class="option-label">D</span> Majalah
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 22
+            {
+                id: 22,
+                content: `
+                    <div class="question-counter">Soal Nomor 22</div>
+                    <div class="question-text">
+                        Undang-undang Republik Indonesia Nomor 12 tahun 2010 tentang Gerakan Pramuka BAB 3 Pasal 12 berisi tentang...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer22" value="1">
+                            <span class="option-label">A</span> Jenjang pendidikan Kepramukaan
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer22" value="2">
+                            <span class="option-label">B</span> Tata cara upacara hari Pramuka
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer22" value="3">
+                            <span class="option-label">C</span> Lambang Gerakan Pramuka
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer22" value="4">
+                            <span class="option-label">D</span> Kwartir Nasional
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 23
+            {
+                id: 23,
+                content: `
+                    <div class="question-counter">Soal Nomor 23</div>
+                    <div class="question-text">
+                        Warna-warna bendera Semaphore yang biasa dipergunakan adalah warna-warna kontras terlihat dari jauh. Terutama jika dikirimkan di laut yang dominasi warnanya biru maka bendera yang dipakai biasanya kombinasi Merah dan Kuning yang biasa disebut Bendera...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer23" value="1">
+                            <span class="option-label">A</span> Semaphore
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer23" value="2">
+                            <span class="option-label">B</span> Oscar
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer23" value="3">
+                            <span class="option-label">C</span> Papa
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer23" value="4">
+                            <span class="option-label">D</span> Alpha
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 24
+            {
+                id: 24,
+                content: `
+                    <div class="question-counter">Soal Nomor 24</div>
+                    <div class="question-text">
+                        Pada 1937-1947 tidak ada penyelenggaraan Jambore dikarenakan...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer24" value="1">
+                            <span class="option-label">A</span> Perang dunia 2
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer24" value="2">
+                            <span class="option-label">B</span> Kekurangan Dana
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer24" value="3">
+                            <span class="option-label">C</span> Tidak ada peminat
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer24" value="4">
+                            <span class="option-label">D</span> Perang dunia 1
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 25
+            {
+                id: 25,
+                content: `
+                    <div class="question-counter">Soal Nomor 25</div>
+                    <div class="question-text">
+                        Kapan Nationale Padvinderij Organisatie Didirikan?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer25" value="1">
+                            <span class="option-label">A</span> 1912
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer25" value="2">
+                            <span class="option-label">B</span> 1922
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer25" value="3">
+                            <span class="option-label">C</span> 1938
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer25" value="4">
+                            <span class="option-label">D</span> Tidak pernah didirikan
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 26
+            {
+                id: 26,
+                content: `
+                    <div class="question-counter">Soal Nomor 26</div>
+                    <div class="question-text">
+                        Siapa nama istri Baden Powell?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer26" value="1">
+                            <span class="option-label">A</span> Heather Baden Powell
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer26" value="2">
+                            <span class="option-label">B</span> Betty Baden Powell
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer26" value="3">
+                            <span class="option-label">C</span> Olave Baden Powell
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer26" value="4">
+                            <span class="option-label">D</span> Grace Baden Powell
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 27
+            {
+                id: 27,
+                content: `
+                    <div class="question-counter">Soal Nomor 27</div>
+                    <div class="question-text">
+                        Hak dan kewajiban setiap warga negara untuk ikut serta dalam usaha pertahanan dan keamanan negara tercantum dalam Undang-Undang Dasar Negara Republik Indonesia Tahun 1945 Pasal....
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer27" value="1">
+                            <span class="option-label">A</span> Pasal 27 Ayat 3
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer27" value="2">
+                            <span class="option-label">B</span> Pasal 27 Ayat 2
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer27" value="3">
+                            <span class="option-label">C</span> Pasal 37 Ayat 28
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer27" value="4">
+                            <span class="option-label">D</span> Pasal 45 Ayat 1
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 28
+            {
+                id: 28,
+                content: `
+                    <div class="question-counter">Soal Nomor 28</div>
+                    <div class="question-text">
+                        STOVIA (School tot Opleiding van Inlandsche Artsen atau Sekolah Dokter Jawa) adalah sekolah kedokteran yang didirikan pemerintah kolonial Belanda di Batavia pada tahun 1851 yang saat ini dikenal sebagai...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer28" value="1">
+                            <span class="option-label">A</span> Fakultas Kedokteran ITB
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer28" value="2">
+                            <span class="option-label">B</span> Fakultas Kedokteran UI
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer28" value="3">
+                            <span class="option-label">C</span> IPDN
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer28" value="4">
+                            <span class="option-label">D</span> Fakultas Kedokteran Hewan
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 29
+            {
+                id: 29,
+                content: `
+                    <div class="question-counter">Soal Nomor 29</div>
+                    <div class="question-text">
+                        Kapan lagu Indonesia Raya pertama kali diperdengarkan untuk umum?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer29" value="1">
+                            <span class="option-label">A</span> 28 Oktober 1945
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer29" value="2">
+                            <span class="option-label">B</span> 17 Agustus 1945
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer29" value="3">
+                            <span class="option-label">C</span> 28 oktober 1928
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer29" value="4">
+                            <span class="option-label">D</span> 17 Agustus 1928
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 30
+            {
+                id: 30,
+                content: `
+                    <div class="question-counter">Soal Nomor 30</div>
+                    <div class="question-text">
+                        Istilah Jepang untuk Badan Penyelidik Usaha-Usaha Persiapan Kemerdekaan Indonesia (BPUPKI) adalah...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer30" value="1">
+                            <span class="option-label">A</span> Dokuritsu Junbi Cosakai
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer30" value="2">
+                            <span class="option-label">B</span> Dokuritsu Junbi Inkai
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer30" value="3">
+                            <span class="option-label">C</span> Dokuritsu Jundi Cosakai
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer30" value="4">
+                            <span class="option-label">D</span> Dokuritsu Judi Ingkai
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 31
+            {
+                id: 31,
+                content: `
+                    <div class="question-counter">Soal Nomor 31</div>
+                    <div class="question-text">
+                        Kerajaan Buddha yang terletak di pulau Sumatera adalah...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer31" value="1">
+                            <span class="option-label">A</span> Kerajaan Aceh
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer31" value="2">
+                            <span class="option-label">B</span> Kerajaan Brawijaya
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer31" value="3">
+                            <span class="option-label">C</span> Kerajaan Sriwijaya
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer31" value="4">
+                            <span class="option-label">D</span> Kerajaan Minangkabau
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 32
+            {
+                id: 32,
+                content: `
+                    <div class="question-counter">Soal Nomor 32</div>
+                    <div class="question-text">
+                        Salah satu negara yang memiliki Hak Veto adalah...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer32" value="1">
+                            <span class="option-label">A</span> Inggris
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer32" value="2">
+                            <span class="option-label">B</span> Indonesia
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer32" value="3">
+                            <span class="option-label">C</span> Arab Saudi
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer32" value="4">
+                            <span class="option-label">D</span> Australia
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 33
+            {
+                id: 33,
+                content: `
+                    <div class="question-counter">Soal Nomor 33</div>
+                    <div class="question-text">
+                        Kapan Amerika Serikat menjatuhkan bom atom di kota Hiroshima?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer33" value="1">
+                            <span class="option-label">A</span> 17 Agustus 1945
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer33" value="2">
+                            <span class="option-label">B</span> 6 Agustus 1945
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer33" value="3">
+                            <span class="option-label">C</span> 18 Agustus 1945
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer33" value="4">
+                            <span class="option-label">D</span> 15 Agustus 1945
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 34
+            {
+                id: 34,
+                content: `
+                    <div class="question-counter">Soal Nomor 34</div>
+                    <div class="question-text">
+                        Siapakah pahlawan wanita dari timur?
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer34" value="1">
+                            <span class="option-label">A</span> Martha Christina Tiahahu
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer34" value="2">
+                            <span class="option-label">B</span> Cut Nyak Dien
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer34" value="3">
+                            <span class="option-label">C</span> RA Kartini
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer34" value="4">
+                            <span class="option-label">D</span> Martha Gellhorn
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 35
+            {
+                id: 35,
+                content: `
+                    <div class="question-counter">Soal Nomor 35</div>
+                    <div class="question-text">
+                        Yang merupakan lagu daerah yang berasal dari Kalimantan Timur adalah...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer35" value="1">
+                            <span class="option-label">A</span> Buah Bolok
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer35" value="2">
+                            <span class="option-label">B</span> Ampar-ampar pisang
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer35" value="3">
+                            <span class="option-label">C</span> Gundul pacul
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer35" value="4">
+                            <span class="option-label">D</span> Potong bebek angsa
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 36
+            {
+                id: 36,
+                content: `
+                    <div class="question-counter">Soal Nomor 36</div>
+                    <div class="question-text">
+                        Benda-benda yang bisa digunakan sebagai Bidai adalah...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer36" value="1">
+                            <span class="option-label">A</span>  Anggota badan sendiri, Papan, Air splint
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer36" value="2">
+                            <span class="option-label">B</span> Anggota badan sendiri, Guling, Air splint
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer36" value="3">
+                            <span class="option-label">C</span> Bilah bambu, Papan, Kain tebal
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer36" value="4">
+                            <span class="option-label">D</span> Bilah Bambu, Air splint, Styrofoam
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 37
+            {
+                id: 37,
+                content: `
+                    <div class="question-counter">Soal Nomor 37</div>
+                    <div class="question-text">
+                        Meringankan penderitaan korban, Mencegah pendarahan dan infeksi, serta Mencegah bahaya cacat dan kematian merupakan tujuan dari...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer37" value="1">
+                            <span class="option-label">A</span> Operasi Darurat
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer37" value="2">
+                            <span class="option-label">B</span> Mencari perhatian publik
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer37" value="3">
+                            <span class="option-label">C</span> PPPK
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer37" value="4">
+                            <span class="option-label">D</span> Pembidaian
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 38
+            {
+                id: 38,
+                content: `
+                    <div class="question-counter">Soal Nomor 38</div>
+                    <div class="question-text">
+                        Pembidaian disebut juga sebagai...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer38" value="1">
+                            <span class="option-label">A</span> Internalisasi
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer38" value="2">
+                            <span class="option-label">B</span> Memar
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer38" value="3">
+                            <span class="option-label">C</span> Agrasi
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer38" value="4">
+                            <span class="option-label">D</span> Fiksasi
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 39
+            {
+                id: 39,
+                content: `
+                    <div class="question-counter">Soal Nomor 39</div>
+                    <div class="question-text">
+                        Luka yang dapat disebut sebagai luka bakar adalah kerusakan jaringan tubuh yang disebabkan oleh panas yang suhunya ...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer39" value="1">
+                            <span class="option-label">A</span> >30°C
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer39" value="2">
+                            <span class="option-label">B</span> +- 60°C
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer39" value="3">
+                            <span class="option-label">C</span> 0°C
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer39" value="4">
+                            <span class="option-label">D</span> 5°C
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 40
+            {
+                id: 40,
+                content: `
+                    <div class="question-counter">Soal Nomor 40</div>
+                    <div class="question-text">
+                        Patah tulang terbuka adalah...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer40" value="1">
+                            <span class="option-label">A</span> Apabila patah tulang lalu terjadi pembengkakan
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer40" value="2">
+                            <span class="option-label">B</span> Apabila patah tulangnya sampai menembus kulit
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer40" value="3">
+                            <span class="option-label">C</span> Apabila patah tulangnya menjadi serpihan
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer40" value="4">
+                            <span class="option-label">D</span>  Apabila tulang tidak patah, melainkan hanya retak sehingga penanganannya lebih cepat dan mudah
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 41
+            {
+                id: 41,
+                content: `
+                    <div class="question-counter">Soal Nomor 41</div>
+                    <div class="question-text">
+                        Gejala patah tulang di antaranya adalah...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer41" value="1">
+                            <span class="option-label">A</span> Bagian tubuh yang patah tidak dapat digerakkan, bentuk tubuh tampak berubah, dan muncul warna kebiru-biruan disertai pembengkakan.
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer41" value="2">
+                            <span class="option-label">B</span> Bagian tubuh terasa sangat nyeri, tampak bengkak, namun masih bisa digerakkan sedikit dan tidak tampak perubahan bentuk.
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer41" value="3">
+                            <span class="option-label">C</span> Bagian tubuh terasa nyeri, sulit digerakkan, tampak kaku, tetapi tidak menunjukkan tanda pembengkakan atau perubahan warna
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer41" value="4">
+                            <span class="option-label">D</span> Bagian tubuh terasa nyeri hebat, tampak bengkak, berwarna kebiruan, tetapi masih bisa digerakkan dan tidak mengalami perubahan bentuk.
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 42
+            {
+                id: 42,
+                content: `
+                    <div class="question-counter">Soal Nomor 42</div>
+                    <div class="question-text">
+                        Pendarahan dilihat dari arah keluar atau sumbernya dibagi menjadi 2, yaitu pendarahan... dan pendarahan
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer42" value="1">
+                            <span class="option-label">A</span> Dalam dan Inti
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer42" value="2">
+                            <span class="option-label">B</span> Dalam dan Luar
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer42" value="3">
+                            <span class="option-label">C</span> Inti dan Luar
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer42" value="4">
+                            <span class="option-label">D</span> Menyebar dan Merembes
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 43
+            {
+                id: 43,
+                content: `
+                    <div class="question-counter">Soal Nomor 43</div>
+                    <div class="question-text">
+                        Misi dari World Organization of the Scout Movement (WOSM) adalah memiliki kontribusi terhadap pendidikan dan pembinaan generasi muda melalui sistem yang berdasarkan pas Janji dan Darma pandu untuk memabnagun dunia yang lebih baik, menjadi individu yang mandiri dan berperan positif dalam masyarakat. WOSM perorganisasian dibagi ke dalam regional-regional dan dioperasikan dengan Konferensi, Komite dan Biro. World Scout Conference (WSC) atau Konferensi Kepanduan Dunia adalah lembaga pemerintahan kepanduan yang bertemu setiap 3 tahun sekali. Konferensi ini membahas....
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer43" value="1">
+                            <span class="option-label">A</span> Rancangan kolaborasi dengan UNICEF agar seluruh anggota Pramuka di seluruh dunia dapat mengikuti kegiatan amal bersama UNICEF
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer43" value="2">
+                            <span class="option-label">B</span> Pengambilan keputusan dan penetapan kebijakan serta standar global untuk Gerakan Pramuka
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer43" value="3">
+                            <span class="option-label">C</span> Kerjasama dengan organisasi serupa untuk kelompok wanita
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer43" value="4">
+                            <span class="option-label">D</span> Rancangan kolaborasi bersama PBB agar seluruh anggota Pramuka di seluruh dunia dapat mengikuti dan mempelajari sistem politik dunia
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 44
+            {
+                id: 44,
+                content: `
+                    <div class="question-counter">Soal Nomor 44</div>
+                    <div class="question-text">
+                        Setelah Proklamasi Kemerdekaan 17 Agustus 1945, berdiri kembali organisasi-organisasi kepanduan hingga mencapai jumlah lebih dari 100 organisasi yang tergabung ke dalam 3 federasi setelah sebelumnya pada masa penjajahan Jepang, organisasi Kepanduan dilarang sama sekali. Salah satu federasi adalah IPINDO (Ikatan Pandu Indonesia). IPINDO kemudian menyelenggarakan Jambore Nasional Kepanduan Pertama pada masa Kepanduan di..... Pada tahun....
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer44" value="1">
+                            <span class="option-label">A</span> Pasar Minggu, Jakarta, 1955
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer44" value="2">
+                            <span class="option-label">B</span> Cibubur, Jakarta, 1955
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer44" value="3">
+                            <span class="option-label">C</span> Jakarta Pusat, Jakarta, 1945
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer44" value="4">
+                            <span class="option-label">D</span> Jakarta Pusat, Jakarta, 1955
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 45
+            {
+                id: 45,
+                content: `
+                    <div class="question-counter">Soal Nomor 45</div>
+                    <div class="question-text">
+                        Kepanduan masuk ke Indonesia (saat itu masih menjadi Hindia Belanda), pertama kali dibawa oleh orang Belanda, organisasinya bernama Nederland Indische Padvinders Vereeniging (NIPV) yang artinya adalah Persatuan Pandu-Pandu Hindia Belanda.Tetapi Pemerintah kolonial Belanda melarang pemakaian istilah Padvinder bagi organisasi kepanduan bangsa kita sehingga diganti menjadi "PANDU" dan "Kepanduan" pada tahun 1928. Alasan Pemerintah kolonial Belanda melarang pemakaian istilah "Padvinder" adalah...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer45" value="1">
+                            <span class="option-label">A</span> Karena Belanda tidak ingin disamakan dengan Indonesia yang merupakan jajahan Belanda
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer45" value="2">
+                            <span class="option-label">B</span> Karena Belanda merasa Indonesia "mencuri" ide dari Belanda terkait penamaannya
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer45" value="3">
+                            <span class="option-label">C</span> Karena Belanda merasa adanya potensi ancaman dari sifat nasionalisme dan solidaritas organisasi kepanduan yang didirikan pribumi
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer45" value="4">
+                            <span class="option-label">D</span> Karena Belanda ingin Indonesia mandiri sehingga bisa merdeka
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 46
+            {
+                id: 46,
+                content: `
+                    <div class="question-counter">Soal Nomor 46</div>
+                    <div class="question-text">
+                       Simpul yang digunakan untuk memulai ikatan silang... (5 menit)
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer46" value="1">
+                            <span class="option-label">A</span> 08.30, 07.40, 08.00,08.15,08.40,07.55,08.15, 07.00, 08.05, 07.30, 07.50, 07.00, 07.55
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer46" value="2">
+                            <span class="option-label">B</span> 08.30,07.40,08.00,08.15,08.40,07.55,07.35, 07.40, 07.15, 08.40, 08.15
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer46" value="3">
+                            <span class="option-label">C</span> 08.30,07.40,08.00,08.15,08.40,07.55,08.35,07.00,08.00,07.05,07.00,08.35
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer46" value="4">
+                            <span class="option-label">D</span> 08.30,07.40,08.00,08.15,08.40,07.55,08.00, 07.00, 08.35, 07.40
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 47
+            {
+                id: 47,
+                content: `
+                    <div class="question-counter">Soal Nomor 47</div>
+                    <div class="question-text">
+                        Beberapa peserta Jambore Dunia ke-1 yang bukan anggota Pandu adalah..
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer47" value="1">
+                            <span class="option-label">A</span> Alligator dari Florida, Bayi Buaya dari Rhodesia, Anak singa dari Sumatra, kera-kera dari Afrika Selatan, bayi Gajah, dan Unta
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer47" value="2">
+                            <span class="option-label">B</span> Alligator dari Florida, Bayi Buaya dari Jamaika, Anak singa dari Rhodesia, kera-kera dari Afrika Selatan, bayi Gajah, dan Unta
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer47" value="3">
+                            <span class="option-label">C</span> Alligator dari Jamaica, Bayi Buaya dari USA, Anak singa dari Rhodesia, kera-kera dari Afrika Selatan, bayi Gajah, dan Unta
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer47" value="4">
+                            <span class="option-label">D</span> Alligator dari Jamaica, Bayi Buaya dari USa, Anak singa dari Rhodesia, kera-kera dari Afrika Selatan
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 48
+            {
+                id: 48,
+                content: `
+                    <div class="question-counter">Soal Nomor 48</div>
+                    <div class="question-text">
+                        Betty berjalan dengan arah Azimuth 90°. Tentukan Back Azimuthnya!
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer48" value="1">
+                            <span class="option-label">A</span> 360°
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer48" value="2">
+                            <span class="option-label">B</span> 90°
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer48" value="3">
+                            <span class="option-label">C</span> 270°
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer48" value="4">
+                            <span class="option-label">D</span> 0°
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 49
+            {
+                id: 49,
+                content: `
+                    <div class="question-counter">Soal Nomor 49</div>
+                    <div class="question-text">
+                        Salah satu kiasan dari Lambang Gerakan Pramuka adalah Buah nyiur tahan lama. Ini mengandung arti...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer49" value="1">
+                            <span class="option-label">A</span> Pramuka berguna bagi nusa, bangsa, dan agama
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer49" value="2">
+                            <span class="option-label">B</span> Pramuka berpegang pada dasar-dasar yang kuat
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer49" value="3">
+                            <span class="option-label">C</span> Pramuka adalah orang yang mampu beradaptasi dalam kondisi apapun
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer49" value="4">
+                            <span class="option-label">D</span> Pramuka adalah orang yang jasmani dan rohaninya kuat dan ulet
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 50
+            {
+                id: 50,
+                content: `
+                    <div class="question-counter">Soal Nomor 50</div>
+                    <div class="question-text">
+                        16-5-18-3-1-13-16-21-18-1-14 / 23-1-18-14-1 / 11-21-14-9-14-7 / 4-1-14 / 2-9-18-21 /13-5-14-7-8-1-19-9-12-11-1-14 / 23-1-18-14-1 / 3-15-11-12-1-20
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer50" value="1">
+                            <span class="option-label">A</span> Coklat
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer50" value="2">
+                            <span class="option-label">B</span> Hijau
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer50" value="3">
+                            <span class="option-label">C</span> Merah
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer50" value="4">
+                            <span class="option-label">D</span> Merah muda ke orange an
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 51
+            {
+                id: 51,
+                content: `
+                    <div class="question-counter">Soal Nomor 51</div>
+                    <div class="question-text">
+                        Tinggi tongkat (AB) adalah 160 cm. Bayangan tongkat adalah 20 cm. Jadi perbandingannya adalah 20 : 160 = 1 : 8 . Jika panjang bayangan Tiang listrik (CD) adalah 80 cm, tinggi Tiang listrik (CD) sebenarnya dengan cara menaksir berdasarkan perbandingannya adalah...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer51" value="1">
+                            <span class="option-label">A</span> 300 cm
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer51" value="2">
+                            <span class="option-label">B</span> 640 cm
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer51" value="3">
+                            <span class="option-label">C</span> 8330 cm
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer51" value="4">
+                            <span class="option-label">D</span> 100 cm
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 52
+            {
+                id: 52,
+                content: `
+                    <div class="question-counter">Soal Nomor 52</div>
+                    <div class="question-text">
+                        Negara berikut memiliki raja sebagai kepala negara, tetapi tetap menjalankan sistem demokrasi modern. Negara tersebut adalah...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer52" value="1">
+                            <span class="option-label">A</span> Inggris
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer52" value="2">
+                            <span class="option-label">B</span> Arab Saudi
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer52" value="3">
+                            <span class="option-label">C</span> Korea Utara
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer52" value="4">
+                            <span class="option-label">D</span> Thailand
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 53
+            {
+                id: 53,
+                content: `
+                    <div class="question-counter">Soal Nomor 53</div>
+                    <div class="question-text">
+                        Selat berikut menghubungkan Pulau Jawa dan Pulau Sumatra, sekaligus menjadi jalur pelayaran internasional yang sangat sibuk. Banyak yang salah menjawab karena mengira Selat Bali juga penting secara ekonomi. Selat tersebut adalah...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer53" value="1">
+                            <span class="option-label">A</span> Selat Bali
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer53" value="2">
+                            <span class="option-label">B</span> Selat Lombok
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer53" value="3">
+                            <span class="option-label">C</span> Selat Sunda
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer53" value="4">
+                            <span class="option-label">D</span> Selat Makassar
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 54
+            {
+                id: 54,
+                content: `
+                    <div class="question-counter">Soal Nomor 54</div>
+                    <div class="question-text">
+                        Luka bakar ringan paling tepat ditangani dengan cara...
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer54" value="1">
+                            <span class="option-label">A</span> Menutup luka dengan kain bersih agar terhindar dari infeksi udara.
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer54" value="2">
+                            <span class="option-label">B</span> Mendinginkan luka dengan air mengalir suhu normal selama 10-20 menit, tanpa menyentuh langsung luka
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer54" value="3">
+                            <span class="option-label">C</span> Mengoleskan salep antibiotik atau minyak agar kulit tetap lembab dan tidak melepuh.
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer54" value="4">
+                            <span class="option-label">D</span> Menyiram luka dengan air es agar panas cepat hilang.
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 55
+            {
+                id: 55,
+                content: `
+                    <div class="question-counter">Soal Nomor 55</div>
+                    <div class="question-text">
+                        Sebuah perusahaan multinasional di ibukota memiliki total 156800 karyawan. Setiap karyawan mendapatkan fasilitas untuk transportasi. Fasilitas yang diberikan berupa mobil, motor, dan shuttle bus. Seperempat dari karyawan yang bekerja diberi fasilitas kendaraan berupa mobil. Sementara seperempat  sisanya mendapat fasilitas berupa motor. Berapa orang yang menggunakan shuttle bus sebagai akomodasi?  
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer55" value="1">
+                            <span class="option-label">A</span> 39200
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer55" value="2">
+                            <span class="option-label">B</span> 117600
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer55" value="3">
+                            <span class="option-label">C</span> 29400
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer55" value="4">
+                            <span class="option-label">D</span> 88200
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 56
+            {
+                id: 56,
+                content: `
+                    <div class="question-counter">Soal Nomor 56</div>
+                    <div class="question-text">
+                        Siapakah Ketua Kwartir Nasional pertama?   
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer56" value="1">
+                            <span class="option-label">A</span> Soekarno
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer56" value="2">
+                            <span class="option-label">B</span> KH Agus Salim
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer56" value="3">
+                            <span class="option-label">C</span> Sri Sultan Hamengkubuwono IX
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer56" value="4">
+                            <span class="option-label">D</span> Moh. Hatta
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 57
+            {
+                id: 57,
+                content: `
+                    <div class="question-counter">Soal Nomor 57</div>
+                    <div class="question-text">
+                        Dimana Baden Powell dimakamkan? (x/y KEMAH MESRA)   
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer57" value="1">
+                            <span class="option-label">A</span> ES HS AS AM HS AS
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer57" value="2">
+                            <span class="option-label">B</span> KS HM AS HA KM
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer57" value="3">
+                            <span class="option-label">C</span>  HE MA AE HE HE
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer57" value="4">
+                            <span class="option-label">D</span> KR KM MR AE AR
+                        </label>
+                    </div>
+                `
+            },
+
+            // SOAL NOMOR 58
+            {
+                id: 58,
+                content: `
+                    <div class="question-counter">Soal Nomor 58</div>
+                    <div class="question-text">
+                         ... .. .- .--. .- -.- .- .... / .--. .-. . ... .. -.. . -. / -.- . . -- .--. .- - / .. -. -.. --- -. . ... .. .- ..--..   
+                    </div>
+                    <div class="options">
+                        <label class="option">
+                            <input type="radio" name="answer58" value="1">
+                            <span class="option-label">A</span> ... --- . .... .- .-. - ---
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer58" value="2">
+                            <span class="option-label">B</span> -... .--- / .... .- -... .. -... .. .
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer58" value="3">
+                            <span class="option-label">C</span> ... ..- -. .- .-. .--- --- / .- - -- --- -.. .. .--. ..- .-. ---
+                        </label>
+                        <label class="option">
+                            <input type="radio" name="answer58" value="4">
+                            <span class="option-label">D</span> .-... -.. ..- .-. .-. .- .... -- .- -. / .-- .- .... .. -..
+                        </label>
+                    </div>
+                `
+            }
+        ];
+
+        // =============================================
+        // JANGAN EDIT BAGIAN DI BAWAH INI
+        // =============================================
+
+        let currentQuestionIndex = 0;
+        const userAnswers = new Array(questions.length).fill(null);
+
+        // Inisialisasi grid soal
+        function initializeQuestionGrid() {
+            const questionGrid = document.getElementById('question-grid');
+            questionGrid.innerHTML = '';
+            
+            questions.forEach((question, index) => {
+                const questionNumber = document.createElement('div');
+                questionNumber.className = 'question-number';
+                if (index === currentQuestionIndex) {
+                    questionNumber.classList.add('active');
+                }
+                if (userAnswers[index] !== null) {
+                    questionNumber.classList.add('answered');
+                }
+                questionNumber.textContent = question.id;
+                questionNumber.addEventListener('click', () => navigateToQuestion(index));
+                questionGrid.appendChild(questionNumber);
+            });
+        }
+
+        // Navigasi ke soal dengan animasi
+        function navigateToQuestion(index, direction = 'none') {
+            if (index >= 0 && index < questions.length) {
+                const questionContent = document.getElementById('question-content');
+                
+                // Tambahkan animasi berdasarkan arah navigasi
+                if (direction === 'next') {
+                    questionContent.classList.add('slide-left');
+                } else if (direction === 'prev') {
+                    questionContent.classList.add('slide-right');
+                }
+                
+                currentQuestionIndex = index;
+                
+                // Tunggu sebentar sebelum update konten untuk animasi
+                setTimeout(() => {
+                    updateQuestionDisplay();
+                    updateQuestionGrid();
+                    updateNavigationButtons();
+                    updateProgress();
+                    
+                    // Hapus class animasi setelah selesai
+                    setTimeout(() => {
+                        questionContent.classList.remove('slide-left', 'slide-right');
+                    }, 300);
+                }, 150);
+            }
+        }
+
+        // Update tampilan soal
+        function updateQuestionDisplay() {
+            const currentQuestion = questions[currentQuestionIndex];
+            
+            // Jika soal memiliki gambar
+            if (currentQuestion.imagePath) {
+                const questionHTML = `
+                    <div class="question-counter">Soal Nomor ${currentQuestion.id}</div>
+                    
+                    <div class="question-image-container">
+                        <img src="${currentQuestion.imagePath}" 
+                             alt="Soal LCTP ${currentQuestion.id}" 
+                             class="question-image"
+                             onerror="handleImageError(${currentQuestion.id})">
+                        <div id="placeholder-${currentQuestion.id}" class="image-placeholder" style="display: none;">
+                            📷 Gambar soal tidak dapat dimuat<br>
+                            <small>Pastikan file <strong>${currentQuestion.imagePath}</strong> tersedia</small>
+                        </div>
+                    </div>
+                    
+                    <div class="options">
+                        ${currentQuestion.options.map((option, index) => `
+                            <label class="option">
+                                <input type="radio" name="answer${currentQuestion.id}" value="${index + 1}">
+                                <span class="option-label">${String.fromCharCode(65 + index)}</span>
+                                <span class="option-text">${option}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                
+                document.getElementById('question-content').innerHTML = questionHTML;
+            } else {
+                // Soal biasa tanpa gambar
+                document.getElementById('question-content').innerHTML = currentQuestion.content;
+            }
+            
+            // Set jawaban yang sudah dipilih sebelumnya
+            if (userAnswers[currentQuestionIndex] !== null) {
+                const radioButton = document.querySelector(`input[name="answer${currentQuestion.id}"][value="${userAnswers[currentQuestionIndex]}"]`);
+                if (radioButton) {
+                    radioButton.checked = true;
+                }
+            }
+            
+            // Tambahkan event listener untuk opsi jawaban
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    userAnswers[currentQuestionIndex] = this.value;
+                    updateQuestionGrid();
+                    updateProgress();
+                });
+            });
+        }
+
+        // Handle error loading gambar
+        function handleImageError(questionId) {
+            const img = document.querySelector(`img[alt="Soal LCTP ${questionId}"]`);
+            const placeholder = document.getElementById(`placeholder-${questionId}`);
+            
+            if (img) {
+                img.style.display = 'none';
+            }
+            if (placeholder) {
+                placeholder.style.display = 'block';
+                placeholder.innerHTML = `
+                    ❌ Gambar soal ${questionId} tidak ditemukan<br>
+                    <small>File: ${questions[questionId-1].imagePath}</small>
+                    <br><br>
+                    <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; text-align: left;">
+                        <strong>Solusi:</strong><br>
+                        1. Cek file <strong>${questions[questionId-1].imagePath}</strong><br>
+                        2. Pastikan folder 'soal/' ada<br>
+                        3. Pastikan nama file sesuai
+                    </div>
+                `;
+            }
+            
+            console.error(`❌ Gagal memuat gambar: ${questions[questionId-1].imagePath}`);
+        }
+
+        // Update grid soal
+        function updateQuestionGrid() {
+            const questionNumbers = document.querySelectorAll('.question-number');
+            
+            questionNumbers.forEach((numberElement, index) => {
+                // Hapus semua class active terlebih dahulu
+                numberElement.classList.remove('active');
+                
+                // Tambahkan class active hanya untuk soal yang sedang aktif
+                if (index === currentQuestionIndex) {
+                    numberElement.classList.add('active');
+                }
+                
+                // Tambahkan class answered hanya untuk soal yang sudah dijawab
+                if (userAnswers[index] !== null) {
+                    numberElement.classList.add('answered');
+                }
+            });
+        }
+
+        // Update progress dan statistik
+        function updateProgress() {
+            const answeredCount = userAnswers.filter(answer => answer !== null).length;
+            const progress = (answeredCount / questions.length) * 100;
+            
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('answered-count').textContent = `${answeredCount}/${questions.length} Terjawab`;
+        }
+
+        // Update tombol navigasi
+        function updateNavigationButtons() {
+            const prevButton = document.getElementById('prev-btn');
+            const navButtonsContainer = document.getElementById('navigation-buttons');
+            
+            prevButton.disabled = currentQuestionIndex === 0;
+            
+            // Jika sudah di soal terakhir, ganti tombol "Selanjutnya" dengan "Kirim"
+            if (currentQuestionIndex === questions.length - 1) {
+                navButtonsContainer.innerHTML = '';
+                const submitButton = document.createElement('button');
+                submitButton.id = 'submit-btn';
+                submitButton.className = 'submit-btn';
+                submitButton.textContent = 'KIRIM JAWABAN';
+                submitButton.addEventListener('click', showSubmitPopup);
+                navButtonsContainer.appendChild(submitButton);
+            } else {
+                navButtonsContainer.innerHTML = '';
+                const nextButton = document.createElement('button');
+                nextButton.id = 'next-btn';
+                nextButton.className = 'nav-button';
+                nextButton.innerHTML = 'SOAL SELANJUTNYA <span>▶</span>';
+                nextButton.addEventListener('click', () => {
+                    navigateToQuestion(currentQuestionIndex + 1, 'next');
+                });
+                navButtonsContainer.appendChild(nextButton);
+            }
+        }
+
+        // Tampilkan popup konfirmasi
+        function showSubmitPopup() {
+            const popup = document.getElementById('submit-popup');
+            popup.style.display = 'flex';
+            setTimeout(() => {
+                popup.classList.add('show');
+            }, 10);
+        }
+
+        // Sembunyikan popup
+        function hideSubmitPopup() {
+            const popup = document.getElementById('submit-popup');
+            popup.classList.remove('show');
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 300);
+        }
+
+        // Fungsi untuk mengirim jawaban
+        function submitAnswers() {
+            hideSubmitPopup();
+            alert('Jawaban berhasil dikirim! Terima kasih telah mengerjakan ujian LCTP.');
+        }
+
+        // Event listeners
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                navigateToQuestion(currentQuestionIndex - 1, 'prev');
+            }
+        });
+
+        document.getElementById('confirm-submit').addEventListener('click', submitAnswers);
+        document.getElementById('cancel-submit').addEventListener('click', hideSubmitPopup);
+
+        // Timer countdown
+        function startTimer() {
+            let timeLeft = 120 * 60; // 120 menit
+            
+            function updateTimer() {
+                if (timeLeft <= 0) {
+                    document.getElementById('timer').textContent = "00:00:00";
+                    submitAnswers();
+                    return;
+                }
+                
+                const hours = Math.floor(timeLeft / 3600);
+                const minutes = Math.floor((timeLeft % 3600) / 60);
+                const seconds = timeLeft % 60;
+                
+                document.getElementById('timer').textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                timeLeft--;
+                setTimeout(updateTimer, 1000);
+            }
+            
+            updateTimer();
+        }
+
+        // Inisialisasi
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeQuestionGrid();
+            updateQuestionDisplay();    
+            updateNavigationButtons();
+            updateProgress();
+            startTimer();
+            
+            console.log('✅ Sistem ujian LCTP siap digunakan!');
+            console.log('📁 Total soal:', questions.length);
+        });
+    </script>
+</body>
+</html>

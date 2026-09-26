@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ujian Olimpiade IPA - TIMAC FEST 2025</title>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 0; padding: 20px; background: #f0f2f5; }
+        .exam-container { max-width: 800px; margin: 0 auto; }
+        .header { background: #2c3e50; color: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; }
+        .timer { background: #e74c3c; color: white; padding: 15px; text-align: center; border-radius: 5px; margin-bottom: 20px; font-size: 1.5em; }
+        .progress { background: white; padding: 15px; border-radius: 5px; margin-bottom: 20px; }
+        .progress-bar { width: 100%; height: 20px; background: #ecf0f1; border-radius: 10px; overflow: hidden; }
+        .progress-fill { height: 100%; background: #27ae60; transition: width 0.3s; }
+        .question-card { background: white; padding: 20px; border-radius: 10px; margin-bottom: 20px; border-left: 5px solid #3498db; }
+        .options { margin-top: 15px; }
+        .option { display: flex; align-items: center; padding: 10px; margin: 5px 0; border: 2px solid #bdc3c7; border-radius: 5px; cursor: pointer; }
+        .option:hover { border-color: #3498db; }
+        .option.selected { border-color: #27ae60; background: #d5f4e6; }
+        .option input { margin-right: 10px; }
+        .submit-btn { background: #e74c3c; color: white; padding: 15px 30px; border: none; border-radius: 5px; font-size: 1.2em; cursor: pointer; display: block; margin: 30px auto; }
+        .submit-btn:hover { background: #c0392b; }
+        .error { background: #e74c3c; color: white; padding: 15px; border-radius: 5px; margin-bottom: 20px; display: none; }
+        .result-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: none; justify-content: center; align-items: center; }
+        .result-card { background: white; padding: 30px; border-radius: 15px; text-align: center; max-width: 500px; }
+        .final-score { font-size: 2em; color: #27ae60; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="exam-container">
+        <div class="header">
+            <h1>🧪 Ujian Olimpiade IPA</h1>
+            <div id="user-info">Memuat informasi user...</div>
+        </div>
+        
+        <div class="error" id="error-message"></div>
+        
+        <div class="timer">
+            ⏰ Waktu Tersisa: <span id="timer">60:00</span>
+        </div>
+        
+        <div class="progress">
+            <div class="progress-bar">
+                <div class="progress-fill" id="progress-bar" style="width: 0%"></div>
+            </div>
+            <div id="progress-text" style="text-align: center; margin-top: 10px; font-weight: bold;">
+                Terjawab: 0/0
+            </div>
+        </div>
+        
+        <div id="questions-container">
+            <!-- Questions akan dimuat di sini -->
+        </div>
+        
+        <button class="submit-btn" id="submit-exam">🚀 Kirim Jawaban</button>
+    </div>
+
+    <div class="result-overlay" id="result-overlay">
+        <div class="result-card">
+            <h2>🎉 Ujian Selesai!</h2>
+            <div class="final-score" id="final-score">Nilai: 0.00</div>
+            <div id="score-details"></div>
+            <button onclick="window.location.href='../results.html'" style="background: #3498db; color: white; border: none; padding: 10px 20px; margin: 10px; border-radius: 5px; cursor: pointer;">
+                Lihat Leaderboard
+            </button>
+            <button onclick="location.reload()" style="background: #95a5a6; color: white; border: none; padding: 10px 20px; margin: 10px; border-radius: 5px; cursor: pointer;">
+                Tutup
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // SOAL OLIMPIADE IPA - Bisa diubah oleh panitia
+        const questions = [
+            {
+                question_text: "Apa fungsi utama klorofil dalam fotosintesis?",
+                opsi_a: "Menyerap air",
+                opsi_b: "Menyerap cahaya matahari",
+                opsi_c: "Menyerap karbon dioksida", 
+                opsi_d: "Menghasilkan oksigen",
+                correct_answer: "b"
+            },
+            {
+                question_text: "Planet terdekat dari matahari adalah?",
+                opsi_a: "Venus",
+                opsi_b: "Bumi",
+                opsi_c: "Mars",
+                opsi_d: "Merkurius",
+                correct_answer: "d"
+            },
+            {
+                question_text: "Zat yang dihasilkan dalam proses respirasi sel adalah?",
+                opsi_a: "Oksigen",
+                opsi_b: "Karbon dioksida", 
+                opsi_c: "Nitrogen",
+                opsi_d: "Hidrogen",
+                correct_answer: "b"
+            }
+        ];
+
+        const API_BASE = 'https://exam-system-backend.timacefest2025.workers.dev';
+        let userAnswers = {};
+        let startTime = Date.now();
+        let timerInterval;
+
+        // Initialize exam
+        function initExam() {
+            const userData = JSON.parse(localStorage.getItem('user_data'));
+            if (!userData) {
+                window.location.href = '../login.html';
+                return;
+            }
+
+            // Update user info
+            document.getElementById('user-info').innerHTML = `
+                <strong>${userData.nama}</strong> - ${userData.sekolah}<br>
+                Lomba: ${userData.lomba}
+            `;
+
+            renderQuestions();
+            startTimer();
+        }
+
+        function renderQuestions() {
+            const container = document.getElementById('questions-container');
+            container.innerHTML = '';
+
+            questions.forEach((question, index) => {
+                const questionNumber = index + 1;
+                const questionHTML = `
+                    <div class="question-card">
+                        <h3>Soal ${questionNumber}</h3>
+                        <p>${question.question_text}</p>
+                        <div class="options">
+                            ${['a', 'b', 'c', 'd'].map(option => `
+                                <label class="option">
+                                    <input type="radio" name="question_${questionNumber}" value="${option}">
+                                    ${option.toUpperCase()}. ${question[`opsi_${option}`]}
+                                </label>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += questionHTML;
+            });
+
+            // Add event listeners
+            questions.forEach((_, index) => {
+                const questionNumber = index + 1;
+                const radios = document.querySelectorAll(`input[name="question_${questionNumber}"]`);
+                radios.forEach(radio => {
+                    radio.addEventListener('change', (e) => {
+                        userAnswers[questionNumber] = e.target.value;
+                        updateProgress();
+                        
+                        // Update UI
+                        radios.forEach(r => r.parentElement.classList.remove('selected'));
+                        e.target.parentElement.classList.add('selected');
+                    });
+                });
+            });
+
+            updateProgress();
+        }
+
+        function updateProgress() {
+            const answered = Object.keys(userAnswers).length;
+            const total = questions.length;
+            const progress = (answered / total) * 100;
+            
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('progress-text').textContent = `Terjawab: ${answered}/${total}`;
+        }
+
+        function startTimer() {
+            const duration = 60 * 60 * 1000; // 60 menit
+            updateTimerDisplay();
+            
+            timerInterval = setInterval(() => {
+                updateTimerDisplay();
+                const elapsed = Date.now() - startTime;
+                if (elapsed >= duration) {
+                    submitExam();
+                }
+            }, 1000);
+        }
+
+        function updateTimerDisplay() {
+            const elapsed = Date.now() - startTime;
+            const duration = 60 * 60 * 1000;
+            const remaining = duration - elapsed;
+            
+            if (remaining <= 0) {
+                document.getElementById('timer').textContent = '00:00';
+                return;
+            }
+            
+            const minutes = Math.floor(remaining / 60000);
+            const seconds = Math.floor((remaining % 60000) / 1000);
+            document.getElementById('timer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+
+        function calculateScore() {
+            let correctCount = 0;
+            questions.forEach((question, index) => {
+                const questionNumber = index + 1;
+                if (userAnswers[questionNumber] === question.correct_answer) {
+                    correctCount++;
+                }
+            });
+            return correctCount * 1.25; // jawaban benar × 1.25
+        }
+
+        async function submitExam() {
+            clearInterval(timerInterval);
+
+            const userData = JSON.parse(localStorage.getItem('user_data'));
+            const timeSpent = Math.floor((Date.now() - startTime) / 1000);
+            const score = calculateScore();
+
+            try {
+                const response = await fetch(API_BASE + '/api/exams/submit', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: userData.id,
+                        username: userData.username,
+                        nama: userData.nama,
+                        sekolah: userData.sekolah,
+                        lomba: userData.lomba,
+                        score: score,
+                        answers: userAnswers,
+                        time_spent: timeSpent
+                    })
+                });
+
+                const result = await response.json();
+                
+                if (result.success) {
+                    showResult(score);
+                } else {
+                    showError('Gagal menyimpan nilai: ' + result.error);
+                }
+            } catch (error) {
+                showError('Gagal mengirim jawaban: ' + error.message);
+            }
+        }
+
+        function showResult(score) {
+            const correctCount = score / 1.25;
+            document.getElementById('final-score').textContent = `Nilai: ${score.toFixed(2)}`;
+            document.getElementById('score-details').innerHTML = `
+                Jawaban Benar: ${correctCount}/${questions.length}<br>
+                (${correctCount} × 1.25 = ${score.toFixed(2)})
+            `;
+            document.getElementById('result-overlay').style.display = 'flex';
+        }
+
+        function showError(message) {
+            document.getElementById('error-message').textContent = message;
+            document.getElementById('error-message').style.display = 'block';
+        }
+
+        // Event listeners
+        document.getElementById('submit-exam').addEventListener('click', () => {
+            const answered = Object.keys(userAnswers).length;
+            if (answered < questions.length) {
+                if (!confirm(`Anda baru menjawab ${answered} dari ${questions.length} soal. Yakin ingin submit?`)) {
+                    return;
+                }
+            }
+            if (confirm('Apakah Anda yakin ingin mengirim jawaban?')) {
+                submitExam();
+            }
+        });
+
+        // Initialize
+        initExam();
+    </script>
+</body>
+</html>

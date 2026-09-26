@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - PESERTA LOMBA ACEFEST 2025</title>
+    <style>
+        /* Reset dan base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+body {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Login Container */
+.login-container {
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+    padding: 40px;
+    width: 100%;
+    max-width: 450px;
+    position: relative;
+    overflow: hidden;
+}
+
+.login-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 5px;
+    background: linear-gradient(90deg, #667eea, #764ba2);
+}
+
+.logo-section {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo-section h1 {
+    color: #333;
+    font-size: 28px;
+    margin-bottom: 5px;
+    font-weight: 700;
+}
+
+.logo-section p {
+    color: #666;
+    font-size: 16px;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: 600;
+    color: #333;
+    font-size: 14px;
+}
+
+input {
+    width: 100%;
+    padding: 12px 15px;
+    border: 2px solid #e1e5e9;
+    border-radius: 8px;
+    font-size: 16px;
+    transition: all 0.3s ease;
+}
+
+input:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.login-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border: none;
+    padding: 14px;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    width: 100%;
+    transition: all 0.3s ease;
+    margin-top: 10px;
+    position: relative;
+}
+
+.login-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+}
+
+.login-btn:active {
+    transform: translateY(0);
+}
+
+.login-btn:disabled {
+    opacity: 0.7;
+    cursor: not-allowed;
+    transform: none;
+}
+
+.error {
+    background: #fee;
+    color: #c33;
+    padding: 12px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    border: 1px solid #fcc;
+    display: none;
+    font-size: 14px;
+}
+
+.info-section {
+    margin-top: 25px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border-left: 4px solid #667eea;
+}
+
+.info-section h3 {
+    color: #333;
+    margin-bottom: 10px;
+    font-size: 14px;
+}
+
+.info-section ul {
+    list-style: none;
+    font-size: 13px;
+    color: #666;
+}
+
+.info-section li {
+    margin-bottom: 5px;
+    padding-left: 15px;
+    position: relative;
+}
+
+.info-section li::before {
+    content: '•';
+    position: absolute;
+    left: 0;
+    color: #667eea;
+    font-weight: bold;
+}
+
+.loading {
+    display: none;
+    text-align: center;
+    margin-top: 10px;
+}
+
+.spinner {
+    border: 3px solid #f3f3f3;
+    border-top: 3px solid #667eea;
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    animation: spin 1s linear infinite;
+    display: inline-block;
+    margin-right: 10px;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+/* Utility Classes */
+.hidden {
+    display: none !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.mt-20 {
+    margin-top: 20px;
+}
+
+.mb-20 {
+    margin-bottom: 20px;
+}
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo-section">
+            <h1>LOGIN PESERTA</h1>
+            <p>Sistem Ujian Olimpiade</p>
+        </div>
+        
+        <div class="error" id="error-message"></div>
+        
+        <form id="loginForm">
+            <div class="form-group">
+                <label for="username">Username</label>
+                <input type="text" id="username" placeholder="Masukkan username Anda" required autocomplete="username">
+            </div>
+            
+            <div class="form-group">
+                <label for="password">Password</label>
+                <input type="password" id="password" placeholder="Masukkan password Anda" required autocomplete="current-password">
+            </div>
+            
+            <button type="submit" class="login-btn" id="loginButton">
+                <span id="loginText">Masuk</span>
+                <div class="loading" id="loadingIndicator">
+                    <div class="spinner"></div> Memproses...
+                </div>
+            </button>
+        </form>
+        
+        <div class="info-section">
+            <h3>Informasi Login</h3>
+            <ul>
+                <li>Gunakan username dan password yang telah diberikan panitia</li>
+                <li>Pastikan koneksi internet stabil</li>
+                <li>Browser yang disarankan: Chrome, Firefox, atau Edge versi terbaru</li>
+                <li>Jika mengalami kendala, hubungi panitia segera</li>
+            </ul>
+        </div>
+    </div>
+
+    <script src="js/auth.js"></script>
+</body>
+</html>

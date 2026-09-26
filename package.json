@@ -1,0 +1,18 @@
+{
+  "name": "exam-system-backend",
+  "version": "1.0.0",
+  "description": "Backend for TIMAC FEST 2025 Exam System",
+  "main": "src/index.js",
+  "scripts": {
+    "deploy": "wrangler deploy",
+    "dev": "wrangler dev",
+    "db:create": "wrangler d1 create exam-database",
+    "db:execute": "wrangler d1 execute exam-database --file=./schema.sql"
+  },
+  "dependencies": {
+    "hono": "^4.10.4"
+  },
+  "devDependencies": {
+    "wrangler": "^4.45.0"
+  }
+}

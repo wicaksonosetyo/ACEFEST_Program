@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Gambar - TIMAC FEST 2025</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body { background: #f8f9fa; }
+        .card { transition: transform 0.2s; }
+        .card:hover { transform: translateY(-2px); }
+        .image-preview { 
+            height: 200px; 
+            object-fit: cover;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div class="container py-4">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h1>Dashboard Gambar Desain Poster</h1>
+            <button class="btn btn-primary" onclick="loadImageSubmissions()">Refresh</button>
+        </div>
+
+        <div id="loading" class="text-center" style="display: none;">
+            <div class="spinner-border"></div>
+            <p>Loading...</p>
+        </div>
+
+        <div id="imagesGrid" class="row"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://exam-system-backend.timacefest2025.workers.dev';
+
+        async function loadImageSubmissions() {
+            document.getElementById('loading').style.display = 'block';
+            document.getElementById('imagesGrid').innerHTML = '';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/images/submissions`);
+                const data = await response.json();
+                
+                if (data.success) {
+                    displayImages(data.submissions);
+                } else {
+                    throw new Error(data.error);
+                }
+            } catch (error) {
+                alert('Error: ' + error.message);
+            } finally {
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
+
+        function displayImages(submissions) {
+            const grid = document.getElementById('imagesGrid');
+            
+            submissions.forEach(submission => {
+                const imageUrl = `${API_BASE}/api/images/${submission.image_filename}`;
+                
+                const card = `
+                    <div class="col-md-4 mb-4">
+                        <div class="card">
+                            <img src="${imageUrl}" 
+                                 class="card-img-top image-preview" 
+                                 alt="${submission.image_title}"
+                                 onerror="this.src='data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGRkIi8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPkdhbWJhciB0aWRhayBkYXBhdCBkaXRhbXBpbGthbjwvdGV4dD48L3N2Zz4='">
+                            <div class="card-body">
+                                <h5 class="card-title">${submission.image_title}</h5>
+                                <p class="card-text">
+                                    <strong>${submission.nama}</strong><br>
+                                    ${submission.sekolah}
+                                </p>
+                                <small class="text-muted">${new Date(submission.submitted_at).toLocaleDateString('id-ID')}</small>
+                            </div>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += card;
+            });
+        }
+
+        // Load data saat halaman dibuka
+        loadImageSubmissions();
+    </script>
+</body>
+</html>

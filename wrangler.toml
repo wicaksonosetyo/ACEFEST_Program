@@ -1,0 +1,14 @@
+name = "exam-system-backend"
+compatibility_date = "2024-07-25"
+main = "src/index.js"
+compatibility_flags = ["nodejs_compat"]
+
+[[d1_databases]]
+binding = "DB"
+database_name = "exam-database"
+database_id = "68ca43f7-ab69-425b-a932-ead777e2fa2b"
+
+# Hapus R2 dulu untuk simplify
+# [[r2_buckets]]
+# binding = "R2_STORAGE" 
+# bucket_name = "exam-files"

@@ -1,0 +1,929 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACEFEST - MATH</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Sora', sans-serif;
+        }
+        
+        body {
+            background: #f8f9fa;
+            color: #333;
+            line-height: 1.6;
+            min-height: 100vh;
+            overflow: hidden;
+        }
+        
+        .container {
+            display: flex;
+            height: 100vh;
+            max-width: 100%;
+            margin: 0;
+            background: white;
+        }
+        
+        .sidebar {
+            width: 280px;
+            background: linear-gradient(180deg, #f9a825 0%, #f57f17 100%);
+            color: #2c3e50;
+            padding: 20px 15px;
+            box-shadow: 3px 0 15px rgba(0, 0, 0, 0.1);
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .sidebar-title {
+            font-size: 18px;
+            margin-bottom: 20px;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #ffb74d;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .question-grid-container {
+            flex: 1;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+        
+        .question-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+        
+        .question-number {
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #2c3e50;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 500;
+            border: 3px solid transparent;
+            color: white;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+        
+        .question-number:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+        }
+        
+        .question-number.active {
+            background: #3498db;
+            border-color: #ffffff;
+            box-shadow: 0 4px 15px rgba(52, 152, 219, 0.5);
+            transform: scale(1.1);
+            color: white;
+        }
+        
+        .question-number.answered {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            background: white;
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #f9a825 0%, #f57f17 100%);
+            color: #2c3e50;
+            padding: 15px 30px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            flex-shrink: 0;
+        }
+        
+        .exam-info {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        
+        .progress-bar {
+            width: 180px;
+            height: 8px;
+            background: rgba(44, 62, 80, 0.3);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress {
+            height: 100%;
+            background: #2ecc71;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .answered-info {
+            color: #2c3e50;
+            font-weight: 600;
+            font-size: 15px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 6px 12px;
+            border-radius: 6px;
+        }
+        
+        .timer {
+            font-weight: 700;
+            font-size: 20px;
+            color: #2c3e50;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 8px 16px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .question-container {
+            flex: 1;
+            padding: 25px 30px;
+            overflow-y: auto;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .question-content {
+            background: white;
+            padding: 25px;
+            border-radius: 10px;
+            box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+            margin-bottom: 15px;
+            border-left: 4px solid #f9a825;
+            flex: 1;
+            transition: transform 0.3s ease, opacity 0.3s ease;
+        }
+        
+        .question-content.slide-left {
+            animation: slideLeft 0.3s ease;
+        }
+        
+        .question-content.slide-right {
+            animation: slideRight 0.3s ease;
+        }
+        
+        @keyframes slideLeft {
+            from {
+                transform: translateX(20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideRight {
+            from {
+                transform: translateX(-20px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        .question-counter {
+            font-size: 14px;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+            font-weight: 500;
+        }
+        
+        .question-title {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 15px;
+            font-weight: 600;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #f0f0f0;
+        }
+        
+        .question-image-container {
+            margin: 20px 0;
+            text-align: center;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px dashed #e9ecef;
+        }
+        
+        .question-image {
+            max-width: 100%;
+            max-height: 400px;
+            height: auto;
+            border-radius: 6px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            display: block;
+            margin: 0 auto;
+        }
+        
+        .image-placeholder {
+            padding: 40px;
+            text-align: center;
+            color: #7f8c8d;
+            font-style: italic;
+            background: #f8f9fa;
+            border-radius: 6px;
+            border: 2px dashed #bdc3c7;
+        }
+        
+        .options {
+            margin: 25px 0;
+        }
+        
+        .option {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+            padding: 15px 20px;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            background: white;
+        }
+        
+        .option:hover {
+            border-color: #f9a825;
+            background: #fff9e6;
+            transform: translateX(5px);
+        }
+        
+        .option input {
+            margin-right: 15px;
+            transform: scale(1.3);
+        }
+        
+        .option-label {
+            font-weight: 700;
+            margin-right: 15px;
+            color: #333;
+            font-size: 16px;
+            min-width: 25px;
+            background: #f8f9fa;
+            padding: 5px 10px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        
+        .option-text {
+            color: #333;
+            font-size: 15px;
+            font-weight: 500;
+        }
+        
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            padding: 20px 30px;
+            background: white;
+            border-top: 2px solid #e9ecef;
+            flex-shrink: 0;
+        }
+        
+        .nav-button {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #f9a825 0%, #f57f17 100%);
+            color: #2c3e50;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(249, 168, 37, 0.3);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .nav-button:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(249, 168, 37, 0.4);
+        }
+        
+        .nav-button:active {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(249, 168, 37, 0.3);
+        }
+        
+        .nav-button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+            color: #7f8c8d;
+        }
+        
+        .submit-btn {
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #27ae60 0%, #219a52 100%);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 15px;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+        }
+        
+        .submit-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+        }
+        
+        .submit-btn:active {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(39, 174, 96, 0.3);
+        }
+        
+        /* Popup Styles */
+        .popup-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+        }
+        
+        .popup-overlay.show {
+            opacity: 1;
+            display: flex;
+        }
+        
+        .popup-content {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            text-align: center;
+            max-width: 450px;
+            width: 90%;
+            transform: scale(0.8);
+            opacity: 0;
+            transition: all 0.3s ease;
+        }
+        
+        .popup-overlay.show .popup-content {
+            transform: scale(1);
+            opacity: 1;
+        }
+        
+        .popup-title {
+            font-size: 22px;
+            font-weight: 600;
+            margin-bottom: 15px;
+            color: #2c3e50;
+        }
+        
+        .popup-message {
+            margin-bottom: 25px;
+            color: #555;
+            line-height: 1.6;
+            font-size: 15px;
+        }
+        
+        .popup-buttons {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+        }
+        
+        .popup-btn {
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            min-width: 100px;
+        }
+        
+        .popup-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        }
+        
+        .popup-confirm {
+            background: linear-gradient(135deg, #27ae60 0%, #219a52 100%);
+            color: white;
+        }
+        
+        .popup-cancel {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+        }
+
+        /* Scrollbar styling */
+        .question-grid-container::-webkit-scrollbar {
+            width: 6px;
+        }
+        
+        .question-grid-container::-webkit-scrollbar-track {
+            background: #ffb74d;
+            border-radius: 3px;
+        }
+        
+        .question-grid-container::-webkit-scrollbar-thumb {
+            background: #f57f17;
+            border-radius: 3px;
+        }
+        
+        .question-grid-container::-webkit-scrollbar-thumb:hover {
+            background: #e65100;
+        }
+
+        /* Responsive design untuk gambar */
+        @media (max-width: 768px) {
+            .container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 200px;
+            }
+            
+            .question-grid {
+                grid-template-columns: repeat(6, 1fr);
+                gap: 8px;
+            }
+            
+            .question-number {
+                width: 40px;
+                height: 40px;
+                font-size: 14px;
+            }
+            
+            .question-image {
+                max-height: 300px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-title">DAFTAR SOAL</div>
+            <div class="question-grid-container">
+                <div class="question-grid" id="question-grid">
+                    <!-- Soal akan di-generate oleh JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="header">
+                <div class="exam-info">
+                    <div class="progress-bar">
+                        <div class="progress" id="progress-bar"></div>
+                    </div>
+                    <div class="answered-info" id="answered-count">0/50 Terjawab</div>
+                </div>
+                <div class="timer" id="timer">02:00:00</div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-content" id="question-content">
+                    <!-- Konten soal akan diisi oleh JavaScript -->
+                </div>
+            </div>
+            
+            <div class="navigation">
+                <button class="nav-button" id="prev-btn">
+                    <span>◀</span> SOAL SEBELUMNYA
+                </button>
+                <div id="navigation-buttons">
+                    <button class="nav-button" id="next-btn">
+                        SOAL SELANJUTNYA <span>▶</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Konfirmasi -->
+    <div class="popup-overlay" id="submit-popup">
+        <div class="popup-content">
+            <div class="popup-title">Konfirmasi Pengiriman</div>
+            <div class="popup-message">
+                Apakah Anda yakin ingin mengirim jawaban?<br>
+                Setelah dikirim, Anda tidak dapat mengubah jawaban.
+            </div>
+            <div class="popup-buttons">
+                <button class="popup-btn popup-confirm" id="confirm-submit">YA, KIRIM</button>
+                <button class="popup-btn popup-cancel" id="cancel-submit">BATAL</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // =============================================
+        // KONFIGURASI FOTO SOAL MATEMATIKA - 50 SOAL
+        // =============================================
+
+        // Data soal Matematika dengan path yang benar - 50 SOAL
+        const questions = [
+            { id: 1, imagePath: 'soal/math/Soal_1_A.png', subject: "Matematika" },
+            { id: 2, imagePath: 'soal/math/Soal_2_A.png', subject: "Matematika" },
+            { id: 3, imagePath: 'soal/math/Soal_3_D.png', subject: "Matematika" },
+            { id: 4, imagePath: 'soal/math/Soal_4_C.png', subject: "Matematika" },
+            { id: 5, imagePath: 'soal/math/Soal_5_B.png', subject: "Matematika" },
+            { id: 6, imagePath: 'soal/math/Soal_6_D.png', subject: "Matematika" },
+            { id: 7, imagePath: 'soal/math/Soal_7_B.png', subject: "Matematika" },
+            { id: 8, imagePath: 'soal/math/Soal_8_B.png', subject: "Matematika" },
+            { id: 9, imagePath: 'soal/math/Soal_9_D.png', subject: "Matematika" },
+            { id: 10, imagePath: 'soal/math/Soal_10_A.png', subject: "Matematika" },
+            { id: 11, imagePath: 'soal/math/Soal_11_C.png', subject: "Matematika" },
+            { id: 12, imagePath: 'soal/math/Soal_12_A.png', subject: "Matematika" },
+            { id: 13, imagePath: 'soal/math/Soal_13_B.png', subject: "Matematika" },
+            { id: 14, imagePath: 'soal/math/Soal_14_B.png', subject: "Matematika" },
+            { id: 15, imagePath: 'soal/math/Soal_15_B.png', subject: "Matematika" },
+            { id: 16, imagePath: 'soal/math/Soal_16_C.png', subject: "Matematika" },
+            { id: 17, imagePath: 'soal/math/Soal_17_B.png', subject: "Matematika" },
+            { id: 18, imagePath: 'soal/math/Soal_18_C.png', subject: "Matematika" },
+            { id: 19, imagePath: 'soal/math/Soal_19_B.png', subject: "Matematika" },
+            { id: 20, imagePath: 'soal/math/Soal_20_A.png', subject: "Matematika" },
+            { id: 21, imagePath: 'soal/math/Soal_21_C.png', subject: "Matematika" },
+            { id: 22, imagePath: 'soal/math/Soal_22_D.png', subject: "Matematika" },
+            { id: 23, imagePath: 'soal/math/Soal_23_B.png', subject: "Matematika" },
+            { id: 24, imagePath: 'soal/math/Soal_24_D.png', subject: "Matematika" },
+            { id: 25, imagePath: 'soal/math/Soal_25_D.png', subject: "Matematika" },
+            { id: 26, imagePath: 'soal/math/Soal_26_A.png', subject: "Matematika" },
+            { id: 27, imagePath: 'soal/math/Soal_27_B.png', subject: "Matematika" },
+            { id: 28, imagePath: 'soal/math/Soal_28_A.png', subject: "Matematika" },
+            { id: 29, imagePath: 'soal/math/Soal_29_D.png', subject: "Matematika" },
+            { id: 30, imagePath: 'soal/math/Soal_30_A.png', subject: "Matematika" },
+            { id: 31, imagePath: 'soal/math/Soal_31_B.png', subject: "Matematika" },
+            { id: 32, imagePath: 'soal/math/Soal_32_C.png', subject: "Matematika" },
+            { id: 33, imagePath: 'soal/math/Soal_33_B.png', subject: "Matematika" },
+            { id: 34, imagePath: 'soal/math/Soal_34_B.png', subject: "Matematika" },
+            { id: 35, imagePath: 'soal/math/Soal_35_B.png', subject: "Matematika" },
+            { id: 36, imagePath: 'soal/math/Soal_36_B.png', subject: "Matematika" },
+            { id: 37, imagePath: 'soal/math/Soal_37_B.png', subject: "Matematika" },
+            { id: 38, imagePath: 'soal/math/Soal_38_B.png', subject: "Matematika" },
+            { id: 39, imagePath: 'soal/math/Soal_39_B.png', subject: "Matematika" },
+            { id: 40, imagePath: 'soal/math/Soal_40_A.png', subject: "Matematika" },
+            { id: 41, imagePath: 'soal/math/Soal_41_B.png', subject: "Matematika" },
+            { id: 42, imagePath: 'soal/math/Soal_42_B.png', subject: "Matematika" },
+            { id: 43, imagePath: 'soal/math/Soal_43_C.png', subject: "Matematika" },
+            { id: 44, imagePath: 'soal/math/Soal_44_B.png', subject: "Matematika" },
+            { id: 45, imagePath: 'soal/math/Soal_45_B.png', subject: "Matematika" },
+            { id: 46, imagePath: 'soal/math/Soal_46_B.png', subject: "Matematika" },
+            { id: 47, imagePath: 'soal/math/Soal_47_B.png', subject: "Matematika" },
+            { id: 48, imagePath: 'soal/math/Soal_48_B.png', subject: "Matematika" },
+            { id: 49, imagePath: 'soal/math/Soal_49_D.png', subject: "Matematika" },
+            { id: 50, imagePath: 'soal/math/Soal_50_A.png', subject: "Matematika" }
+        ];
+
+        // Opsi jawaban untuk setiap soal - 50 SOAL (semua dikosongkan)
+        const answerOptions = [
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""],
+            ["", "", "", ""]
+        ];
+
+        // Tambahkan opsi jawaban ke setiap soal
+        questions.forEach((question, index) => {
+            question.options = answerOptions[index];
+        });
+
+        let currentQuestionIndex = 0;
+        const userAnswers = new Array(questions.length).fill(null);
+
+        // Inisialisasi grid soal
+        function initializeQuestionGrid() {
+            const questionGrid = document.getElementById('question-grid');
+            questionGrid.innerHTML = '';
+            
+            questions.forEach((question, index) => {
+                const questionNumber = document.createElement('div');
+                questionNumber.className = 'question-number';
+                if (index === currentQuestionIndex) {
+                    questionNumber.classList.add('active');
+                }
+                if (userAnswers[index] !== null) {
+                    questionNumber.classList.add('answered');
+                }
+                questionNumber.textContent = question.id;
+                questionNumber.addEventListener('click', () => navigateToQuestion(index));
+                questionGrid.appendChild(questionNumber);
+            });
+        }
+
+        // Navigasi ke soal dengan animasi
+        function navigateToQuestion(index, direction = 'none') {
+            if (index >= 0 && index < questions.length) {
+                const questionContent = document.getElementById('question-content');
+                
+                // Tambahkan animasi berdasarkan arah navigasi
+                if (direction === 'next') {
+                    questionContent.classList.add('slide-left');
+                } else if (direction === 'prev') {
+                    questionContent.classList.add('slide-right');
+                }
+                
+                currentQuestionIndex = index;
+                
+                // Tunggu sebentar sebelum update konten untuk animasi
+                setTimeout(() => {
+                    updateQuestionDisplay();
+                    updateQuestionGrid();
+                    updateNavigationButtons();
+                    updateProgress();
+                    
+                    // Hapus class animasi setelah selesai
+                    setTimeout(() => {
+                        questionContent.classList.remove('slide-left', 'slide-right');
+                    }, 300);
+                }, 150);
+            }
+        }
+
+        // Update tampilan soal dengan gambar
+        function updateQuestionDisplay() {
+            const currentQuestion = questions[currentQuestionIndex];
+            
+            // Buat HTML untuk menampilkan gambar soal (tanpa teks "Matematika - Kelas 10")
+            const questionHTML = `
+                <div class="question-counter">Soal Nomor ${currentQuestion.id}</div>
+                
+                <div class="question-image-container">
+                    <img src="${currentQuestion.imagePath}" 
+                         alt="Soal Matematika ${currentQuestion.id}" 
+                         class="question-image"
+                         onerror="handleImageError(${currentQuestion.id})">
+                    <div id="placeholder-${currentQuestion.id}" class="image-placeholder" style="display: none;">
+                        📷 Gambar soal tidak dapat dimuat<br>
+                        <small>Pastikan file <strong>${currentQuestion.imagePath}</strong> tersedia</small>
+                    </div>
+                </div>
+                
+                <div class="options">
+                    ${currentQuestion.options.map((option, index) => `
+                        <label class="option">
+                            <input type="radio" name="answer${currentQuestion.id}" value="${index + 1}">
+                            <span class="option-label">${String.fromCharCode(65 + index)}</span>
+                            <span class="option-text">${option}</span>
+                        </label>
+                    `).join('')}
+                </div>
+            `;
+            
+            document.getElementById('question-content').innerHTML = questionHTML;
+            
+            // Set jawaban yang sudah dipilih sebelumnya
+            if (userAnswers[currentQuestionIndex] !== null) {
+                const radioButton = document.querySelector(`input[name="answer${currentQuestion.id}"][value="${userAnswers[currentQuestionIndex]}"]`);
+                if (radioButton) {
+                    radioButton.checked = true;
+                }
+            }
+            
+            // Tambahkan event listener untuk opsi jawaban
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    userAnswers[currentQuestionIndex] = this.value;
+                    updateQuestionGrid();
+                    updateProgress();
+                });
+            });
+        }
+
+        // Handle error loading gambar
+        function handleImageError(questionId) {
+            const img = document.querySelector(`img[alt="Soal Matematika ${questionId}"]`);
+            const placeholder = document.getElementById(`placeholder-${questionId}`);
+            
+            if (img) {
+                img.style.display = 'none';
+            }
+            if (placeholder) {
+                placeholder.style.display = 'block';
+                placeholder.innerHTML = `
+                    ❌ Gambar soal ${questionId} tidak ditemukan<br>
+                    <small>File: ${questions[questionId-1].imagePath}</small>
+                    <br><br>
+                    <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; text-align: left;">
+                        <strong>Solusi:</strong><br>
+                        1. Cek file <strong>${questions[questionId-1].imagePath}</strong><br>
+                        2. Pastikan folder 'soal/math/' ada<br>
+                        3. Pastikan nama file sesuai
+                    </div>
+                `;
+            }
+            
+            console.error(`❌ Gagal memuat gambar: ${questions[questionId-1].imagePath}`);
+        }
+
+        // Update grid soal
+        function updateQuestionGrid() {
+            const questionNumbers = document.querySelectorAll('.question-number');
+            
+            questionNumbers.forEach((numberElement, index) => {
+                numberElement.classList.remove('active');
+                
+                if (index === currentQuestionIndex) {
+                    numberElement.classList.add('active');
+                }
+                
+                if (userAnswers[index] !== null) {
+                    numberElement.classList.add('answered');
+                } else {
+                    numberElement.classList.remove('answered');
+                }
+            });
+        }
+
+        // Update progress dan statistik
+        function updateProgress() {
+            const answeredCount = userAnswers.filter(answer => answer !== null).length;
+            const progress = (answeredCount / questions.length) * 100;
+            
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('answered-count').textContent = `${answeredCount}/${questions.length} Terjawab`;
+        }
+
+        // Update tombol navigasi
+        function updateNavigationButtons() {
+            const prevButton = document.getElementById('prev-btn');
+            const navButtonsContainer = document.getElementById('navigation-buttons');
+            
+            prevButton.disabled = currentQuestionIndex === 0;
+            
+            // Jika sudah di soal terakhir, ganti tombol "Selanjutnya" dengan "Kirim"
+            if (currentQuestionIndex === questions.length - 1) {
+                navButtonsContainer.innerHTML = '';
+                const submitButton = document.createElement('button');
+                submitButton.id = 'submit-btn';
+                submitButton.className = 'submit-btn';
+                submitButton.textContent = 'KIRIM JAWABAN';
+                submitButton.addEventListener('click', showSubmitPopup);
+                navButtonsContainer.appendChild(submitButton);
+            } else {
+                navButtonsContainer.innerHTML = '';
+                const nextButton = document.createElement('button');
+                nextButton.id = 'next-btn';
+                nextButton.className = 'nav-button';
+                nextButton.innerHTML = 'SOAL SELANJUTNYA <span>▶</span>';
+                nextButton.addEventListener('click', () => {
+                    navigateToQuestion(currentQuestionIndex + 1, 'next');
+                });
+                navButtonsContainer.appendChild(nextButton);
+            }
+        }
+
+        // Tampilkan popup konfirmasi
+        function showSubmitPopup() {
+            const popup = document.getElementById('submit-popup');
+            popup.style.display = 'flex';
+            setTimeout(() => {
+                popup.classList.add('show');
+            }, 10);
+        }
+
+        // Sembunyikan popup
+        function hideSubmitPopup() {
+            const popup = document.getElementById('submit-popup');
+            popup.classList.remove('show');
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 300);
+        }
+
+        // Fungsi untuk mengirim jawaban
+        function submitAnswers() {
+            hideSubmitPopup();
+            alert('Jawaban berhasil dikirim! Terima kasih telah mengerjakan ujian Matematika.');
+        }
+
+        // Event listeners
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                navigateToQuestion(currentQuestionIndex - 1, 'prev');
+            }
+        });
+
+        document.getElementById('confirm-submit').addEventListener('click', submitAnswers);
+        document.getElementById('cancel-submit').addEventListener('click', hideSubmitPopup);
+
+        // Timer countdown
+        function startTimer() {
+            let timeLeft = 120 * 60; // 120 menit
+            
+            function updateTimer() {
+                if (timeLeft <= 0) {
+                    document.getElementById('timer').textContent = "00:00:00";
+                    submitAnswers();
+                    return;
+                }
+                
+                const hours = Math.floor(timeLeft / 3600);
+                const minutes = Math.floor((timeLeft % 3600) / 60);
+                const seconds = timeLeft % 60;
+                
+                document.getElementById('timer').textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                timeLeft--;
+                setTimeout(updateTimer, 1000);
+            }
+            
+            updateTimer();
+        }
+
+        // Inisialisasi
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeQuestionGrid();
+            updateQuestionDisplay();    
+            updateNavigationButtons();
+            updateProgress();
+            startTimer();
+            
+            console.log('✅ Sistem ujian Matematika siap digunakan!');
+            console.log('📁 Total soal:', questions.length);
+            console.log('📁 Path gambar: soal/math/');
+        });
+    </script>
+</body>
+</html>

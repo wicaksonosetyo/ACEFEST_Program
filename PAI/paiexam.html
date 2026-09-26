@@ -1,0 +1,3099 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ACEFEST - PAI</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+                margin: 0;
+                padding: 0;
+                box-sizing: border-box;
+                font-family: 'Sora', sans-serif;
+            }
+            
+            body {
+                background: #f8f9fa;
+                color: #333;
+                line-height: 1.6;
+                min-height: 100vh;
+                overflow: hidden;
+            }
+            
+            .container {
+                display: flex;
+                height: 100vh;
+                max-width: 100%;
+                margin: 0;
+                background: white;
+            }
+            
+            .sidebar {
+                width: 280px;
+                background: linear-gradient(180deg, #35640d 0%, #2b5308 100%);
+                color: white;
+                padding: 20px 15px;
+                box-shadow: 3px 0 15px rgba(0, 0, 0, 0.1);
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .sidebar-title {
+                font-size: 18px;
+                margin-bottom: 20px;
+                text-align: center;
+                padding-bottom: 15px;
+                border-bottom: 2px solid #9CCC65;
+                font-weight: 600;
+                color: white;
+            }
+            
+            .question-grid-container {
+                flex: 1;
+                overflow-y: auto;
+                padding-right: 5px;
+            }
+            
+            .question-grid {
+                display: grid;
+                grid-template-columns: repeat(4, 1fr);
+                gap: 12px;
+            }
+            
+            .question-number {
+                width: 50px;
+                height: 50px;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                background: #2c3e50;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                font-size: 16px;
+                font-weight: 500;
+                border: 3px solid transparent;
+                color: white;
+                box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            }
+            
+            .question-number:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            }
+            
+            .question-number.active {
+                background: #3498db;
+                border-color: #ffffff;
+                box-shadow: 0 4px 15px rgba(52, 152, 219, 0.5);
+                transform: scale(1.1);
+                color: white;
+            }
+            
+            .question-number.answered {
+                background: #27ae60;
+                color: white;
+                border: 3px solid transparent;
+            }
+            
+            .main-content {
+                flex: 1;
+                display: flex;
+                flex-direction: column;
+                background: white;
+                overflow: hidden;
+            }
+            
+            .header {
+                background: linear-gradient(135deg, #35640d 0%, #2b5308 100%);
+                color: white;
+                padding: 15px 30px;
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+                flex-shrink: 0;
+            }
+            
+            .exam-info {
+                display: flex;
+                align-items: center;
+                gap: 25px;
+            }
+            
+            .progress-bar {
+                width: 180px;
+                height: 8px;
+                background: rgba(255, 255, 255, 0.3);
+                border-radius: 4px;
+                overflow: hidden;
+            }
+            
+            .progress {
+                height: 100%;
+                background: #2ecc71;
+                border-radius: 4px;
+                transition: width 0.3s ease;
+                width: 0%;
+            }
+            
+            .answered-info {
+                color: white;
+                font-weight: 600;
+                font-size: 15px;
+                background: rgba(255, 255, 255, 0.2);
+                padding: 6px 12px;
+                border-radius: 6px;
+            }
+            
+            .timer {
+                font-weight: 700;
+                font-size: 20px;
+                color: white;
+                background: rgba(255, 255, 255, 0.2);
+                padding: 8px 16px;
+                border-radius: 8px;
+                backdrop-filter: blur(10px);
+            }
+            
+            .question-container {
+                flex: 1;
+                padding: 25px 30px;
+                overflow-y: auto;
+                background: #f8f9fa;
+                display: flex;
+                flex-direction: column;
+            }
+            
+            .question-content {
+                background: white;
+                padding: 25px;
+                border-radius: 10px;
+                box-shadow: 0 3px 12px rgba(0, 0, 0, 0.08);
+                margin-bottom: 15px;
+                border-left: 4px solid #35640d;
+                flex: 1;
+                transition: transform 0.3s ease, opacity 0.3s ease;
+            }
+            
+            .question-content.slide-left {
+                animation: slideLeft 0.3s ease;
+            }
+            
+            .question-content.slide-right {
+                animation: slideRight 0.3s ease;
+            }
+            
+            @keyframes slideLeft {
+                from {
+                    transform: translateX(20px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            @keyframes slideRight {
+                from {
+                    transform: translateX(-20px);
+                    opacity: 0;
+                }
+                to {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+            }
+            
+            .question-counter {
+                font-size: 14px;
+                color: #7f8c8d;
+                margin-bottom: 8px;
+                font-weight: 500;
+            }
+            
+            .question-text {
+                font-size: 16px;
+                line-height: 1.6;
+                color: #2c3e50;
+                margin-bottom: 20px;
+                padding: 12px;
+                background: #f8f9fa;
+                border-radius: 6px;
+                border-left: 3px solid #35640d;
+            }
+            
+            .question-image-container {
+                margin: 20px 0;
+                text-align: center;
+                background: #f8f9fa;
+                padding: 20px;
+                border-radius: 8px;
+                border: 2px dashed #e9ecef;
+            }
+            
+            .question-image {
+                max-width: 100%;
+                max-height: 400px;
+                height: auto;
+                border-radius: 6px;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+                display: block;
+                margin: 0 auto;
+            }
+            
+            .image-placeholder {
+                padding: 40px;
+                text-align: center;
+                color: #7f8c8d;
+                font-style: italic;
+                background: #f8f9fa;
+                border-radius: 6px;
+                border: 2px dashed #bdc3c7;
+            }
+            
+            .options {
+                margin: 25px 0;
+            }
+            
+            .option {
+                display: flex;
+                align-items: center;
+                margin-bottom: 12px;
+                padding: 15px 20px;
+                border: 2px solid #e9ecef;
+                border-radius: 8px;
+                cursor: pointer;
+                transition: all 0.3s ease;
+                background: white;
+            }
+            
+            .option:hover {
+                border-color: #3498db;
+                background: #f8f9fa;
+                transform: translateX(5px);
+            }
+            
+            .option input {
+                margin-right: 15px;
+                transform: scale(1.3);
+            }
+            
+            .option-label {
+                font-weight: 700;
+                margin-right: 15px;
+                color: #333;
+                font-size: 16px;
+                min-width: 25px;
+                background: #f8f9fa;
+                padding: 5px 10px;
+                border-radius: 4px;
+                text-align: center;
+            }
+            
+            .option-text {
+                color: #333;
+                font-size: 15px;
+                font-weight: 500;
+            }
+            
+            .navigation {
+                display: flex;
+                justify-content: space-between;
+                padding: 20px 30px;
+                background: white;
+                border-top: 2px solid #e9ecef;
+                flex-shrink: 0;
+            }
+            
+            .nav-button {
+                padding: 14px 28px;
+                background: linear-gradient(135deg, #2b5308 0%, #35640d 100%);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 600;
+                font-size: 15px;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
+                display: flex;
+                align-items: center;
+                gap: 8px;
+            }
+            
+            .nav-button:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 6px 20px rgba(52, 152, 219, 0.4);
+            }
+            
+            .nav-button:active {
+                transform: translateY(-1px);
+                box-shadow: 0 3px 10px rgba(52, 152, 219, 0.3);
+            }
+            
+            .nav-button:disabled {
+                background: #bdc3c7;
+                cursor: not-allowed;
+                transform: none;
+                box-shadow: none;
+                color: #7f8c8d;
+            }
+            
+            .submit-btn {
+                padding: 14px 32px;
+                background: linear-gradient(135deg, #27ae60 0%, #219a52 100%);
+                color: white;
+                border: none;
+                border-radius: 8px;
+                cursor: pointer;
+                font-weight: 600;
+                font-size: 15px;
+                transition: all 0.3s ease;
+                box-shadow: 0 4px 8px rgba(39, 174, 96, 0.3);
+            }
+            
+            .submit-btn:hover {
+                transform: translateY(-3px);
+                box-shadow: 0 6px 20px rgba(39, 174, 96, 0.4);
+            }
+            
+            .submit-btn:active {
+                transform: translateY(-1px);
+                box-shadow: 0 3px 10px rgba(39, 174, 96, 0.3);
+            }
+            
+            /* Popup Styles */
+            .popup-overlay {
+                position: fixed;
+                top: 0;
+                left: 0;
+                width: 100%;
+                height: 100%;
+                background: rgba(0, 0, 0, 0.5);
+                display: none;
+                justify-content: center;
+                align-items: center;
+                z-index: 1000;
+                opacity: 0;
+                transition: opacity 0.3s ease;
+            }
+            
+            .popup-overlay.show {
+                opacity: 1;
+                display: flex;
+            }
+            
+            .popup-content {
+                background: white;
+                padding: 30px;
+                border-radius: 12px;
+                box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+                text-align: center;
+                max-width: 450px;
+                width: 90%;
+                transform: scale(0.8);
+                opacity: 0;
+                transition: all 0.3s ease;
+            }
+            
+            .popup-overlay.show .popup-content {
+                transform: scale(1);
+                opacity: 1;
+            }
+            
+            .popup-title {
+                font-size: 22px;
+                font-weight: 600;
+                margin-bottom: 15px;
+                color: #2c3e50;
+            }
+            
+            .popup-message {
+                margin-bottom: 25px;
+                color: #555;
+                line-height: 1.6;
+                font-size: 15px;
+            }
+            
+            .popup-buttons {
+                display: flex;
+                gap: 15px;
+                justify-content: center;
+            }
+            
+            .popup-btn {
+                padding: 12px 24px;
+                border: none;
+                border-radius: 6px;
+                cursor: pointer;
+                font-weight: 600;
+                transition: all 0.3s ease;
+                font-size: 14px;
+                min-width: 100px;
+            }
+            
+            .popup-btn:hover {
+                transform: translateY(-2px);
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+            }
+            
+            .popup-confirm {
+                background: linear-gradient(135deg, #27ae60 0%, #219a52 100%);
+                color: white;
+            }
+            
+            .popup-cancel {
+                background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+                color: white;
+            }
+
+            /* Scrollbar styling */
+            .question-grid-container::-webkit-scrollbar {
+                width: 6px;
+            }
+            
+            .question-grid-container::-webkit-scrollbar-track {
+                background: #9CCC65;
+                border-radius: 3px;
+            }
+            
+            .question-grid-container::-webkit-scrollbar-thumb {
+                background: #689F38;
+                border-radius: 3px;
+            }
+            
+            .question-grid-container::-webkit-scrollbar-thumb:hover {
+                background: #558B2F;
+            }
+
+            /* Responsive design untuk gambar */
+            @media (max-width: 768px) {
+                .container {
+                    flex-direction: column;
+                }
+                
+                .sidebar {
+                    width: 100%;
+                    height: auto;
+                    max-height: 200px;
+                }
+                
+                .question-grid {
+                    grid-template-columns: repeat(6, 1fr);
+                    gap: 8px;
+                }
+                
+                .question-number {
+                    width: 40px;
+                    height: 40px;
+                    font-size: 14px;
+                }
+                
+                .question-image {
+                    max-height: 300px;
+                }
+            }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="sidebar">
+            <div class="sidebar-title">DAFTAR SOAL</div>
+            <div class="question-grid-container">
+                <div class="question-grid" id="question-grid">
+                    <!-- Soal akan di-generate oleh JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-content">
+            <div class="header">
+                <div class="exam-info">
+                    <div class="progress-bar">
+                        <div class="progress" id="progress-bar"></div>
+                    </div>
+                    <div class="answered-info" id="answered-count">0/58 Terjawab</div>
+                </div>
+                <div class="timer" id="timer">02:00:00</div>
+            </div>
+            
+            <div class="question-container">
+                <div class="question-content" id="question-content">
+                    <!-- Konten soal akan diisi oleh JavaScript -->
+                </div>
+            </div>
+            
+            <div class="navigation">
+                <button class="nav-button" id="prev-btn">
+                    <span>◀</span> SOAL SEBELUMNYA
+                </button>
+                <div id="navigation-buttons">
+                    <button class="nav-button" id="next-btn">
+                        SOAL SELANJUTNYA <span>▶</span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Popup Konfirmasi -->
+    <div class="popup-overlay" id="submit-popup">
+        <div class="popup-content">
+            <div class="popup-title">Konfirmasi Pengiriman</div>
+            <div class="popup-message">
+                Apakah Anda yakin ingin mengirim jawaban?<br>
+                Setelah dikirim, Anda tidak dapat mengubah jawaban.
+            </div>
+            <div class="popup-buttons">
+                <button class="popup-btn popup-confirm" id="confirm-submit">YA, KIRIM</button>
+                <button class="popup-btn popup-cancel" id="cancel-submit">BATAL</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+    // SOAL NOMOR 1
+    {
+        id: 1,
+        content: `
+            <div class="question-counter">Soal Nomor 1</div>
+            <div class="question-text">
+                Salah satu nama lain dari Al-Qur'an adalah Al-Furqan. Arti dari Al-Furqan adalah ...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer1" value="1">
+                    <span class="option-label">A</span> Kitab yang berisi tuntunan dan peringatan bagi manusia
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer1" value="2">
+                    <span class="option-label">B</span> Pembeda antara yang benar dan yang salah dalam kehidupan
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer1" value="3">
+                    <span class="option-label">C</span> Petunjuk bagi umat manusia untuk mencapai keselamatan
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer1" value="4">
+                    <span class="option-label">D</span> Pedoman hidup yang menjelaskan jalan yang lurus
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 2
+    {
+        id: 2,
+        content: `
+            <div class="question-counter">Soal Nomor 2</div>
+            <div class="question-text">
+                Ayat pertama yang turun dalam Al-Qur'an berisi perintah untuk ...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer2" value="1">
+                    <span class="option-label">A</span> Membaca dan menuntut ilmu dengan sungguh-sungguh
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer2" value="2">
+                    <span class="option-label">B</span> Bersyukur kepada Allah atas semua nikmat yang diberikan
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer2" value="3">
+                    <span class="option-label">C</span> Melaksanakan salat lima waktu dengan tepat waktu
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer2" value="4">
+                    <span class="option-label">D</span> Mengajarkan ilmu kepada orang lain tanpa pamrih
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 3
+    {
+        id: 3,
+        content: `
+            <div class="question-counter">Soal Nomor 3</div>
+            <div class="question-text">
+                Dalam Q.S. Al-A'raf ayat 56 Allah melarang manusia berbuat ...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer3" value="1">
+                    <span class="option-label">A</span> Keadilan yang tidak sesuai keinginan manusia
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer3" value="2">
+                    <span class="option-label">B</span> Minum Minuman keras, berjudi dan memakai narkoba
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer3" value="3">
+                    <span class="option-label">C</span> Kerusakan di muka bumi setelah di atur oleh Allah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer3" value="4">
+                    <span class="option-label">D</span> Kebaikan yang terlalu berlebihan dalam kehidupan
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 4
+    {
+        id: 4,
+        content: `
+            <div class="question-counter">Soal Nomor 4</div>
+            <div class="question-text">
+                Perhatikan firman Allah SWT surat Al Qomar ayat 49 berikut!<br>
+                إِنَّا كُلَّ شَيءٍ خَلَقْنَاهُ بِقَدَرٍ<br>
+                Ayat tersebut diatas berkenaan dengan ...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer4" value="1">
+                    <span class="option-label">A</span> Alam barzah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer4" value="2">
+                    <span class="option-label">B</span> Qadha dan qadar
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer4" value="3">
+                    <span class="option-label">C</span> Surga dan Neraka
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer4" value="4">
+                    <span class="option-label">D</span> Hari Kiamat
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 5
+    {
+        id: 5,
+        content: `
+            <div class="question-counter">Soal Nomor 5</div>
+            <div class="question-text">
+                Perhatikan Hadits dibawah ini!<br>
+                أُطْلُبِ الْعِلْمَ مِنَ الْمَهْدِ إِلَى اللَّحْدِ<br>
+                Hadits di atas membahas tentang apa?
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer5" value="1">
+                    <span class="option-label">A</span> Menuntuk ilmu sampai ke negeri cina
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer5" value="2">
+                    <span class="option-label">B</span> Tuntutlah ilmu dari bayi sampai ke liang lahat
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer5" value="3">
+                    <span class="option-label">C</span> Memakan menggunakan tangan kanan
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer5" value="4">
+                    <span class="option-label">D</span> Tidak boleh berkata "ah" kepada orangtua
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 6
+    {
+        id: 6,
+        content: `
+            <div class="question-counter">Soal Nomor 6</div>
+            <div class="question-text">
+                Isi pokok dari Surah Ar-Rum ayat 41 adalah ...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer6" value="1">
+                    <span class="option-label">A</span> Kerusakan alam terjadi karena ujian dari Allah semata
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer6" value="2">
+                    <span class="option-label">B</span> Kerusakan di bumi muncul akibat ulah manusia sendiri
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer6" value="3">
+                    <span class="option-label">C</span> Semua bencana adalah tanda akhir zaman
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer6" value="4">
+                    <span class="option-label">D</span> Manusia tidak punya tanggung jawab terhadap alam
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 7
+    {
+        id: 7,
+        content: `
+            <div class="question-counter">Soal Nomor 7</div>
+            <div class="question-text">
+                Perhatikan firman Allah SWT surat Al Ahzab ayat 70 berikut!<br>
+                يٰٓاَيُّهَا الَّذِيْنَ اٰمَنُوا اتَّقُوا اللّٰهَ وَقُوْلُوْا قَوْلًا سَدِيْدًا<br>
+                Ayat tersebut diatas berkenaan dengan ...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer7" value="1">
+                    <span class="option-label">A</span> Hilangnya tanggung jawab dan kejujuran
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer7" value="2">
+                    <span class="option-label">B</span> Manusia sadar akan kewajibab di Dunia
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer7" value="3">
+                    <span class="option-label">C</span> Manusia tidak boleh merusak hutan
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer7" value="4">
+                    <span class="option-label">D</span> Manusia tidak boleh berbohong
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 8
+    {
+        id: 8,
+        content: `
+            <div class="question-counter">Soal Nomor 8</div>
+            <div class="question-text">
+                Perhatikan Q.S Al Hujurat ayat 13 dibawah ini!<br>
+                يٰٓاَيُّهَا النَّاسُ اِنَّا خَلَقْنٰكُمْ مِّنْ ذَكَرٍ وَّاُنْثٰى وَجَعَلْنٰكُمْ شُعُوْبًا وَّقَبَاۤىِٕلَ لِتَعَارَفُوْا ۚ اِنَّ اَكْرَمَكُمْ عِنْدَ اللّٰهِ اَتْقٰىكُمْ ۗاِنَّ اللّٰهَ عَلِيْمٌ خَبِيْرٌ<br>
+                Isi pokok Surah di atas adalah ...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer8" value="1">
+                    <span class="option-label">A</span> Manusia diciptakan berbeda agar saling mengasihi
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer8" value="2">
+                    <span class="option-label">B</span> Perbedaan manusia adalah untuk saling menghargai
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer8" value="3">
+                    <span class="option-label">C</span> Perbedaan suku dan bangsa menunjukkan derajat seseorang
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer8" value="4">
+                    <span class="option-label">D</span> Tidak ada perbedaan antara yang kaya dan miskin
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 9
+    {
+        id: 9,
+        content: `
+            <div class="question-counter">Soal Nomor 9</div>
+            <div class="question-text">
+                Seorang siswa selalu bersyukur dan tidak sombong ketika mendapatkan nilai tinggi. Ia mencerminkan pengamalan dari Asmaul Husna...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer9" value="1">
+                    <span class="option-label">A</span> Al-Ghafur
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer9" value="2">
+                    <span class="option-label">B</span> Al-Muqsith
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer9" value="3">
+                    <span class="option-label">C</span> Al-Mutakabbir
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer9" value="4">
+                    <span class="option-label">D</span> Asy-Syakur
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 10
+    {
+        id: 10,
+        content: `
+            <div class="question-counter">Soal Nomor 10</div>
+            <div class="question-text">
+                Perhatikan firman Allah SWT. di dalam surat Thaha ayat 8 berikut ! :<br>
+                اَللّٰهُ لَآ اِلٰهَ اِلَّا هُوَۗ لَهُ الْاَسْمَاۤءُ الْحُسْنٰى<br>
+                Ayat di atas menunjukkan bahwa asmaul husna adalah milik Allah SWT, maka kita wajib ...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer10" value="1">
+                    <span class="option-label">A</span> Membacanya
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer10" value="2">
+                    <span class="option-label">B</span> Mengingatnya
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer10" value="3">
+                    <span class="option-label">C</span> Mengetahuinya
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer10" value="4">
+                    <span class="option-label">D</span> Meyakini
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 11
+    {
+        id: 11,
+        content: `
+            <div class="question-counter">Soal Nomor 11</div>
+            <div class="question-text">
+                Fenomena planet-planet yang berjalan sesuai rotasinya, maka menjadi bukti bahwa Allah Swt. memiliki sifat di dalam asma'ul husna, yaitu ...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer11" value="1">
+                    <span class="option-label">A</span> Al-'Azîz
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer11" value="2">
+                    <span class="option-label">B</span> Al- Ghaffar
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer11" value="3">
+                    <span class="option-label">C</span> Al-Ba'its
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer11" value="4">
+                    <span class="option-label">D</span> An-Nafi '
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 12
+    {
+        id: 12,
+        content: `
+            <div class="question-counter">Soal Nomor 12</div>
+            <div class="question-text">
+                Setiap hari pak jono menjual gorengan mendapatkan rata-rata uang Rp 50.000 tiap hari, tetapi hari itu pak jono hanya mendapat uang hanya Rp 15.000. Dengan uang yang di dapat pak jono di hari itu, beliau nikmati dengan penuh kesyukuran, karena yakin Allah SWT pasti memudakan/melapankan rizkinya dihari lainnya, sikap pak jono sebagai bentuk keteladanan asma Allah....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer12" value="1">
+                    <span class="option-label">A</span> Al-'Aziz
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer12" value="2">
+                    <span class="option-label">B</span> Al-Basith
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer12" value="3">
+                    <span class="option-label">C</span> Al-Gaffar
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer12" value="4">
+                    <span class="option-label">D</span> Al-Qayyum
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 13
+    {
+        id: 13,
+        content: `
+            <div class="question-counter">Soal Nomor 13</div>
+            <div class="question-text">
+                Dialah Dzat Yang Maha Berdiri, sehingga dalam menciptakan segala makhluk tidak perlu bantuan siapapun. Hal ini menunjukkan pengertian dari sifat Allah SWT....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer13" value="1">
+                    <span class="option-label">A</span> Al-Barr
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer13" value="2">
+                    <span class="option-label">B</span> Al-'Aziz
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer13" value="3">
+                    <span class="option-label">C</span> An-Nafi'
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer13" value="4">
+                    <span class="option-label">D</span> Al-Qayyum
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 14
+    {
+        id: 14,
+        content: `
+            <div class="question-counter">Soal Nomor 14</div>
+            <div class="question-text">
+                Seseorang yang malas melaksanakan sholat, dan ragu terhadap balasan Allah SWT di akhirat adalah salah satu ciri-ciri akhlak tercela...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer14" value="1">
+                    <span class="option-label">A</span> Riya
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer14" value="2">
+                    <span class="option-label">B</span> Nifaq
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer14" value="3">
+                    <span class="option-label">C</span> Hasad
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer14" value="4">
+                    <span class="option-label">D</span> Khianat
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 15
+    {
+        id: 15,
+        content: `
+            <div class="question-counter">Soal Nomor 15</div>
+            <div class="question-text">
+                Di antara isi perjanjian Aqabah I kecuali ...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer15" value="1">
+                    <span class="option-label">A</span> Tidak menyekutukan Allah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer15" value="2">
+                    <span class="option-label">B</span> Tidak mencuri dan berzina
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer15" value="3">
+                    <span class="option-label">C</span> Tidak menahan zakat
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer15" value="4">
+                    <span class="option-label">D</span> Tidak membunuh anak-anak
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 16
+    {
+        id: 16,
+        content: `
+            <div class="question-counter">Soal Nomor 16</div>
+            <div class="question-text">
+                Q.S. Al-Hujurat ayat 11 melarang seseorang menghina orang lain. Hal ini menunjukkan pentingnya nilai akhlak...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer16" value="1">
+                    <span class="option-label">A</span> Santun dan menghormati sesama
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer16" value="2">
+                    <span class="option-label">B</span> Amanah dan jujur
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer16" value="3">
+                    <span class="option-label">C</span> Malu dan empati
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer16" value="4">
+                    <span class="option-label">D</span> Istiqamah dan sabar
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 17
+    {
+        id: 17,
+        content: `
+            <div class="question-counter">Soal Nomor 17</div>
+            <div class="question-text">
+                Hadis Nabi SAW: "Tidak beriman seseorang di antara kalian hingga ia mencintai saudaranya sebagaimana ia mencintai dirinya sendiri." Makna hadis tersebut berkaitan dengan sikap...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer17" value="1">
+                    <span class="option-label">A</span> Empati dan menghormati sesama
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer17" value="2">
+                    <span class="option-label">B</span> Amanah dalam bekerja
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer17" value="3">
+                    <span class="option-label">C</span> Istiqomah dalam ibadah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer17" value="4">
+                    <span class="option-label">D</span> Malu terhadap dosa
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 18
+    {
+        id: 18,
+        content: `
+            <div class="question-counter">Soal Nomor 18</div>
+            <div class="question-text">
+                Perhatikan al Hadits berikut!<br>
+                عَلَيْكُمْ بِالصِّدْقِ، فَإِنَّ الصِّدْقَ يَهْدِي إِلَى الْبِرِّ، وَإِنَّ الْبِرَّ يَهْدِي إِلَى الْجَنَّةِ<br>
+                Isi kandungan Hadist tersebut adalah....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer18" value="1">
+                    <span class="option-label">A</span> Jujur harus dimiliki oleh kita semua umat Islam
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer18" value="2">
+                    <span class="option-label">B</span> Jujur perilaku yang dicontohkan oleh Rasulullah Saw
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer18" value="3">
+                    <span class="option-label">C</span> Perilaku jujur salah satu sifat yang wajib dimiliki
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer18" value="4">
+                    <span class="option-label">D</span> Perilaku jujur itu membawa kebaikan
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 19
+    {
+        id: 19,
+        content: `
+            <div class="question-counter">Soal Nomor 19</div>
+            <div class="question-text">
+                Seorang petani memperoleh panen padi sebanyak 2.000 kg dari sawah yang menggunakan biaya pengairan. Nisab zakat pertanian adalah 653 kg gabah. Maka zakat yang wajib ia keluarkan adalah...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer19" value="1">
+                    <span class="option-label">A</span> 50 kg
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer19" value="2">
+                    <span class="option-label">B</span> 100 kg
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer19" value="3">
+                    <span class="option-label">C</span> 130 kg
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer19" value="4">
+                    <span class="option-label">D</span> 200 kg
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer19" value="5">
+                    <span class="option-label">E</span> 260 kg
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 20
+    {
+        id: 20,
+        content: `
+            <div class="question-counter">Soal Nomor 20</div>
+            <div class="question-text">
+                Berikut ini yang termasuk rukun tayammum adalah....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer20" value="1">
+                    <span class="option-label">A</span> Mengusap tangan sampai siku
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer20" value="2">
+                    <span class="option-label">B</span> Membasuh wajah dengan air
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer20" value="3">
+                    <span class="option-label">C</span> Menyapu sebagian kepala
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer20" value="4">
+                    <span class="option-label">D</span> Mengusap wajah dan kedua tangan dengan debu suci
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer20" value="5">
+                    <span class="option-label">E</span> Membasuh kaki sampai mata kaki
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 21
+    {
+        id: 21,
+        content: `
+            <div class="question-counter">Soal Nomor 21</div>
+            <div class="question-text">
+                Mandi wajib disebut juga dengan istilah ...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer21" value="1">
+                    <span class="option-label">A</span> Istinja'
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer21" value="2">
+                    <span class="option-label">B</span> Tayamum
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer21" value="3">
+                    <span class="option-label">C</span> Ghusl
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer21" value="4">
+                    <span class="option-label">D</span> Wudhu besar
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 22
+    {
+        id: 22,
+        content: `
+            <div class="question-counter">Soal Nomor 22</div>
+            <div class="question-text">
+                Banyak orang telah menyalatkan jenazah tetangga. Namun Salma masih ragu apakah ia perlu ikut. Apa sikap yang paling tepat?
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer22" value="1">
+                    <span class="option-label">A</span> Tidak perlu ikut karena sudah banyak yang menyalatkan.
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer22" value="2">
+                    <span class="option-label">B</span> Tetap ikut agar mendapat pahala dan menumbuhkan empati.
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer22" value="3">
+                    <span class="option-label">C</span> Menunggu di rumah sambil mendoakan dari jauh.
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer22" value="4">
+                    <span class="option-label">D</span> Menyuruh orang lain menggantikannya ikut shalat.
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 23
+    {
+        id: 23,
+        content: `
+            <div class="question-counter">Soal Nomor 23</div>
+            <div class="question-text">
+                Seorang petani panen padi banyak, tapi tidak tahu zakat pertanian wajib bila sudah mencapai nisab. Apa yang sebaiknya kamu lakukan?
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer23" value="1">
+                    <span class="option-label">A</span> Menasihati dengan cara lembut dan bijak.
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer23" value="2">
+                    <span class="option-label">B</span> Membiarkannya karena itu urusannya sendiri.
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer23" value="3">
+                    <span class="option-label">C</span> Menegurnya di depan banyak orang agar sadar.
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer23" value="4">
+                    <span class="option-label">D</span> Melaporkan kepada kepala desa agar diingatkan.
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 24
+    {
+        id: 24,
+        content: `
+            <div class="question-counter">Soal Nomor 24</div>
+            <div class="question-text">
+                Zakat fitrah seharusnya dikeluarkan sebelum shalat Idul Fitri. Jika diberikan setelah shalat Id, hukumnya ...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer24" value="1">
+                    <span class="option-label">A</span> Tetap sah sebagai zakat fitrah.
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer24" value="2">
+                    <span class="option-label">B</span> Tidak sah sebagai zakat fitrah, tapi jadi sedekah.
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer24" value="3">
+                    <span class="option-label">C</span> Sah karena masih di bulan Syawal.
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer24" value="4">
+                    <span class="option-label">D</span> Tidak sah dan tidak bernilai apa-apa.
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 25
+    {
+        id: 25,
+        content: `
+            <div class="question-counter">Soal Nomor 25</div>
+            <div class="question-text">
+                Keluarga Hasan ingin akikah anaknya, tapi kondisi ekonomi sedang sulit. Apa sebaiknya dilakukan?
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer25" value="1">
+                    <span class="option-label">A</span> Berutang agar akikah tetap terlaksana.
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer25" value="2">
+                    <span class="option-label">B</span> Menunda sampai ada kemampuan.
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer25" value="3">
+                    <span class="option-label">C</span> Tidak jadi akikah karena sudah lewat waktunya.
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer25" value="4">
+                    <span class="option-label">D</span> Menggantinya dengan sedekah biasa.
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 26
+    {
+        id: 26,
+        content: `
+            <div class="question-counter">Soal Nomor 26</div>
+            <div class="question-text">
+                Seekor kambing untuk qurban cacat di telinga. Apa keputusan terbaik panitia?
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer26" value="1">
+                    <span class="option-label">A</span> Tetap diterima sebagai hewan qurban.
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer26" value="2">
+                    <span class="option-label">B</span> Ditolak dan diganti dengan hewan yang sehat.
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer26" value="3">
+                    <span class="option-label">C</span> Disembelih saja tanpa niat qurban.
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer26" value="4">
+                    <span class="option-label">D</span> Disimpan untuk acara lain yang serupa.
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 27
+    {
+        id: 27,
+        content: `
+            <div class="question-counter">Soal Nomor 27</div>
+            <div class="question-text">
+                Perhatikan ayat berikut !<br>
+                يَّاكَ نَعْبُدُ وَإِيَّاكَ نَسْتَعِينُ<br>
+                Lafadz yang bergaris bawah adalah bacaan ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer27" value="1">
+                    <span class="option-label">A</span> Mad wajib Mutasil
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer27" value="2">
+                    <span class="option-label">B</span> Mad Jaiz munfasil
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer27" value="3">
+                    <span class="option-label">C</span> Mad Arid lissukun
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer27" value="4">
+                    <span class="option-label">D</span> Mad Iwad
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 28
+    {
+        id: 28,
+        content: `
+            <div class="question-counter">Soal Nomor 28</div>
+            <div class="question-text">
+                Pak Muhsin menanam padai di lahan 2 hektar yang diairi dengan air hujan, waktu panen menghasilkan gabah 5 ton (5000 kg) berapa kilogram zakat yang harus dikeluarkan?
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer28" value="1">
+                    <span class="option-label">A</span> 450
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer28" value="2">
+                    <span class="option-label">B</span> 500
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer28" value="3">
+                    <span class="option-label">C</span> 400
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer28" value="4">
+                    <span class="option-label">D</span> 550
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 29
+    {
+        id: 29,
+        content: `
+            <div class="question-counter">Soal Nomor 29</div>
+            <div class="question-text">
+                Perhatikan pernyataan berikut!<br>
+                1. Dilakukan secara terang-terangan<br>
+                2. Dilakukan secara sembunyi-sembunyi<br>
+                3. Dari kota satu ke kota lainnya sepanjang Jazirah Arab<br>
+                4. Dari door to door (pintu ke pintu)<br>
+                5. Kepada siapa pun termasuk ke penguasa Quraisy<br>
+                6. Hanya sebatas tetangga dan kerabat dekat<br><br>
+                Strategi dakwah yang dilakukan Nabi Muhammad SAW pada awal masa kerasulannya ditunjukkan nomor ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer29" value="1">
+                    <span class="option-label">A</span> 1, 2, dan 3
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer29" value="2">
+                    <span class="option-label">B</span> 4, 5, dan 6
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer29" value="3">
+                    <span class="option-label">C</span> 1, 3, dan 5
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer29" value="4">
+                    <span class="option-label">D</span> 2, 4, dan 6
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 30
+    {
+        id: 30,
+        content: `
+            <div class="question-counter">Soal Nomor 30</div>
+            <div class="question-text">
+                Yang bukan termasuk arti zakat secara Bahasa adalah ...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer30" value="1">
+                    <span class="option-label">A</span> Tumbuh
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer30" value="2">
+                    <span class="option-label">B</span> Suci
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer30" value="3">
+                    <span class="option-label">C</span> Bahagia
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer30" value="4">
+                    <span class="option-label">D</span> Bertambah
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 31
+    {
+        id: 31,
+        content: `
+            <div class="question-counter">Soal Nomor 31</div>
+            <div class="question-text">
+                Pak Abdullah mempunyai simpanan emas senilai 300 gram yang sudah disimpan satu tahun, berapakah zakat yang harus dikeluarkan jika harga emas Rp 938.000?
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer31" value="1">
+                    <span class="option-label">A</span> Rp 7.035.000
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer31" value="2">
+                    <span class="option-label">B</span> Rp 7.500.000
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer31" value="3">
+                    <span class="option-label">C</span> Rp 7.045.000
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer31" value="4">
+                    <span class="option-label">D</span> Rp 7.055.000
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 32
+    {
+        id: 32,
+        content: `
+            <div class="question-counter">Soal Nomor 32</div>
+            <div class="question-text">
+                Bapak Sunoto mempunyai anak yang baru dilahirkan setelah isya pada malam hari raya Idul Fitri, dengan demikian, bagaimana hukum zakat fitrah untuk anak tersebut?
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer32" value="1">
+                    <span class="option-label">A</span> wajib dibayar
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer32" value="2">
+                    <span class="option-label">B</span> tidak wajib dibayar
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer32" value="3">
+                    <span class="option-label">C</span> diganti dengan sedekah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer32" value="4">
+                    <span class="option-label">D</span> dibayar pada ramadhan tahun berikutnya
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 33
+    {
+        id: 33,
+        content: `
+            <div class="question-counter">Soal Nomor 33</div>
+            <div class="question-text">
+                Pada masa awal kenabian sasaran utama dakwah Nabi Muhammad SAW adalah ...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer33" value="1">
+                    <span class="option-label">A</span> Seluruh kafir Quraisy
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer33" value="2">
+                    <span class="option-label">B</span> Teman-teman terdekat
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer33" value="3">
+                    <span class="option-label">C</span> Kerabat terdekat
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer33" value="4">
+                    <span class="option-label">D</span> Istri (Siti Khadijah)
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 34
+    {
+        id: 34,
+        content: `
+            <div class="question-counter">Soal Nomor 34</div>
+            <div class="question-text">
+                Yang bukan termasuk rukun shalat adalah ... .
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer34" value="1">
+                    <span class="option-label">A</span> Niat
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer34" value="2">
+                    <span class="option-label">B</span> takbiratul ihram
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer34" value="3">
+                    <span class="option-label">C</span> Iftitah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer34" value="4">
+                    <span class="option-label">D</span> membaca surat al-fatihah
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 35
+    {
+        id: 35,
+        content: `
+            <div class="question-counter">Soal Nomor 35</div>
+            <div class="question-text">
+                Haji menurut bahasa artinya adalah ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer35" value="1">
+                    <span class="option-label">A</span> Ibadah tertentu
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer35" value="2">
+                    <span class="option-label">B</span> Tamu Allah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer35" value="3">
+                    <span class="option-label">C</span> Menyengaja
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer35" value="4">
+                    <span class="option-label">D</span> Beribadah ke Makkah
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 36
+    {
+        id: 36,
+        content: `
+            <div class="question-counter">Soal Nomor 36</div>
+            <div class="question-text">
+                Dibawah ini contoh Mad jaiz munfashil adalah..........
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer36" value="1">
+                    <span class="option-label">A</span> فِيْهَا
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer36" value="2">
+                    <span class="option-label">B</span> سَمِعُوْا
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer36" value="3">
+                    <span class="option-label">C</span> إِذَآ أُلْقُوْا
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer36" value="4">
+                    <span class="option-label">D</span> شَهِيْقًا
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 37
+    {
+        id: 37,
+        content: `
+            <div class="question-counter">Soal Nomor 37</div>
+            <div class="question-text">
+                السَّمَآءُ Mengandung bacaan...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer37" value="1">
+                    <span class="option-label">A</span> Mad wajib muttashil
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer37" value="2">
+                    <span class="option-label">B</span> Mad jaiz munfashil
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer37" value="3">
+                    <span class="option-label">C</span> Mad shilah tawilah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer37" value="4">
+                    <span class="option-label">D</span> Mad shilah qashirah
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 38
+    {
+        id: 38,
+        content: `
+            <div class="question-counter">Soal Nomor 38</div>
+            <div class="question-text">
+                Bacaan mad iwad terdapat pada lafal...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer38" value="1">
+                    <span class="option-label">A</span> خَيْرًا كَثِيْرًا
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer38" value="2">
+                    <span class="option-label">B</span> هَذَا الْبَيْتِ
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer38" value="3">
+                    <span class="option-label">C</span> طَعَامِ الْمِسْكِيْنِ
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer38" value="4">
+                    <span class="option-label">D</span> أَجْرٌ عَظِيْمٌ
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 39
+    {
+        id: 39,
+        content: `
+            <div class="question-counter">Soal Nomor 39</div>
+            <div class="question-text">
+                Lafal خَوْفٌ adalah contoh hukum bacaan ...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer39" value="1">
+                    <span class="option-label">A</span> Mad iwad
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer39" value="2">
+                    <span class="option-label">B</span> Mad aridl lissukun
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer39" value="3">
+                    <span class="option-label">C</span> Mad layyin
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer39" value="4">
+                    <span class="option-label">D</span> Mas Ashli
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 40
+    {
+        id: 40,
+        content: `
+            <div class="question-counter">Soal Nomor 40</div>
+            <div class="question-text">
+                Cara pandang, sikap, dan perilaku melebihi batas-batas moderasi dalam pemahaman dan praktik beragama adalah...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer40" value="1">
+                    <span class="option-label">A</span> Ekstrimisme beragama
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer40" value="2">
+                    <span class="option-label">B</span> Eksklusif beragama
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer40" value="3">
+                    <span class="option-label">C</span> Inklusif beragama
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer40" value="4">
+                    <span class="option-label">D</span> Moderasi Beragama
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 41
+    {
+        id: 41,
+        content: `
+            <div class="question-counter">Soal Nomor 41</div>
+            <div class="question-text">
+                Prinsip dasar Moderasi Beragama adalah
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer41" value="1">
+                    <span class="option-label">A</span> Jujur dan berimbang
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer41" value="2">
+                    <span class="option-label">B</span> Adil dan berimbang
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer41" value="3">
+                    <span class="option-label">C</span> Tulus dan berimbang
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer41" value="4">
+                    <span class="option-label">D</span> Jujur dan adil
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 42
+    {
+        id: 42,
+        content: `
+            <div class="question-counter">Soal Nomor 42</div>
+            <div class="question-text">
+                Yang sepadan dengan makna kata radikalisme kecuali...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer42" value="1">
+                    <span class="option-label">A</span> Eksstrem
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer42" value="2">
+                    <span class="option-label">B</span> Eksklusif
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer42" value="3">
+                    <span class="option-label">C</span> Anarkis
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer42" value="4">
+                    <span class="option-label">D</span> Berlebihan
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 43
+    {
+        id: 43,
+        content: `
+            <div class="question-counter">Soal Nomor 43</div>
+            <div class="question-text">
+                Dalam undang-undang dasar 1945 pasal 29 ayat 2 negara menjamin kemerdekaan tiap-tiap penduduk untuk memeluk agama dan untuk beribadah menurut agama dan kepercayaannya masing-masing amanat undang-undang tersebut dijadikan landasan hukum kerukunan umat beragama disebut landasan.<br>
+                Apakah isi landasan undang-undang tersebut...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer43" value="1">
+                    <span class="option-label">A</span> Landasan konstitusional
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer43" value="2">
+                    <span class="option-label">B</span> Landasan strategis
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer43" value="3">
+                    <span class="option-label">C</span> Landasan operasional
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer43" value="4">
+                    <span class="option-label">D</span> Landasan etis
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 44
+    {
+        id: 44,
+        content: `
+            <div class="question-counter">Soal Nomor 44</div>
+            <div class="question-text">
+                Di bawah ini yang bukan termasuk Assabiqunal awwalun adalah ... .
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer44" value="1">
+                    <span class="option-label">A</span> Khadijah binti Khuwailid
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer44" value="2">
+                    <span class="option-label">B</span> Zaid bin Tsabit
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer44" value="3">
+                    <span class="option-label">C</span> Ali bin Abi Thalib
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer44" value="4">
+                    <span class="option-label">D</span> Zaid bin Haritsah
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 45
+    {
+        id: 45,
+        content: `
+            <div class="question-counter">Soal Nomor 45</div>
+            <div class="question-text">
+                Pak Mustari membeli beberapa hewan qurban diantaranya: 2 ekor sapi umur 3 tahun, 3 ekor sapi umur 1 tahun, 4 ekor kerbau umur 2 tahun, 3 ekor kambing umur 2 tahun, 2 ekor kambing umur setengah tahun.<br>
+                Hewan yang layak untuk dijadikan qurban pada pernyataan tersebut di atas adalah ...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer45" value="1">
+                    <span class="option-label">A</span> 2 ekor sapi umur 3 tahun, 4 ekor kerbau umur 2 tahun, 3 ekor kambing umur 2 tahun
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer45" value="2">
+                    <span class="option-label">B</span> 2 ekor sapi umur 3 tahun, 3 ekor sapi umur 1 tahun, 4 ekor kerbau umur 2 tahun
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer45" value="3">
+                    <span class="option-label">C</span> 2 ekor sapi umur 3 tahun, 3 ekor sapi umur 1 tahun, 2 ekor kambing umur setengah tahun.
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer45" value="4">
+                    <span class="option-label">D</span> 4 ekor kerbau umur 2 tahun, 3 ekor kambing umur 2 tahun, 2 ekor kambing umur setengah tahun.
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 46
+    {
+        id: 46,
+        content: `
+            <div class="question-counter">Soal Nomor 46</div>
+            <div class="question-text">
+                Nabi Muhammad saw. Setelah Hijrah di kota Madinah, melakukan beberapa program untuk mengatur kehidupan bermasyarakat, diantara program tersebut adalah mempersaudarakan antara Kaum Muhajirin dengan Anshor, kemudian mendirikan sebuah masjid, yang diberi nama Masjid Nabawi, dalam pembangunannya seluruh umat Islam boleh mengambil bagian untuk mewujudkan Masjid tersebut.<br>
+                Berdasarkan Narasi tersebut nilai yang diterapkan dalam kehidupan bermasyarakat adalah ...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer46" value="1">
+                    <span class="option-label">A</span> Persaudaraan
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer46" value="2">
+                    <span class="option-label">B</span> Persatuan
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer46" value="3">
+                    <span class="option-label">C</span> Kebersamaan
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer46" value="4">
+                    <span class="option-label">D</span> Perjuangan
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 47
+    {
+        id: 47,
+        content: `
+            <div class="question-counter">Soal Nomor 47</div>
+            <div class="question-text">
+                Berdasarkan narasi tentang Ali bin Abi Thalib dapat disimpulkan bahwa beliau berjasa dalam...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer47" value="1">
+                    <span class="option-label">A</span> Pengembangan ilmu pengetahuan pada dunia Islam
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer47" value="2">
+                    <span class="option-label">B</span> Penyempurnaan bahasa arab sebagai bahasa Negara
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer47" value="3">
+                    <span class="option-label">C</span> Penyempurnaan ilmu tafsir di masa khulafaur Rasyiddin
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer47" value="4">
+                    <span class="option-label">D</span> Menyatukan perbedaan pendapat di kalangan kaum muslimin
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 48
+    {
+        id: 48,
+        content: `
+            <div class="question-counter">Soal Nomor 48</div>
+            <div class="question-text">
+                Berdasarkan biografi Khalifah al Walid Bin Abdul Malik, nilai perjuangan yang bisa diteladani adalah ..
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer48" value="1">
+                    <span class="option-label">A</span> Mencintai rakyat
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer48" value="2">
+                    <span class="option-label">B</span> Membahagiakan rakyat
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer48" value="3">
+                    <span class="option-label">C</span> Mensejahterakan rakyat
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer48" value="4">
+                    <span class="option-label">D</span> Memajukan ilmu pengetahuan
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 49
+    {
+        id: 49,
+        content: `
+            <div class="question-counter">Soal Nomor 49</div>
+            <div class="question-text">
+                Berdasarkan ilustrasi tersebut, Syauqi telah meneladani salah satu sifat nabi dan rasul, yaitu....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer49" value="1">
+                    <span class="option-label">A</span> Siddiq
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer49" value="2">
+                    <span class="option-label">B</span> Tabligh
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer49" value="3">
+                    <span class="option-label">C</span> Fatanah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer49" value="4">
+                    <span class="option-label">D</span> Amanah
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 50
+    {
+        id: 50,
+        content: `
+            <div class="question-counter">Soal Nomor 50</div>
+            <div class="question-text">
+                Dari kutipan berita di atas sikap yang sesuai dengan makna iman kepada qadha dan qadar Allah SWT, adalah ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer50" value="1">
+                    <span class="option-label">A</span> Menyesali takdir yang diberikan Allah SWT
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer50" value="2">
+                    <span class="option-label">B</span> Menerima dan pasrah terhadap ketentuan Allah yang terjadi
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer50" value="3">
+                    <span class="option-label">C</span> Menyalahkan warga masyarakat karena sengaja membakar hutan dan lahan
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer50" value="4">
+                    <span class="option-label">D</span> Optimis karena semua sudah menjadi kehendak Nya dan yakin pasti ada solusinya
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 51
+    {
+        id: 51,
+        content: `
+            <div class="question-counter">Soal Nomor 51</div>
+            <div class="question-text">
+                Berdasarkan kutipan di atas, bentuk-bentuk empati yang dapat dilakukan seorang siswa dalam menyikapi musibah tersebut adalah...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer51" value="1">
+                    <span class="option-label">A</span> Menggalang dana untuk membantu beban biaya operasinya.
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer51" value="2">
+                    <span class="option-label">B</span> Mencari tahu penyebab terjadinya kecelakaan tersebut
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer51" value="3">
+                    <span class="option-label">C</span> Memperbaiki sarana olahraga sehingga aman digunakan
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer51" value="4">
+                    <span class="option-label">D</span> Menghentikan sementara kegiatan olahraga
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 52
+    {
+        id: 52,
+        content: `
+            <div class="question-counter">Soal Nomor 52</div>
+            <div class="question-text">
+                Dari pernyataan tersebut cara yang paling tepat untuk menghindarkan diri dari minuman keras adalah.....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer52" value="1">
+                    <span class="option-label">A</span> Meningkatkan keimanan dan ketaqwaan kepada Allah Swt.
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer52" value="2">
+                    <span class="option-label">B</span> Selektif ketika memilih teman dalam pergaulan
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer52" value="3">
+                    <span class="option-label">C</span> Harus mempunyai semangat yang kuat untuk meraih masa depan
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer52" value="4">
+                    <span class="option-label">D</span> Meyakini kalau minuman keras itu akan berakibat fatal bagi peminumnya
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 53
+    {
+        id: 53,
+        content: `
+            <div class="question-counter">Soal Nomor 53</div>
+            <div class="question-text">
+                Berdasarkan ilustrasi tersebut, bagaimana cara berbakti dan taat kepada orang tua yang tepat dilakukan oleh Doni?
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer53" value="1">
+                    <span class="option-label">A</span> Mengikuti lomba pentas PAI dan mengabaikan ibunya yang sedang sakit
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer53" value="2">
+                    <span class="option-label">B</span> Memutuskan untuk tidak ikut lomba agar ibunya yang sakit segera sembuh
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer53" value="3">
+                    <span class="option-label">C</span> Meminta kepada ayahnya untuk tidak bekerja dan mendampingi ibunya di rumah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer53" value="4">
+                    <span class="option-label">D</span> Meminta guru pembimbingnya untuk mengizinkan berlatih di rumah
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 54
+    {
+        id: 54,
+        content: `
+            <div class="question-counter">Soal Nomor 54</div>
+            <div class="question-text">
+                Ilmu tajwid merupakan ilmu yang membahas tentang....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer54" value="1">
+                    <span class="option-label">A</span> Beberapa keistimewaan membaca Al-Qur'an
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer54" value="2">
+                    <span class="option-label">B</span> Irama dan teknik membaca Al-Qur'an
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer54" value="3">
+                    <span class="option-label">C</span> Seni dan etika dalam membaca Al-Qur'an dengan irama dan etika yang bagus
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer54" value="4">
+                    <span class="option-label">D</span> Tata cara membaca Al-Qur'an dengan bacaan yang benar dan fasih
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 55
+    {
+        id: 55,
+        content: `
+            <div class="question-counter">Soal Nomor 55</div>
+            <div class="question-text">
+                Hukum salat Jumat adalah fardu ain bagi setiap musim laki-lai yang telah memenuhi syarat. Maksud dari fardu ain adalah...
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer55" value="1">
+                    <span class="option-label">A</span> Kewajiban sekelompok kaum muslimin yang sadar akan salat Jumat
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer55" value="2">
+                    <span class="option-label">B</span> Kewajiban yang harus dilakukan karena sudah di depan mata
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer55" value="3">
+                    <span class="option-label">C</span> Kewajiban yang tidak boleh diabaikan dengan alasan bagaimanapun
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer55" value="4">
+                    <span class="option-label">D</span> Kewajiban individual yang harus dilaksanakan oleh setiap umat muslim
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 56
+    {
+        id: 56,
+        content: `
+            <div class="question-counter">Soal Nomor 56</div>
+            <div class="question-text">
+                Sebelum datangnya Islam, masyarakat Arab dikenal sangat fanatik terhadap suku dan kabilahnya. Namun, setelah Islam datang, Rasulullah Saw. menanamkan semangat kesetaraan dan mengikat umat dengan tali keimanan, bukan kesukuan. Prinsip yang menekankan persaudaraan sesama muslim tersebut disebut ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer56" value="1">
+                    <span class="option-label">A</span> Tasamuh
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer56" value="2">
+                    <span class="option-label">B</span> Ukhuwah Islamiyah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer56" value="3">
+                    <span class="option-label">C</span> Ta'awun
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer56" value="4">
+                    <span class="option-label">D</span> Tasyawur
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 57
+    {
+        id: 57,
+        content: `
+            <div class="question-counter">Soal Nomor 57</div>
+            <div class="question-text">
+                Rasulullah Saw. dikenal sebagai pemimpin yang selalu melibatkan para sahabat dalam pengambilan keputusan penting, baik dalam urusan agama maupun pemerintahan. Sikap ini menjadi dasar bagi prinsip demokrasi dalam Islam yang disebut dengan ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer57" value="1">
+                    <span class="option-label">A</span> Tenggang rasa
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer57" value="2">
+                    <span class="option-label">B</span> Persaudaraan
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer57" value="3">
+                    <span class="option-label">C</span> Musyawarah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer57" value="4">
+                    <span class="option-label">D</span> Tolong-menolong
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 58
+    {
+        id: 58,
+        content: `
+            <div class="question-counter">Soal Nomor 58</div>
+            <div class="question-text">
+                Dalam QS. Al-Ma'idah ayat 2, Allah Swt. memerintahkan umat Islam untuk saling membantu dalam hal kebaikan dan ketakwaan, bukan dalam dosa dan permusuhan. Nilai kerja sama sosial yang terkandung dalam ayat tersebut dikenal dengan istilah ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer58" value="1">
+                    <span class="option-label">A</span> Tasamuh
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer58" value="2">
+                    <span class="option-label">B</span> Tasyawur
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer58" value="3">
+                    <span class="option-label">C</span> Ukhuwah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer58" value="4">
+                    <span class="option-label">D</span> Ta'awun
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 59
+    {
+        id: 59,
+        content: `
+            <div class="question-counter">Soal Nomor 59</div>
+            <div class="question-text">
+                Dalam Surah Al-Insyirah ayat 8, Allah Swt. memerintahkan manusia agar hanya berharap kepada-Nya dan menyerahkan seluruh urusannya setelah berikhtiar. Sikap yang tercermin dari kandungan ayat tersebut disebut ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer59" value="1">
+                    <span class="option-label">A</span> Ikhlas
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer59" value="2">
+                    <span class="option-label">B</span> Ikhtiar
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer59" value="3">
+                    <span class="option-label">C</span> Tawakal
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer59" value="4">
+                    <span class="option-label">D</span> Sabar
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 60
+    {
+        id: 60,
+        content: `
+            <div class="question-counter">Soal Nomor 60</div>
+            <div class="question-text">
+                Seorang petani memperoleh hasil panen gabah kering sebanyak dua ton dari sawah yang diairi dengan biaya irigasi. Berdasarkan ketentuan zakat pertanian yang menggunakan biaya pengairan, kadar zakat yang wajib dikeluarkan adalah 5% dari hasil panen. Dengan demikian, zakat yang harus dikeluarkan adalah ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer60" value="1">
+                    <span class="option-label">A</span> 1 kg
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer60" value="2">
+                    <span class="option-label">B</span> 10 kg
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer60" value="3">
+                    <span class="option-label">C</span> 100 kg
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer60" value="4">
+                    <span class="option-label">D</span> 20 kg
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 61
+    {
+        id: 61,
+        content: `
+            <div class="question-counter">Soal Nomor 61</div>
+            <div class="question-text">
+                Seorang laki-laki menemukan perhiasan emas kuno seberat 2,5 kilogram yang sudah tidak diketahui pemiliknya. Jika harga emas per gram Rp350.000, maka jumlah zakat yang wajib ia keluarkan (dengan nisab zakat emas 2,5%) adalah ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer61" value="1">
+                    <span class="option-label">A</span> Rp155.000
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer61" value="2">
+                    <span class="option-label">B</span> Rp175.000
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer61" value="3">
+                    <span class="option-label">C</span> Rp21.875.000
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer61" value="4">
+                    <span class="option-label">D</span> Rp255.000
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 62
+    {
+        id: 62,
+        content: `
+            <div class="question-counter">Soal Nomor 62</div>
+            <div class="question-text">
+                Dalam sistem distribusi zakat, terdapat delapan golongan yang berhak menerimanya sesuai ketentuan syariat. Istilah yang digunakan untuk menyebut orang-orang yang berhak menerima zakat tersebut adalah ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer62" value="1">
+                    <span class="option-label">A</span> Mustahik
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer62" value="2">
+                    <span class="option-label">B</span> Fii Sabilillah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer62" value="3">
+                    <span class="option-label">C</span> Ibnu Sabil
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer62" value="4">
+                    <span class="option-label">D</span> Gharim
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 63
+    {
+        id: 63,
+        content: `
+            <div class="question-counter">Soal Nomor 63</div>
+            <div class="question-text">
+                Kandungan Surah At-Tin ayat ke-4 menjelaskan bahwa manusia diciptakan Allah dalam bentuk dan keadaan yang sempurna. Seorang siswa yang bersyukur atas kecerdasan dan kekuatan fisik dengan mempergunakannya untuk beribadah dan berbuat kebaikan berarti telah mengamalkan isi ayat tersebut. Ayat yang dimaksud adalah ayat ke ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer63" value="1">
+                    <span class="option-label">A</span> 3
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer63" value="2">
+                    <span class="option-label">B</span> 4
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer63" value="3">
+                    <span class="option-label">C</span> 5
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer63" value="4">
+                    <span class="option-label">D</span> 6
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 64
+    {
+        id: 64,
+        content: `
+            <div class="question-counter">Soal Nomor 64</div>
+            <div class="question-text">
+                Seorang muslim yang senantiasa menerima apa pun rezeki yang diberikan Allah kepadanya tanpa merasa iri terhadap orang lain, serta tetap berusaha dan bersyukur atas segala nikmat meskipun sederhana, menunjukkan sikap ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer64" value="1">
+                    <span class="option-label">A</span> Tasamuh
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer64" value="2">
+                    <span class="option-label">B</span> Qana'ah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer64" value="3">
+                    <span class="option-label">C</span> Tawakal
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer64" value="4">
+                    <span class="option-label">D</span> Sabar
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 65
+    {
+        id: 65,
+        content: `
+            <div class="question-counter">Soal Nomor 65</div>
+            <div class="question-text">
+                Sikap seseorang yang tetap menjalin hubungan baik dan menghormati penganut agama lain tanpa mencampuri urusan keyakinan mereka, serta mampu hidup berdampingan dalam suasana damai dan saling menghargai merupakan wujud dari nilai-nilai ajaran Islam yang disebut ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer65" value="1">
+                    <span class="option-label">A</span> Qana'ah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer65" value="2">
+                    <span class="option-label">B</span> Tasamuh
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer65" value="3">
+                    <span class="option-label">C</span> Sabar
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer65" value="4">
+                    <span class="option-label">D</span> Tawakal
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 66
+    {
+        id: 66,
+        content: `
+            <div class="question-counter">Soal Nomor 66</div>
+            <div class="question-text">
+                Shalat sunah yang dilaksanakan secara berjamaah, memiliki dua khutbah setelah pelaksanaan, dilaksanakan mulai terbit matahari hingga menjelang zawal, serta memiliki tujuh kali takbir pada rakaat pertama dan lima kali takbir pada rakaat kedua merupakan salah satu shalat yang dilakukan pada hari raya Islam, yaitu ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer66" value="1">
+                    <span class="option-label">A</span> Shalat Dhuha
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer66" value="2">
+                    <span class="option-label">B</span> Shalat Tarawih
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer66" value="3">
+                    <span class="option-label">C</span> Shalat Khusuf
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer66" value="4">
+                    <span class="option-label">D</span> Shalat Idain
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 67
+    {
+        id: 67,
+        content: `
+            <div class="question-counter">Soal Nomor 67</div>
+            <div class="question-text">
+                Dalam konsep keimanan terhadap qadha dan qadar, terdapat dua jenis takdir: takdir mubram yang tidak dapat diubah, dan takdir muallaq yang masih dapat berubah melalui ikhtiar manusia dengan izin Allah Swt. Jenis takdir yang masih bisa berubah tersebut disebut ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer67" value="1">
+                    <span class="option-label">A</span> Qadar
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer67" value="2">
+                    <span class="option-label">B</span> Takdir Muallaq
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer67" value="3">
+                    <span class="option-label">C</span> Takdir Mubram
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer67" value="4">
+                    <span class="option-label">D</span> Qadha
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 68
+    {
+        id: 68,
+        content: `
+            <div class="question-counter">Soal Nomor 68</div>
+            <div class="question-text">
+                Jenis manasik haji di mana jamaah terlebih dahulu menunaikan umrah secara sempurna pada bulan-bulan haji, kemudian melaksanakan ibadah haji dalam tahun yang sama setelah melepas ihram umrah, dinamakan haji ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer68" value="1">
+                    <span class="option-label">A</span> Ifrad
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer68" value="2">
+                    <span class="option-label">B</span> Tamattu'
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer68" value="3">
+                    <span class="option-label">C</span> Qiran
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer68" value="4">
+                    <span class="option-label">D</span> Ihram
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 69
+    {
+        id: 69,
+        content: `
+            <div class="question-counter">Soal Nomor 69</div>
+            <div class="question-text">
+                Setelah menyelesaikan thawaf, jamaah haji maupun umrah melakukan perjalanan bolak-balik sebanyak tujuh kali antara dua bukit bersejarah di sekitar Masjidil Haram, yaitu Bukit Shafa dan Bukit Marwah. Amalan ini merupakan simbol perjuangan Siti Hajar dalam mencari air bagi putranya, Nabi Ismail, dan disebut dengan ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer69" value="1">
+                    <span class="option-label">A</span> Wukuf
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer69" value="2">
+                    <span class="option-label">B</span> Ihram
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer69" value="3">
+                    <span class="option-label">C</span> Tahallul
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer69" value="4">
+                    <span class="option-label">D</span> Sa'i
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 70
+    {
+        id: 70,
+        content: `
+            <div class="question-counter">Soal Nomor 70</div>
+            <div class="question-text">
+                Dalam pelaksanaan ibadah haji, terdapat amalan-amalan yang termasuk ke dalam kategori wajib, yang artinya apabila tidak dikerjakan maka hajinya tetap sah tetapi wajib membayar dam. Salah satu amalan yang termasuk dalam kategori tersebut adalah ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer70" value="1">
+                    <span class="option-label">A</span> Melontar jumrah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer70" value="2">
+                    <span class="option-label">B</span> Ihram dari miqat yang telah ditentukan
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer70" value="3">
+                    <span class="option-label">C</span> Wukuf di Arafah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer70" value="4">
+                    <span class="option-label">D</span> Thawaf Ifadah
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 71
+    {
+        id: 71,
+        content: `
+            <div class="question-counter">Soal Nomor 71</div>
+            <div class="question-text">
+                Salah satu rukun haji yang dilakukan setelah wukuf di Padang Arafah adalah thawaf yang wajib dilaksanakan oleh setiap jamaah haji. Thawaf ini memiliki kedudukan yang sangat penting karena menandai sahnya ibadah haji dan tidak dapat digantikan dengan dam apabila ditinggalkan. Thawaf yang dimaksud dikenal dengan sebutan thawaf ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer71" value="1">
+                    <span class="option-label">A</span> Wada'
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer71" value="2">
+                    <span class="option-label">B</span> Sunnah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer71" value="3">
+                    <span class="option-label">C</span> Qudum
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer71" value="4">
+                    <span class="option-label">D</span> Ifadah
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 72
+    {
+        id: 72,
+        content: `
+            <div class="question-counter">Soal Nomor 72</div>
+            <div class="question-text">
+                Dalam Al-Qur'an, manusia disebut sebagai khalifah fil-ardh, artinya manusia memiliki tanggung jawab untuk memelihara, mengelola, dan memanfaatkan alam secara bijaksana. Konsep ini menuntut adanya ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer72" value="1">
+                    <span class="option-label">A</span> Eksploitasi sumber daya alam
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer72" value="2">
+                    <span class="option-label">B</span> Kepedulian lingkungan dan tanggung jawab moral
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer72" value="3">
+                    <span class="option-label">C</span> Penguasaan mutlak terhadap bumi
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer72" value="4">
+                    <span class="option-label">D</span> Kemandirian ekonomi umat
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 73
+    {
+        id: 73,
+        content: `
+            <div class="question-counter">Soal Nomor 73</div>
+            <div class="question-text">
+                Salah satu bentuk kesempurnaan iman seseorang adalah mencintai saudaranya sebagaimana ia mencintai dirinya sendiri. Hadis ini menunjukkan pentingnya menjaga ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer73" value="1">
+                    <span class="option-label">A</span> Ukhuwah Islamiyah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer73" value="2">
+                    <span class="option-label">B</span> Taqwa pribadi
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer73" value="3">
+                    <span class="option-label">C</span> Ketaatan ritual
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer73" value="4">
+                    <span class="option-label">D</span> Kemandirian
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 74
+    {
+        id: 74,
+        content: `
+            <div class="question-counter">Soal Nomor 74</div>
+            <div class="question-text">
+                Dalam QS. Al-Hujurat ayat 13 disebutkan bahwa Allah menciptakan manusia bersuku-suku dan berbangsa-bangsa agar mereka saling mengenal. Pesan moral dari ayat ini adalah ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer74" value="1">
+                    <span class="option-label">A</span> Semua bangsa memiliki derajat yang sama di sisi Allah, kecuali yang paling bertakwa
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer74" value="2">
+                    <span class="option-label">B</span> Keunggulan manusia diukur dari keturunannya
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer74" value="3">
+                    <span class="option-label">C</span> Islam menolak adanya perbedaan budaya
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer74" value="4">
+                    <span class="option-label">D</span> Suku tertentu lebih mulia dari yang lain
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 75
+    {
+        id: 75,
+        content: `
+            <div class="question-counter">Soal Nomor 75</div>
+            <div class="question-text">
+                Konsep ketauhidan dalam Islam tidak sekadar mengakui keberadaan Allah Swt., tetapi juga menuntut pengesaan-Nya dalam seluruh aspek kehidupan, termasuk ibadah, niat, dan pengharapan. Pemahaman ini disebut dengan tauhid ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer75" value="1">
+                    <span class="option-label">A</span> Rububiyyah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer75" value="2">
+                    <span class="option-label">B</span> Uluhiyyah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer75" value="3">
+                    <span class="option-label">C</span> Asma wa Sifat
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer75" value="4">
+                    <span class="option-label">D</span> Aqidah
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 76
+    {
+        id: 76,
+        content: `
+            <div class="question-counter">Soal Nomor 76</div>
+            <div class="question-text">
+                Zakat merupakan sarana pemerataan ekonomi dalam Islam. Salah satu hikmah dari kewajiban zakat adalah menumbuhkan rasa empati sosial dan menghapus kesenjangan antara si kaya dan si miskin. Hal ini menunjukkan bahwa zakat memiliki fungsi ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer76" value="1">
+                    <span class="option-label">A</span> Sosial dan spiritual
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer76" value="2">
+                    <span class="option-label">B</span> Material dan ritual
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer76" value="3">
+                    <span class="option-label">C</span> Politik dan budaya
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer76" value="4">
+                    <span class="option-label">D</span> Moral dan finansial
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 77
+    {
+        id: 77,
+        content: `
+            <div class="question-counter">Soal Nomor 77</div>
+            <div class="question-text">
+                Dalam Islam, setiap perbuatan yang dilakukan dengan niat ikhlas semata-mata karena Allah Swt. akan bernilai ibadah, meskipun bentuknya bersifat duniawi. Prinsip ini merupakan implementasi dari hadis Nabi yang berbunyi "Innamal a'malu binniyat". Hadis tersebut mengajarkan pentingnya ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer77" value="1">
+                    <span class="option-label">A</span> Ketulusan hati dalam bekerja
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer77" value="2">
+                    <span class="option-label">B</span> Niat yang lurus dalam setiap amal
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer77" value="3">
+                    <span class="option-label">C</span> Amal tanpa pamrih sosial
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer77" value="4">
+                    <span class="option-label">D</span> Menjaga rahasia amal kebaikan
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 78
+    {
+        id: 78,
+        content: `
+            <div class="question-counter">Soal Nomor 78</div>
+            <div class="question-text">
+                etika seseorang berbuat salah kepada orang lain, ia diwajibkan meminta maaf dan memperbaiki kesalahan tersebut. Jika dosa itu berkaitan langsung dengan hak Allah, maka cukup disertai tobat nasuha. Hal ini menunjukkan bahwa dalam Islam, tobat harus mencakup aspek ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer78" value="1">
+                    <span class="option-label">A</span> Pengakuan lisan dan penyesalan
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer78" value="2">
+                    <span class="option-label">B</span> Penyesalan hati, penghentian maksiat, dan tekad untuk tidak mengulang
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer78" value="3">
+                    <span class="option-label">C</span> Pembacaan doa dan sedekah
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer78" value="4">
+                    <span class="option-label">D</span> Penyesalan hati dan puasa sunah
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 79
+    {
+        id: 79,
+        content: `
+            <div class="question-counter">Soal Nomor 79</div>
+            <div class="question-text">
+                Konsep tauhid rububiyyah dalam teologi Islam tidak sekadar pengakuan terhadap keberadaan Allah sebagai pencipta alam semesta, tetapi juga meniscayakan keyakinan bahwa seluruh proses alam berjalan dalam ketentuan dan kekuasaan-Nya. Oleh karena itu, penolakan terhadap campur tangan Allah dalam hukum sebab-akibat alam termasuk ke dalam bentuk ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer79" value="1">
+                    <span class="option-label">A</span> Khurafat
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer79" value="2">
+                    <span class="option-label">B</span> Syirik kecil
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer79" value="3">
+                    <span class="option-label">C</span> Tasybih
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer79" value="4">
+                    <span class="option-label">D</span> Ilhad
+                </label>
+            </div>
+        `
+    },
+    // SOAL NOMOR 80
+    {
+        id: 80,
+        content: `
+            <div class="question-counter">Soal Nomor 80</div>
+            <div class="question-text">
+                Salah satu hikmah mendalam dari ibadah zakat ialah membentuk solidaritas sosial transendental, yakni hubungan sosial yang berlandaskan pada kesadaran spiritual, bukan sekadar kepentingan material. Nilai filosofis ini secara teologis berfungsi untuk ....
+            </div>
+            <div class="options">
+                <label class="option">
+                    <input type="radio" name="answer80" value="1">
+                    <span class="option-label">A</span> Meneguhkan konsep keadilan distributif dalam Islam
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer80" value="2">
+                    <span class="option-label">B</span> Menghapuskan sistem kepemilikan pribadi
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer80" value="3">
+                    <span class="option-label">C</span> Menumbuhkan kemandirian ekonomi individu
+                </label>
+                <label class="option">
+                    <input type="radio" name="answer80" value="4">
+                    <span class="option-label">D</span> Menetapkan peran pemerintah dalam pemerataan
+                </label>
+            </div>
+        `
+    }
+];
+        // =============================================
+        // JANGAN EDIT BAGIAN DI BAWAH INI
+        // =============================================
+
+        let currentQuestionIndex = 0;
+        const userAnswers = new Array(questions.length).fill(null);
+
+        // Inisialisasi grid soal
+        function initializeQuestionGrid() {
+            const questionGrid = document.getElementById('question-grid');
+            questionGrid.innerHTML = '';
+            
+            questions.forEach((question, index) => {
+                const questionNumber = document.createElement('div');
+                questionNumber.className = 'question-number';
+                if (index === currentQuestionIndex) {
+                    questionNumber.classList.add('active');
+                }
+                if (userAnswers[index] !== null) {
+                    questionNumber.classList.add('answered');
+                }
+                questionNumber.textContent = question.id;
+                questionNumber.addEventListener('click', () => navigateToQuestion(index));
+                questionGrid.appendChild(questionNumber);
+            });
+        }
+
+        // Navigasi ke soal dengan animasi
+        function navigateToQuestion(index, direction = 'none') {
+            if (index >= 0 && index < questions.length) {
+                const questionContent = document.getElementById('question-content');
+                
+                // Tambahkan animasi berdasarkan arah navigasi
+                if (direction === 'next') {
+                    questionContent.classList.add('slide-left');
+                } else if (direction === 'prev') {
+                    questionContent.classList.add('slide-right');
+                }
+                
+                currentQuestionIndex = index;
+                
+                // Tunggu sebentar sebelum update konten untuk animasi
+                setTimeout(() => {
+                    updateQuestionDisplay();
+                    updateQuestionGrid();
+                    updateNavigationButtons();
+                    updateProgress();
+                    
+                    // Hapus class animasi setelah selesai
+                    setTimeout(() => {
+                        questionContent.classList.remove('slide-left', 'slide-right');
+                    }, 300);
+                }, 150);
+            }
+        }
+
+        // Update tampilan soal
+        function updateQuestionDisplay() {
+            const currentQuestion = questions[currentQuestionIndex];
+            
+            // Jika soal memiliki gambar
+            if (currentQuestion.imagePath) {
+                const questionHTML = `
+                    <div class="question-counter">Soal Nomor ${currentQuestion.id}</div>
+                    
+                    <div class="question-image-container">
+                        <img src="${currentQuestion.imagePath}" 
+                             alt="Soal LCTP ${currentQuestion.id}" 
+                             class="question-image"
+                             onerror="handleImageError(${currentQuestion.id})">
+                        <div id="placeholder-${currentQuestion.id}" class="image-placeholder" style="display: none;">
+                            📷 Gambar soal tidak dapat dimuat<br>
+                            <small>Pastikan file <strong>${currentQuestion.imagePath}</strong> tersedia</small>
+                        </div>
+                    </div>
+                    
+                    <div class="options">
+                        ${currentQuestion.options.map((option, index) => `
+                            <label class="option">
+                                <input type="radio" name="answer${currentQuestion.id}" value="${index + 1}">
+                                <span class="option-label">${String.fromCharCode(65 + index)}</span>
+                                <span class="option-text">${option}</span>
+                            </label>
+                        `).join('')}
+                    </div>
+                `;
+                
+                document.getElementById('question-content').innerHTML = questionHTML;
+            } else {
+                // Soal biasa tanpa gambar
+                document.getElementById('question-content').innerHTML = currentQuestion.content;
+            }
+            
+            // Set jawaban yang sudah dipilih sebelumnya
+            if (userAnswers[currentQuestionIndex] !== null) {
+                const radioButton = document.querySelector(`input[name="answer${currentQuestion.id}"][value="${userAnswers[currentQuestionIndex]}"]`);
+                if (radioButton) {
+                    radioButton.checked = true;
+                }
+            }
+            
+            // Tambahkan event listener untuk opsi jawaban
+            document.querySelectorAll('input[type="radio"]').forEach(radio => {
+                radio.addEventListener('change', function() {
+                    userAnswers[currentQuestionIndex] = this.value;
+                    updateQuestionGrid();
+                    updateProgress();
+                });
+            });
+        }
+
+        // Handle error loading gambar
+        function handleImageError(questionId) {
+            const img = document.querySelector(`img[alt="Soal LCTP ${questionId}"]`);
+            const placeholder = document.getElementById(`placeholder-${questionId}`);
+            
+            if (img) {
+                img.style.display = 'none';
+            }
+            if (placeholder) {
+                placeholder.style.display = 'block';
+                placeholder.innerHTML = `
+                    ❌ Gambar soal ${questionId} tidak ditemukan<br>
+                    <small>File: ${questions[questionId-1].imagePath}</small>
+                    <br><br>
+                    <div style="background: #f0f0f0; padding: 15px; border-radius: 5px; text-align: left;">
+                        <strong>Solusi:</strong><br>
+                        1. Cek file <strong>${questions[questionId-1].imagePath}</strong><br>
+                        2. Pastikan folder 'soal/' ada<br>
+                        3. Pastikan nama file sesuai
+                    </div>
+                `;
+            }
+            
+            console.error(`❌ Gagal memuat gambar: ${questions[questionId-1].imagePath}`);
+        }
+
+        // Update grid soal
+        function updateQuestionGrid() {
+            const questionNumbers = document.querySelectorAll('.question-number');
+            
+            questionNumbers.forEach((numberElement, index) => {
+                // Hapus semua class active terlebih dahulu
+                numberElement.classList.remove('active');
+                
+                // Tambahkan class active hanya untuk soal yang sedang aktif
+                if (index === currentQuestionIndex) {
+                    numberElement.classList.add('active');
+                }
+                
+                // Tambahkan class answered hanya untuk soal yang sudah dijawab
+                if (userAnswers[index] !== null) {
+                    numberElement.classList.add('answered');
+                }
+            });
+        }
+
+        // Update progress dan statistik
+        function updateProgress() {
+            const answeredCount = userAnswers.filter(answer => answer !== null).length;
+            const progress = (answeredCount / questions.length) * 100;
+            
+            document.getElementById('progress-bar').style.width = `${progress}%`;
+            document.getElementById('answered-count').textContent = `${answeredCount}/${questions.length} Terjawab`;
+        }
+
+        // Update tombol navigasi
+        function updateNavigationButtons() {
+            const prevButton = document.getElementById('prev-btn');
+            const navButtonsContainer = document.getElementById('navigation-buttons');
+            
+            prevButton.disabled = currentQuestionIndex === 0;
+            
+            // Jika sudah di soal terakhir, ganti tombol "Selanjutnya" dengan "Kirim"
+            if (currentQuestionIndex === questions.length - 1) {
+                navButtonsContainer.innerHTML = '';
+                const submitButton = document.createElement('button');
+                submitButton.id = 'submit-btn';
+                submitButton.className = 'submit-btn';
+                submitButton.textContent = 'KIRIM JAWABAN';
+                submitButton.addEventListener('click', showSubmitPopup);
+                navButtonsContainer.appendChild(submitButton);
+            } else {
+                navButtonsContainer.innerHTML = '';
+                const nextButton = document.createElement('button');
+                nextButton.id = 'next-btn';
+                nextButton.className = 'nav-button';
+                nextButton.innerHTML = 'SOAL SELANJUTNYA <span>▶</span>';
+                nextButton.addEventListener('click', () => {
+                    navigateToQuestion(currentQuestionIndex + 1, 'next');
+                });
+                navButtonsContainer.appendChild(nextButton);
+            }
+        }
+
+        // Tampilkan popup konfirmasi
+        function showSubmitPopup() {
+            const popup = document.getElementById('submit-popup');
+            popup.style.display = 'flex';
+            setTimeout(() => {
+                popup.classList.add('show');
+            }, 10);
+        }
+
+        // Sembunyikan popup
+        function hideSubmitPopup() {
+            const popup = document.getElementById('submit-popup');
+            popup.classList.remove('show');
+            setTimeout(() => {
+                popup.style.display = 'none';
+            }, 300);
+        }
+
+        // Fungsi untuk mengirim jawaban
+        function submitAnswers() {
+            hideSubmitPopup();
+            alert('Jawaban berhasil dikirim! Terima kasih telah mengerjakan ujian LCTP.');
+        }
+
+        // Event listeners
+        document.getElementById('prev-btn').addEventListener('click', () => {
+            if (currentQuestionIndex > 0) {
+                navigateToQuestion(currentQuestionIndex - 1, 'prev');
+            }
+        });
+
+        document.getElementById('confirm-submit').addEventListener('click', submitAnswers);
+        document.getElementById('cancel-submit').addEventListener('click', hideSubmitPopup);
+
+        // Timer countdown
+        function startTimer() {
+            let timeLeft = 120 * 60; // 120 menit
+            
+            function updateTimer() {
+                if (timeLeft <= 0) {
+                    document.getElementById('timer').textContent = "00:00:00";
+                    submitAnswers();
+                    return;
+                }
+                
+                const hours = Math.floor(timeLeft / 3600);
+                const minutes = Math.floor((timeLeft % 3600) / 60);
+                const seconds = timeLeft % 60;
+                
+                document.getElementById('timer').textContent = 
+                    `${hours.toString().padStart(2, '0')}:${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                timeLeft--;
+                setTimeout(updateTimer, 1000);
+            }
+            
+            updateTimer();
+        }
+
+        // Inisialisasi
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeQuestionGrid();
+            updateQuestionDisplay();    
+            updateNavigationButtons();
+            updateProgress();
+            startTimer();
+            
+            console.log('✅ Sistem ujian LCTP siap digunakan!');
+            console.log('📁 Total soal:', questions.length);
+        });
+    </script>
+</body>
+</html>

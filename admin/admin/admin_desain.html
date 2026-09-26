@@ -1,0 +1,533 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Panitia - View Karya Peserta</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f8f9fa;
+            color: #333;
+        }
+
+        .header {
+            background: #2C3E50;
+            color: white;
+            padding: 1.5rem 0;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .header h1 {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        .header p {
+            color: #bdc3c7;
+            margin-top: 0.5rem;
+        }
+
+        .controls {
+            background: white;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            display: flex;
+            gap: 1rem;
+            align-items: center;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            color: #2C3E50;
+            font-size: 0.9rem;
+        }
+
+        select, input {
+            padding: 0.6rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            min-width: 200px;
+        }
+
+        .btn {
+            padding: 0.6rem 1.5rem;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+
+        .submissions-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .submission-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .image-container {
+            position: relative;
+            background: #ecf0f1;
+            height: 400px;
+            overflow: hidden;
+        }
+
+        .submission-image {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            cursor: zoom-in;
+            transition: transform 0.3s ease;
+        }
+
+        .submission-image:hover {
+            transform: scale(1.02);
+        }
+
+        .image-overlay {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(44, 62, 80, 0.9);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .submission-info {
+            padding: 1.5rem;
+        }
+
+        .submission-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #2C3E50;
+            margin-bottom: 1rem;
+        }
+
+        .submission-description {
+            color: #7f8c8d;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+
+        .details-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .detail-item {
+            display: flex;
+            flex-direction: column;
+        }
+
+        .detail-label {
+            font-size: 0.8rem;
+            color: #95a5a6;
+            font-weight: 600;
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            color: #2C3E50;
+            font-weight: 500;
+        }
+
+        .status-section {
+            padding: 1rem;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-top: 1rem;
+        }
+
+        .status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .status-approved {
+            background: #d1ecf1;
+            color: #0c5460;
+        }
+
+        .status-rejected {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .rejection-reason {
+            margin-top: 0.5rem;
+            padding: 0.75rem;
+            background: white;
+            border-radius: 4px;
+            border-left: 4px solid #e74c3c;
+        }
+
+        .timestamp {
+            font-size: 0.8rem;
+            color: #95a5a6;
+            margin-top: 1rem;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.95);
+            backdrop-filter: blur(5px);
+        }
+
+        .modal-content {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            max-width: 90%;
+            max-height: 90%;
+            object-fit: contain;
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 2rem;
+            right: 2rem;
+            color: white;
+            font-size: 2.5rem;
+            cursor: pointer;
+            z-index: 1001;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: #7f8c8d;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1.5rem;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: #7f8c8d;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+    </style>
+</head>
+<body>
+    <header class="header">
+        <div class="container">
+            <h1>Dashboard Panitia - View Karya Peserta</h1>
+            <p>Hanya untuk melihat hasil karya desain poster peserta</p>
+        </div>
+    </header>
+
+    <div class="container">
+        <div class="controls">
+            <div class="filter-group">
+                <label for="statusFilter">Filter Status</label>
+                <select id="statusFilter">
+                    <option value="all">Semua Status</option>
+                    <option value="pending">Menunggu Review</option>
+                    <option value="approved">Disetujui</option>
+                    <option value="rejected">Ditolak</option>
+                </select>
+            </div>
+            
+            <div class="filter-group">
+                <label for="searchFilter">Cari Peserta</label>
+                <input type="text" id="searchFilter" placeholder="Nama, sekolah, atau judul...">
+            </div>
+            
+            <button class="btn btn-primary" onclick="loadSubmissions()" style="align-self: flex-end;">
+                🔄 Refresh Data
+            </button>
+        </div>
+
+        <div id="submissions-container">
+            <div class="loading">
+                <h3>Memuat data karya peserta...</h3>
+                <p>Sedang mengambil data dari database</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal untuk gambar besar -->
+    <div id="imageModal" class="modal">
+        <span class="close-modal" onclick="closeModal()">&times;</span>
+        <img class="modal-content" id="modalImage">
+    </div>
+
+    <script>
+        const API_BASE_URL = 'https://exam-system-backend.timacefest2025.workers.dev';
+        let allSubmissions = [];
+
+        // Load data saat halaman dibuka
+        document.addEventListener('DOMContentLoaded', function() {
+            loadSubmissions();
+            
+            // Event listeners untuk filter
+            document.getElementById('statusFilter').addEventListener('change', filterSubmissions);
+            document.getElementById('searchFilter').addEventListener('input', filterSubmissions);
+        });
+
+        // Fungsi utama untuk load submissions
+        async function loadSubmissions() {
+            const container = document.getElementById('submissions-container');
+            
+            try {
+                container.innerHTML = `
+                    <div class="loading">
+                        <h3>Memuat data karya peserta...</h3>
+                        <p>Sedang mengambil data dari database</p>
+                    </div>
+                `;
+
+                const response = await fetch(`${API_BASE_URL}/api/images/submissions`);
+                const result = await response.json();
+                
+                if (result.success) {
+                    allSubmissions = result.submissions;
+                    renderSubmissions(allSubmissions);
+                } else {
+                    throw new Error(result.error || 'Gagal memuat data');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                container.innerHTML = `
+                    <div class="error">
+                        <h3>Gagal Memuat Data</h3>
+                        <p>${error.message}</p>
+                        <button class="btn btn-primary" onclick="loadSubmissions()" style="margin-top: 1rem;">
+                            Coba Lagi
+                        </button>
+                    </div>
+                `;
+            }
+        }
+
+        // Render submissions ke HTML
+        function renderSubmissions(submissions) {
+            const container = document.getElementById('submissions-container');
+            
+            if (submissions.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div>📭</div>
+                        <h3>Belum Ada Karya</h3>
+                        <p>Belum ada peserta yang mengumpulkan karya desain poster</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = `
+                <div class="submissions-grid">
+                    ${submissions.map(submission => `
+                        <div class="submission-card">
+                            <div class="image-container">
+                                <img 
+                                    src="${API_BASE_URL}/api/images/${submission.image_filename}"
+                                    alt="${submission.image_title}"
+                                    class="submission-image"
+                                    onclick="openModal('${submission.image_filename}')"
+                                    loading="lazy"
+                                >
+                                <div class="image-overlay">
+                                    ${getStatusText(submission.status)}
+                                </div>
+                            </div>
+                            
+                            <div class="submission-info">
+                                <div class="submission-title">${escapeHtml(submission.image_title)}</div>
+                                
+                                ${submission.image_description ? `
+                                    <div class="submission-description">
+                                        ${escapeHtml(submission.image_description)}
+                                    </div>
+                                ` : ''}
+                                
+                                <div class="details-grid">
+                                    <div class="detail-item">
+                                        <span class="detail-label">Nama Peserta</span>
+                                        <span class="detail-value">${escapeHtml(submission.nama)}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Sekolah</span>
+                                        <span class="detail-value">${escapeHtml(submission.sekolah)}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">Username</span>
+                                        <span class="detail-value">${escapeHtml(submission.username)}</span>
+                                    </div>
+                                    <div class="detail-item">
+                                        <span class="detail-label">User ID</span>
+                                        <span class="detail-value">${escapeHtml(submission.user_id)}</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="status-section">
+                                    <div class="status-badge status-${submission.status}">
+                                        ${getStatusText(submission.status)}
+                                    </div>
+                                    
+                                    ${submission.rejection_reason ? `
+                                        <div class="rejection-reason">
+                                            <strong>Alasan Penolakan:</strong>
+                                            <p>${escapeHtml(submission.rejection_reason)}</p>
+                                        </div>
+                                    ` : ''}
+                                    
+                                    <div class="timestamp">
+                                        <strong>Dikirim:</strong> ${new Date(submission.submitted_at).toLocaleString('id-ID')}
+                                        ${submission.reviewed_at ? `
+                                            <br><strong>Direview:</strong> ${new Date(submission.reviewed_at).toLocaleString('id-ID')}
+                                        ` : ''}
+                                        ${submission.reviewed_by ? `
+                                            <br><strong>Oleh:</strong> ${escapeHtml(submission.reviewed_by)}
+                                        ` : ''}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `).join('')}
+                </div>
+            `;
+        }
+
+        // Filter submissions
+        function filterSubmissions() {
+            const statusFilter = document.getElementById('statusFilter').value;
+            const searchFilter = document.getElementById('searchFilter').value.toLowerCase();
+            
+            let filtered = allSubmissions;
+            
+            // Filter by status
+            if (statusFilter !== 'all') {
+                filtered = filtered.filter(s => s.status === statusFilter);
+            }
+            
+            // Filter by search
+            if (searchFilter) {
+                filtered = filtered.filter(s => 
+                    s.nama.toLowerCase().includes(searchFilter) ||
+                    s.sekolah.toLowerCase().includes(searchFilter) ||
+                    s.username.toLowerCase().includes(searchFilter) ||
+                    s.image_title.toLowerCase().includes(searchFilter) ||
+                    (s.image_description && s.image_description.toLowerCase().includes(searchFilter))
+                );
+            }
+            
+            renderSubmissions(filtered);
+        }
+
+        // Modal functions
+        function openModal(imageFilename) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImage');
+            
+            modalImg.src = `${API_BASE_URL}/api/images/${imageFilename}`;
+            modal.style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('imageModal').style.display = 'none';
+        }
+
+        // Utility functions
+        function getStatusText(status) {
+            const statusMap = {
+                'pending': '🕐 Menunggu Review',
+                'approved': '✅ Disetujui',
+                'rejected': '❌ Ditolak'
+            };
+            return statusMap[status] || status;
+        }
+
+        function escapeHtml(unsafe) {
+            if (!unsafe) return '';
+            return unsafe.toString()
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+        }
+
+        // Close modal on outside click
+        window.onclick = function(event) {
+            const modal = document.getElementById('imageModal');
+            if (event.target === modal) {
+                closeModal();
+            }
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal ACEFEST - IPS</title>
+    <link href="https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Sora', sans-serif;
+        }
+        
+        :root {
+            --primary: #FF6B00;
+            --primary-light: #FFA500;
+            --secondary: #FFEB3B;
+            --dark: #2c3e50;
+            --light: #f8f9fa;
+            --text: #5a6c7d;
+            --white: #ffffff;
+            --shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            --transition: all 0.3s ease;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
+            color: #333;
+            line-height: 1.6;
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        /* Background effects */
+        body::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 80%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(255, 255, 255, 0.2) 0%, transparent 50%),
+                radial-gradient(circle at 40% 40%, rgba(255, 255, 255, 0.1) 0%, transparent 50%);
+            z-index: -1;
+        }
+        
+        .floating-shapes {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            overflow: hidden;
+        }
+        
+        .shape {
+            position: absolute;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 50%;
+            animation: float 15s infinite ease-in-out;
+        }
+        
+        .shape:nth-child(1) {
+            width: 80px;
+            height: 80px;
+            top: 10%;
+            left: 10%;
+            animation-delay: 0s;
+        }
+        
+        .shape:nth-child(2) {
+            width: 120px;
+            height: 120px;
+            top: 70%;
+            left: 80%;
+            animation-delay: 2s;
+        }
+        
+        .shape:nth-child(3) {
+            width: 60px;
+            height: 60px;
+            top: 40%;
+            left: 85%;
+            animation-delay: 4s;
+        }
+        
+        .shape:nth-child(4) {
+            width: 100px;
+            height: 100px;
+            top: 80%;
+            left: 15%;
+            animation-delay: 6s;
+        }
+        
+        @keyframes float {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            50% {
+                transform: translateY(-20px) rotate(10deg);
+            }
+        }
+        
+        .main-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+        
+        .title-section {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+        
+        .main-title {
+            font-size: 64px;
+            font-weight: 800;
+            margin-bottom: 8px;
+            color: #FF6B00;
+            text-shadow: 
+                2px 2px 0px #FFEB3B,
+                4px 4px 0px rgba(0, 0, 0, 0.1);
+            letter-spacing: -1px;
+            line-height: 1.1;
+        }
+        
+        .subtitle {
+            font-size: 32px;
+            font-weight: 600;
+            color: #2c3e50;
+            background: linear-gradient(135deg, #2c3e50 0%, #4a6491 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: -0.5px;
+        }
+        
+        .content-wrapper {
+            display: flex;
+            gap: 40px;
+            max-width: 1000px;
+            width: 100%;
+            align-items: stretch;
+            justify-content: center;
+        }
+        
+        .left-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 450px;
+        }
+        
+        .right-column {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            max-width: 450px;
+        }
+        
+        .exam-card {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: var(--shadow);
+            transition: var(--transition);
+            border: 2px solid transparent;
+            position: relative;
+            overflow: hidden;
+            height: fit-content;
+        }
+        
+        .exam-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: linear-gradient(90deg, var(--primary), var(--primary-light));
+        }
+        
+        .exam-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 12px 30px rgba(0, 0, 0, 0.2);
+        }
+        
+        .exam-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 8px;
+        }
+        
+        .exam-category {
+            font-size: 16px;
+            color: var(--primary);
+            font-weight: 500;
+            margin-bottom: 20px;
+            display: inline-block;
+            padding: 6px 16px;
+            background-color: rgba(255, 107, 0, 0.1);
+            border-radius: 20px;
+        }
+        
+        .exam-description {
+            color: var(--text);
+            margin-bottom: 25px;
+            line-height: 1.6;
+            font-size: 16px;
+        }
+        
+        .exam-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+        
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 16px;
+            color: var(--text);
+            padding: 12px;
+            background: var(--light);
+            border-radius: 10px;
+            border-left: 4px solid var(--primary);
+            transition: var(--transition);
+        }
+        
+        .detail-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        .detail-icon {
+            color: var(--primary);
+            font-size: 18px;
+        }
+        
+        .exam-actions {
+            display: flex;
+            gap: 15px;
+        }
+        
+        .btn-primary {
+            flex: 1;
+            padding: 16px 24px;
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-light) 100%);
+            color: var(--white);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 17px;
+            transition: var(--transition);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .btn-primary::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+            transition: 0.5s;
+        }
+        
+        .btn-primary:hover::before {
+            left: 100%;
+        }
+        
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 15px rgba(255, 107, 0, 0.4);
+        }
+        
+        .info-section {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 20px;
+            padding: 35px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+        }
+        
+        .info-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: var(--dark);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+        }
+        
+        .info-list {
+            text-align: left;
+            list-style-type: none;
+        }
+        
+        .info-list li {
+            margin-bottom: 14px;
+            padding-left: 30px;
+            position: relative;
+            color: var(--text);
+            font-size: 16px;
+            line-height: 1.5;
+        }
+        
+        .info-list li::before {
+            content: '✓';
+            position: absolute;
+            left: 0;
+            color: var(--primary);
+            font-weight: bold;
+            font-size: 18px;
+        }
+        
+        .footer {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 15px 0;
+            text-align: center;
+            color: var(--text);
+            font-size: 14px;
+        }
+        
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        @media (max-width: 768px) {
+            body {
+                overflow-y: auto;
+                height: auto;
+            }
+            
+            .content-wrapper {
+                flex-direction: column;
+                gap: 30px;
+            }
+            
+            .exam-card {
+                margin: 0;
+                padding: 25px;
+            }
+            
+            .info-section {
+                padding: 25px;
+            }
+            
+            .main-title {
+                font-size: 48px;
+            }
+            
+            .subtitle {
+                font-size: 24px;
+            }
+            
+            .exam-details {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .main-title {
+                font-size: 36px;
+            }
+            
+            .subtitle {
+                font-size: 20px;
+            }
+            
+            .btn-primary {
+                padding: 14px 20px;
+                font-size: 15px;
+            }
+            
+            .exam-card, .info-section {
+                padding: 20px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="floating-shapes">
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+        <div class="shape"></div>
+    </div>
+
+    <main class="main-container">
+        <div class="title-section">
+            <h1 class="main-title">LEMON</h1>
+            <div class="subtitle">Olimpiade IPS</div>
+        </div>
+
+        <div class="content-wrapper">
+            <div class="left-column">
+                <section class="exam-card">
+                    <h3 class="exam-title">Olimpiade IPS</h3>
+                    <div class="exam-category">Sosial</div>
+                    <p class="exam-description">
+                        Klik tombol dibawah ini untuk mulai mengerjakan soal Olimpiade IPS! Ujian ini terdiri dari 100 soal yang harus diselesaikan dalam waktu 120 menit.
+                    </p>
+                    <div class="exam-details">
+                        <div class="detail-item">
+                            <span class="detail-icon">⏱️</span>
+                            <span>120 Menit</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">📝</span>
+                            <span>100 Soal</span>
+                        </div>
+                    </div>
+                    <div class="exam-actions">
+                        <a href="ipsexam.html" class="btn-primary">
+                            <i class="fas fa-play-circle"></i> Mulai Ujian
+                        </a>
+                    </div>
+                </section>
+            </div>
+            
+            <div class="right-column">
+                <section class="info-section">
+                    <h3 class="info-title"><i class="fas fa-info-circle"></i> Informasi Penting</h3>
+                    <ul class="info-list">
+                        <li>Persiapkan Device / Peranngkat yang memadai</li>
+                        <li>Pastikan koneksi internet Anda stabil sebelum memulai ujian</li>
+                        <li>Ujian tidak dapat dihentikan setelah dimulai</li>
+                        <li>Hindari berpindah-pindah Tab / Browser</li>
+                        <li>Jawaban otomatis terkirim ketika waktu sudah habis</li>
+                    </ul>
+                </section>
+            </div>
+        </div>
+    </main>
+
+    <footer class="footer">
+        <div class="footer-content">
+            <p>&copy; 2025 TIM IT ACEFEST | Made with ❤️ & 🎶 | Semua Hak Cipta Dilindungi.</p>
+        </div>
+    </footer>
+
+    <script>
+        // Script untuk interaksi
+        document.addEventListener('DOMContentLoaded', function() {
+            const examCard = document.querySelector('.exam-card');
+            const startButton = document.querySelector('.btn-primary');
+            const detailItems = document.querySelectorAll('.detail-item');
+            
+            // Animasi hover pada kartu ujian
+            examCard.addEventListener('mouseenter', function() {
+                this.style.transform = 'translateY(-5px)';
+            });
+            
+            examCard.addEventListener('mouseleave', function() {
+                this.style.transform = 'translateY(0)';
+            });
+
+            // Efek klik pada tombol mulai
+            startButton.addEventListener('click', function() {
+                this.style.transform = 'scale(0.95)';
+                setTimeout(() => {
+                    this.style.transform = 'scale(1)';
+                }, 150);
+            });
+            
+            // Animasi untuk detail items
+            detailItems.forEach(item => {
+                item.addEventListener('mouseenter', function() {
+                    this.style.transform = 'translateY(-2px)';
+                });
+                
+                item.addEventListener('mouseleave', function() {
+                    this.style.transform = 'translateY(0)';
+                });
+            });
+            
+            // Tambahkan animasi saat halaman dimuat
+            const titleSection = document.querySelector('.title-section');
+            const examSection = document.querySelector('.exam-card');
+            const infoSection = document.querySelector('.info-section');
+            
+            // Animasi masuk bertahap
+            setTimeout(() => {
+                titleSection.style.opacity = '1';
+                titleSection.style.transform = 'translateY(0)';
+            }, 300);
+            
+            setTimeout(() => {
+                examSection.style.opacity = '1';
+                examSection.style.transform = 'translateY(0)';
+            }, 600);
+            
+            setTimeout(() => {
+                infoSection.style.opacity = '1';
+                infoSection.style.transform = 'translateY(0)';
+            }, 900);
+            
+            // Set initial state untuk animasi
+            titleSection.style.opacity = '0';
+            titleSection.style.transform = 'translateY(20px)';
+            titleSection.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            
+            examSection.style.opacity = '0';
+            examSection.style.transform = 'translateY(20px)';
+            examSection.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+            
+            infoSection.style.opacity = '0';
+            infoSection.style.transform = 'translateY(20px)';
+            infoSection.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        });
+    </script>
+</body>
+</html>

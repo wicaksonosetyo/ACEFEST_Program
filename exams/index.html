@@ -1,0 +1,827 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Konfirmasi Pengumpulan Ujian</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background: linear-gradient(135deg, #f0f9ff 0%, #e6f7ff 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .container {
+            max-width: 450px;
+            width: 100%;
+            background: white;
+            border-radius: 35px;
+            box-shadow: 0 25px 60px rgba(100, 181, 246, 0.2);
+            overflow: hidden;
+            text-align: center;
+            padding: 50px 35px;
+            border: 3px solid #e3f2fd;
+            position: relative;
+            z-index: 10;
+            animation: containerPop 0.8s ease-out;
+        }
+        
+        .success-icon {
+            width: 140px;
+            height: 140px;
+            margin: 0 auto 25px;
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .character {
+            width: 140px;
+            height: 140px;
+            background: linear-gradient(135deg, #4FC3F7, #29B6F6);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            box-shadow: 0 15px 35px rgba(41, 182, 246, 0.3);
+            animation: characterBounce 2s ease-in-out infinite;
+            position: relative;
+            z-index: 2;
+            border: 4px solid #E1F5FE;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .character:hover {
+            transform: scale(1.1) rotate(5deg);
+            box-shadow: 0 20px 40px rgba(41, 182, 246, 0.4);
+        }
+        
+        .face {
+            position: relative;
+            width: 80px;
+            height: 80px;
+        }
+        
+        .eyes {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+        }
+        
+        .eye {
+            width: 20px;
+            height: 20px;
+            background: white;
+            border-radius: 50%;
+            position: relative;
+            animation: blink 4s infinite;
+        }
+        
+        .eye::after {
+            content: '';
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background: #1565C0;
+            border-radius: 50%;
+            top: 3px;
+            left: 3px;
+            animation: lookAround 8s infinite;
+        }
+        
+        .smile {
+            width: 40px;
+            height: 20px;
+            border: 4px solid white;
+            border-top: none;
+            border-radius: 0 0 40px 40px;
+            margin: 0 auto;
+            animation: smile 3s ease-in-out infinite;
+        }
+        
+        .title {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1565C0;
+            margin-bottom: 15px;
+            line-height: 1.3;
+            position: relative;
+            animation: textPop 0.8s ease-out 0.3s both;
+        }
+        
+        .title-bold {
+            font-size: 32px;
+            color: #0D47A1;
+            display: block;
+            margin-top: 5px;
+            text-shadow: 0 2px 4px rgba(13, 71, 161, 0.1);
+        }
+        
+        .message {
+            font-size: 16px;
+            color: #546E7A;
+            margin-bottom: 35px;
+            line-height: 1.6;
+            animation: fadeInUp 0.8s ease-out 0.5s both;
+        }
+        
+        .exit-btn {
+            display: inline-block;
+            background: linear-gradient(135deg, #4FC3F7, #29B6F6);
+            color: white;
+            padding: 16px 50px;
+            border-radius: 30px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 18px;
+            transition: all 0.3s ease;
+            box-shadow: 0 8px 25px rgba(41, 182, 246, 0.4);
+            border: none;
+            cursor: pointer;
+            border: 3px solid #E1F5FE;
+            position: relative;
+            overflow: hidden;
+            animation: buttonPop 0.8s ease-out 0.7s both;
+            letter-spacing: 1px;
+        }
+        
+        .exit-btn:hover {
+            background: white;
+            color: #29B6F6;
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 15px 35px rgba(41, 182, 246, 0.5);
+        }
+        
+        .exit-btn:active {
+            transform: translateY(-1px);
+        }
+
+        .exit-btn.loading {
+            background: #b0bec5;
+            cursor: not-allowed;
+            transform: none !important;
+        }
+
+        .exit-btn.loading:hover {
+            background: #b0bec5;
+            color: white;
+        }
+
+        /* Progress Celebration */
+        .progress-container {
+            width: 100%;
+            height: 8px;
+            background: #E3F2FD;
+            border-radius: 10px;
+            margin: 25px 0;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #4FC3F7, #29B6F6);
+            border-radius: 10px;
+            width: 0%;
+            animation: progressFill 2s ease-out 1s forwards;
+            position: relative;
+        }
+
+        .progress-bar::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            height: 100%;
+            width: 20px;
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.6), transparent);
+            animation: progressShine 2s ease-in-out infinite;
+        }
+
+        /* Interactive Elements */
+        .interactive-message {
+            background: #E3F2FD;
+            padding: 15px;
+            border-radius: 20px;
+            margin: 20px 0;
+            font-size: 14px;
+            color: #1565C0;
+            border-left: 4px solid #4FC3F7;
+            animation: slideIn 1s ease-out 1.5s both;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .interactive-message:hover {
+            background: #B3E5FC;
+            transform: translateX(5px);
+        }
+
+        .achievement-badge {
+            display: inline-flex;
+            align-items: center;
+            background: linear-gradient(135deg, #FFF9C4, #FFEB3B);
+            color: #FF6F00;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            margin: 15px 0;
+            animation: badgePop 1s ease-out 2s both;
+            box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
+        }
+
+        /* Sparkle Effects */
+        .sparkle {
+            position: absolute;
+            font-size: 24px;
+            opacity: 0;
+            z-index: 5;
+            animation: sparkleFloat 6s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        .sparkle:nth-child(1) { top: 10%; left: 8%; animation-delay: 0s; color: #FF6B6B; }
+        .sparkle:nth-child(2) { top: 15%; right: 10%; animation-delay: 1s; color: #4ECDC4; }
+        .sparkle:nth-child(3) { bottom: 20%; left: 12%; animation-delay: 2s; color: #FFD166; }
+        .sparkle:nth-child(4) { bottom: 15%; right: 8%; animation-delay: 3s; color: #06D6A0; }
+        
+        .floating-emoji {
+            position: absolute;
+            font-size: 20px;
+            opacity: 0;
+            animation: emojiFloat 8s ease-in-out infinite;
+            z-index: 3;
+            pointer-events: none;
+        }
+        
+        .floating-emoji:nth-child(5) { top: 20%; left: 15%; animation-delay: 0.5s; }
+        .floating-emoji:nth-child(6) { top: 25%; right: 18%; animation-delay: 2s; }
+        .floating-emoji:nth-child(7) { bottom: 25%; left: 18%; animation-delay: 3.5s; }
+        
+        .bubble {
+            position: absolute;
+            background: rgba(100, 181, 246, 0.1);
+            border-radius: 50%;
+            animation: bubbleFloat 10s ease-in-out infinite;
+            pointer-events: none;
+        }
+        
+        .bubble:nth-child(8) { width: 50px; height: 50px; top: 8%; left: 5%; animation-delay: 0s; }
+        .bubble:nth-child(9) { width: 30px; height: 30px; top: 25%; right: 6%; animation-delay: 2s; }
+        .bubble:nth-child(10) { width: 40px; height: 40px; bottom: 15%; left: 8%; animation-delay: 4s; }
+
+        /* Sound Toggle */
+        .sound-toggle {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #E3F2FD;
+            border: none;
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #1565C0;
+            transition: all 0.3s ease;
+            z-index: 20;
+        }
+
+        .sound-toggle:hover {
+            background: #B3E5FC;
+            transform: scale(1.1);
+        }
+
+        /* Animasi Keyframes */
+        @keyframes containerPop {
+            0% {
+                opacity: 0;
+                transform: scale(0.8) translateY(50px);
+            }
+            70% {
+                transform: scale(1.05) translateY(-10px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+        
+        @keyframes characterBounce {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            25% {
+                transform: translateY(-10px) rotate(5deg);
+            }
+            75% {
+                transform: translateY(-5px) rotate(-3deg);
+            }
+        }
+        
+        @keyframes blink {
+            0%, 45%, 55%, 100% {
+                transform: scaleY(1);
+            }
+            50% {
+                transform: scaleY(0.1);
+            }
+        }
+
+        @keyframes lookAround {
+            0%, 90%, 100% {
+                transform: translateX(0);
+            }
+            30% {
+                transform: translateX(5px);
+            }
+            60% {
+                transform: translateX(-5px);
+            }
+        }
+        
+        @keyframes smile {
+            0%, 100% {
+                transform: scaleX(1);
+            }
+            50% {
+                transform: scaleX(1.2);
+            }
+        }
+        
+        @keyframes progressFill {
+            0% {
+                width: 0%;
+            }
+            100% {
+                width: 100%;
+            }
+        }
+
+        @keyframes progressShine {
+            0% {
+                left: -20px;
+            }
+            100% {
+                left: 100%;
+            }
+        }
+
+        @keyframes slideIn {
+            0% {
+                opacity: 0;
+                transform: translateX(-30px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateX(0);
+            }
+        }
+
+        @keyframes badgePop {
+            0% {
+                opacity: 0;
+                transform: scale(0) rotate(-180deg);
+            }
+            70% {
+                transform: scale(1.1) rotate(10deg);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) rotate(0);
+            }
+        }
+        
+        @keyframes sparkleFloat {
+            0%, 100% {
+                opacity: 0;
+                transform: translateY(0) rotate(0deg) scale(0);
+            }
+            20% {
+                opacity: 1;
+                transform: translateY(-40px) rotate(180deg) scale(1.5);
+            }
+            40% {
+                opacity: 0.8;
+                transform: translateY(-80px) rotate(360deg) scale(1.2);
+            }
+            60% {
+                opacity: 0.5;
+                transform: translateY(-120px) rotate(540deg) scale(0.8);
+            }
+            80% {
+                opacity: 0.2;
+                transform: translateY(-160px) rotate(720deg) scale(0.5);
+            }
+        }
+        
+        @keyframes emojiFloat {
+            0%, 100% {
+                opacity: 0;
+                transform: translateY(0) scale(0) rotate(0deg);
+            }
+            25% {
+                opacity: 1;
+                transform: translateY(-60px) scale(1.2) rotate(90deg);
+            }
+            50% {
+                opacity: 0.8;
+                transform: translateY(-120px) scale(1) rotate(180deg);
+            }
+            75% {
+                opacity: 0.3;
+                transform: translateY(-180px) scale(0.8) rotate(270deg);
+            }
+        }
+        
+        @keyframes bubbleFloat {
+            0%, 100% {
+                transform: translateY(0) rotate(0deg);
+            }
+            33% {
+                transform: translateY(-50px) rotate(120deg);
+            }
+            66% {
+                transform: translateY(-25px) rotate(240deg);
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                padding: 40px 25px;
+                border-radius: 25px;
+            }
+            
+            .title {
+                font-size: 24px;
+            }
+            
+            .title-bold {
+                font-size: 28px;
+            }
+            
+            .character {
+                width: 120px;
+                height: 120px;
+            }
+            
+            .face {
+                width: 70px;
+                height: 70px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sound Toggle -->
+    <button class="sound-toggle" id="soundToggle">🔊</button>
+
+    <!-- Sparkle Effects -->
+    <div class="sparkle">⭐</div>
+    <div class="sparkle">✨</div>
+    <div class="sparkle">🌟</div>
+    <div class="sparkle">💫</div>
+    
+    <!-- Floating Emojis -->
+    <div class="floating-emoji">🎉</div>
+    <div class="floating-emoji">🎊</div>
+    <div class="floating-emoji">🥳</div>
+    
+    <!-- Bubbles -->
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    <div class="bubble"></div>
+    
+    <div class="container">
+        <div class="success-icon">
+            <div class="character" id="character">
+                <div class="face">
+                    <div class="eyes">
+                        <div class="eye"></div>
+                        <div class="eye"></div>
+                    </div>
+                    <div class="smile"></div>
+                </div>
+            </div>
+        </div>
+        
+        <h1 class="title">
+            Selamat! Ujian Telah<br>
+            <span class="title-bold">Selesai</span>
+        </h1>
+
+        <!-- Progress Bar -->
+        <div class="progress-container">
+            <div class="progress-bar"></div>
+        </div>
+
+        <!-- Achievement Badge -->
+        <div class="achievement-badge">
+            🏆 Penyelesaian Ujian Berhasil!
+        </div>
+        
+        <p class="message">Jawaban ujian Anda telah berhasil dikumpulkan.</p>
+
+        <!-- Interactive Message -->
+        <div class="interactive-message" id="interactiveMessage">
+            💡 <strong>Tips:</strong> Istirahat yang cukup sambil menunggu hasil ujian!
+        </div>
+        
+        <button class="exit-btn" id="exitButton">Keluar</button>
+    </div>
+
+    <script>
+        // Sound Management
+        let soundEnabled = true;
+        const soundToggle = document.getElementById('soundToggle');
+        
+        soundToggle.addEventListener('click', function() {
+            soundEnabled = !soundEnabled;
+            this.textContent = soundEnabled ? '🔊' : '🔇';
+            
+            if (soundEnabled) {
+                playSuccessSound();
+            }
+        });
+
+        function playSuccessSound() {
+            if (!soundEnabled) return;
+            
+            // Create simple success sound using Web Audio API
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.frequency.setValueAtTime(523.25, audioContext.currentTime); // C5
+            oscillator.frequency.setValueAtTime(659.25, audioContext.currentTime + 0.1); // E5
+            oscillator.frequency.setValueAtTime(783.99, audioContext.currentTime + 0.2); // G5
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        // Character Interaction
+        const character = document.getElementById('character');
+        character.addEventListener('click', function() {
+            this.style.transform = 'scale(1.2) rotate(360deg)';
+            this.style.background = 'linear-gradient(135deg, #FF6B6B, #4ECDC4)';
+            
+            setTimeout(() => {
+                this.style.transform = '';
+                this.style.background = 'linear-gradient(135deg, #4FC3F7, #29B6F6)';
+            }, 600);
+            
+            if (soundEnabled) {
+                playCharacterSound();
+            }
+        });
+
+        function playCharacterSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            oscillator.type = 'sine';
+            oscillator.frequency.setValueAtTime(392, audioContext.currentTime); // G4
+            oscillator.frequency.setValueAtTime(523, audioContext.currentTime + 0.1); // C5
+            
+            gainNode.gain.setValueAtTime(0.2, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.3);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.3);
+        }
+
+        // Interactive Message
+        const interactiveMessage = document.getElementById('interactiveMessage');
+        let tipIndex = 0;
+        const tips = [
+            "💡 <strong>Tips:</strong> Istirahat yang cukup sambil menunggu hasil ujian!",
+            "📚 <strong>Saran:</strong> Review materi yang sudah dipelajari!",
+            "🎯 <strong>Motivasi:</strong> Setiap usaha pasti membuahkan hasil!",
+            "🌟 <strong>Inspirasi:</strong> Kesuksesan dimulai dari penyelesaian!"
+        ];
+
+        interactiveMessage.addEventListener('click', function() {
+            tipIndex = (tipIndex + 1) % tips.length;
+            this.innerHTML = tips[tipIndex];
+            
+            // Add bounce effect
+            this.style.transform = 'scale(1.05)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 300);
+        });
+
+        // ========== IMPLEMENTASI TOMBOL KELUAR UNTUK CLOSE WINDOW ==========
+        
+        // Exit Button dengan fungsi close window
+        document.getElementById('exitButton').addEventListener('click', function() {
+            // Disable button untuk prevent multiple clicks
+            this.disabled = true;
+            this.classList.add('loading');
+            this.innerHTML = '🔄 Menutup...';
+            
+            // Celebration effects
+            createCelebration();
+            
+            if (soundEnabled) {
+                playCelebrationSound();
+            }
+            
+            // Clear semua data ujian
+            clearExamData();
+            
+            // Tunggu animasi selesai, lalu close
+            setTimeout(closeExamSession, 1800);
+        });
+
+        function clearExamData() {
+            // Hapus semua data terkait ujian dari storage
+            const examKeys = [
+                'exam_data', 'exam_started', 'exam_time', 
+                'user_answers', 'current_question', 'exam_completed'
+            ];
+            
+            examKeys.forEach(key => {
+                sessionStorage.removeItem(key);
+                localStorage.removeItem(key);
+            });
+            
+            // Set flag bahwa ujian sudah selesai
+            sessionStorage.setItem('exam_completed', 'true');
+        }
+
+        function closeExamSession() {
+            const closeAttempts = [
+                // Attempt 1: Standard close
+                () => window.close(),
+                
+                // Attempt 2: Self close
+                () => window.open('', '_self').close(),
+                
+                // Attempt 3: Close dengan permission
+                () => {
+                    if (window.history.length > 1) {
+                        window.close();
+                    }
+                }
+            ];
+            
+            // Coba semua method
+            closeAttempts.forEach((attempt, index) => {
+                setTimeout(() => {
+                    if (!window.closed) {
+                        try {
+                            attempt();
+                        } catch (e) {
+                            console.log(`Close attempt ${index + 1} failed:`, e);
+                        }
+                    }
+                }, index * 200);
+            });
+            
+            // Final attempt dengan user confirmation
+            setTimeout(() => {
+                if (!window.closed) {
+                    const shouldClose = confirm(
+                        'Ujian telah selesai! 🎉\n\n' +
+                        'Terima kasih telah mengikuti ujian.\n\n' +
+                        'Klik OK untuk menutup halaman ini.'
+                    );
+                    
+                    if (shouldClose) {
+                        // Redirect ke blank page
+                        window.location.href = 'about:blank';
+                        // Try close once more
+                        setTimeout(window.close, 500);
+                    }
+                }
+            }, 1000);
+            
+            // Ultimate fallback
+            setTimeout(() => {
+                if (!window.closed) {
+                    alert('Sesi ujian telah berakhir. Silakan tutup tab browser secara manual.');
+                }
+            }, 3000);
+        }
+
+        function createCelebration() {
+            // Add more sparkles
+            for (let i = 0; i < 15; i++) {
+                setTimeout(() => {
+                    createSparkleBurst();
+                }, i * 100);
+            }
+            
+            // Shake the container
+            const container = document.querySelector('.container');
+            container.style.animation = 'none';
+            setTimeout(() => {
+                container.style.animation = 'containerPop 0.5s ease-out';
+            }, 10);
+        }
+
+        function playCelebrationSound() {
+            const audioContext = new (window.AudioContext || window.webkitAudioContext)();
+            const oscillator = audioContext.createOscillator();
+            const gainNode = audioContext.createGain();
+            
+            oscillator.connect(gainNode);
+            gainNode.connect(audioContext.destination);
+            
+            // Play a celebratory arpeggio
+            const notes = [523.25, 659.25, 783.99, 1046.50]; // C5, E5, G5, C6
+            notes.forEach((freq, index) => {
+                oscillator.frequency.setValueAtTime(freq, audioContext.currentTime + index * 0.1);
+            });
+            
+            gainNode.gain.setValueAtTime(0.3, audioContext.currentTime);
+            gainNode.gain.exponentialRampToValueAtTime(0.01, audioContext.currentTime + 0.5);
+            
+            oscillator.start();
+            oscillator.stop(audioContext.currentTime + 0.5);
+        }
+
+        function createSparkleBurst() {
+            const sparkles = ['⭐', '✨', '🌟', '💫', '🎈', '🎊'];
+            const colors = ['#FF6B6B', '#4ECDC4', '#FFD166', '#06D6A0', '#118AB2', '#EF476F', '#7209B7', '#F72585'];
+            
+            for (let i = 0; i < 6; i++) {
+                const sparkle = document.createElement('div');
+                sparkle.className = 'sparkle';
+                sparkle.textContent = sparkles[Math.floor(Math.random() * sparkles.length)];
+                sparkle.style.color = colors[Math.floor(Math.random() * colors.length)];
+                sparkle.style.left = Math.random() * 80 + 10 + '%';
+                sparkle.style.top = '80%';
+                sparkle.style.animation = 'sparkleFloat 3s ease-in-out forwards';
+                document.body.appendChild(sparkle);
+                
+                setTimeout(() => {
+                    sparkle.remove();
+                }, 3000);
+            }
+        }
+
+        // Auto close setelah 30 detik jika user lupa
+        let autoCloseTimer = setTimeout(() => {
+            if (confirm('Sesi ujian telah berakhir. Tutup halaman ini?')) {
+                closeExamSession();
+            }
+        }, 30000);
+
+        // Clear timer jika user menutup manual
+        document.getElementById('exitButton').addEventListener('click', function() {
+            clearTimeout(autoCloseTimer);
+        });
+
+        // Prevent back button navigation
+        history.pushState(null, null, location.href);
+        window.onpopstate = function() {
+            history.go(1);
+        };
+
+        // Block keyboard shortcuts
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F5' || 
+                (e.ctrlKey && e.key === 'r') || 
+                (e.ctrlKey && e.shiftKey && e.key === 'r') ||
+                e.key === 'F11') {
+                e.preventDefault();
+                return false;
+            }
+        });
+
+        // Play initial success sound
+        setTimeout(playSuccessSound, 1000);
+    </script>
+</body>
+</html>

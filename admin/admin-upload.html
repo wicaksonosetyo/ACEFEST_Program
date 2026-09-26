@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Upload Gambar Soal - Admin TIMAC FEST</title>
+    <link rel="stylesheet" href="../css/styles.css">
+    <style>
+        .admin-container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 30px;
+            background: white;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .form-group { 
+            margin-bottom: 20px; 
+        }
+        label { 
+            display: block; 
+            margin-bottom: 8px; 
+            font-weight: 600;
+            color: #333;
+        }
+        input, select { 
+            width: 100%; 
+            padding: 12px; 
+            border: 2px solid #e1e5e9;
+            border-radius: 8px;
+            font-size: 16px;
+        }
+        input:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        button { 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white; 
+            padding: 14px 28px; 
+            border: none; 
+            border-radius: 8px;
+            cursor: pointer; 
+            font-size: 16px;
+            font-weight: 600;
+            width: 100%;
+            transition: all 0.3s ease;
+        }
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 7px 20px rgba(102, 126, 234, 0.4);
+        }
+        .preview { 
+            max-width: 300px; 
+            margin-top: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.2);
+        }
+        .result-message {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        .success {
+            background: #f0fff0;
+            color: #2d5016;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #fff0f0;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .back-link {
+            display: block;
+            text-align: center;
+            margin-top: 30px;
+            color: #667eea;
+            text-decoration: none;
+        }
+        .back-link:hover {
+            text-decoration: underline;
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <h1 style="text-align: center; margin-bottom: 30px; color: #333;">
+            📤 Upload Gambar Soal
+        </h1>
+        
+        <form id="uploadForm">
+            <div class="form-group">
+                <label for="lomba">Pilih Lomba:</label>
+                <select id="lomba" required>
+                    <option value="">-- Pilih Lomba --</option>
+                    <option value="olimpiade_ipa">Olimpiade IPA</option>
+                    <option value="olimpiade_math">Olimpiade Matematika</option>
+                    <option value="olimpiade_ips">Olimpiade IPS</option>
+                    <option value="olimpiade_pai">Olimpiade PAI</option>
+                    <option value="lctp">LCTP</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="soalId">ID Soal:</label>
+                <input type="number" id="soalId" placeholder="Masukkan nomor soal" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="imageFile">Pilih Gambar:</label>
+                <input type="file" id="imageFile" accept="image/*" required>
+                <div class="preview-container">
+                    <img id="preview" class="preview" style="display:none;">
+                </div>
+            </div>
+            
+            <button type="submit">📤 Upload Gambar</button>
+        </form>
+        
+        <div id="result" class="result-message" style="display: none;"></div>
+        
+        <a href="../index.html" class="back-link">← Kembali ke Halaman Utama</a>
+    </div>
+
+    <script>
+        const API_BASE = 'https://exam-system-backend.timacefest2025.workers.dev';
+
+        // Preview image
+        document.getElementById('imageFile').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const preview = document.getElementById('preview');
+            
+            if (file) {
+                // Validasi file type
+                if (!file.type.startsWith('image/')) {
+                    alert('Harap pilih file gambar (JPEG, PNG, dll)');
+                    this.value = '';
+                    return;
+                }
+                
+                // Validasi file size (max 5MB)
+                if (file.size > 5 * 1024 * 1024) {
+                    alert('Ukuran file maksimal 5MB');
+                    this.value = '';
+                    return;
+                }
+                
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    preview.src = e.target.result;
+                    preview.style.display = 'block';
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+
+        // Upload form
+        document.getElementById('uploadForm').addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            const lomba = document.getElementById('lomba').value;
+            const soalId = document.getElementById('soalId').value;
+            const fileInput = document.getElementById('imageFile');
+            const file = fileInput.files[0];
+            
+            if (!file || !soalId || !lomba) {
+                alert('Harap isi semua field');
+                return;
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('soal_id', soalId);
+            formData.append('lomba', lomba);
+
+            const resultDiv = document.getElementById('result');
+            const submitBtn = this.querySelector('button[type="submit"]');
+            const originalText = submitBtn.innerHTML;
+
+            // Tampilkan loading
+            submitBtn.innerHTML = '⏳ Mengupload...';
+            submitBtn.disabled = true;
+            resultDiv.style.display = 'none';
+
+            try {
+                const response = await fetch(`${API_BASE}/api/admin/upload-image`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const data = await response.json();
+                
+                if (data.success) {
+                    resultDiv.innerHTML = `
+                        <div class="success">
+                            <h3>✅ Upload Berhasil!</h3>
+                            <p><strong>File:</strong> ${data.fileName}</p>
+                            <p><strong>Lomba:</strong> ${lomba}</p>
+                            <p><strong>URL:</strong> <a href="${data.url}" target="_blank">${data.url}</a></p>
+                        </div>
+                    `;
+                    
+                    // Reset form
+                    document.getElementById('uploadForm').reset();
+                    document.getElementById('preview').style.display = 'none';
+                } else {
+                    throw new Error(data.error || 'Upload gagal');
+                }
+                
+            } catch (error) {
+                console.error('Upload error:', error);
+                resultDiv.innerHTML = `
+                    <div class="error">
+                        <h3>❌ Upload Gagal</h3>
+                        <p>${error.message}</p>
+                    </div>
+                `;
+            } finally {
+                // Reset button
+                submitBtn.innerHTML = originalText;
+                submitBtn.disabled = false;
+                resultDiv.style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>

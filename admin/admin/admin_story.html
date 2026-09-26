@@ -1,0 +1,1052 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Status Pengumpulan Story Telling</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        :root {
+            --primary: #1e40af;
+            --primary-light: #3b82f6;
+            --primary-dark: #1e3a8a;
+            --secondary: #64748b;
+            --light: #f8fafc;
+            --dark: #1e293b;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --border: #e2e8f0;
+            --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f1f5f9;
+            color: var(--dark);
+            line-height: 1.6;
+        }
+
+        .dashboard-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        /* Sidebar Styles */
+        .sidebar {
+            width: 250px;
+            background-color: white;
+            box-shadow: var(--shadow);
+            transition: all 0.3s ease;
+            z-index: 100;
+        }
+
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .sidebar-header h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+        }
+
+        .sidebar-menu {
+            padding: 1rem 0;
+        }
+
+        .menu-item {
+            padding: 0.8rem 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            color: var(--secondary);
+            text-decoration: none;
+            transition: all 0.2s ease;
+            cursor: pointer;
+        }
+
+        .menu-item:hover, .menu-item.active {
+            background-color: #eff6ff;
+            color: var(--primary);
+            border-right: 3px solid var(--primary);
+        }
+
+        .menu-item i {
+            width: 20px;
+            text-align: center;
+        }
+
+        /* Main Content Styles */
+        .main-content {
+            flex: 1;
+            padding: 1.5rem;
+            overflow-y: auto;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .header h1 {
+            color: var(--dark);
+            font-size: 1.8rem;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+
+        /* Stats Cards */
+        .stats-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .stat-icon.blue {
+            background-color: #dbeafe;
+            color: var(--primary);
+        }
+
+        .stat-icon.green {
+            background-color: #d1fae5;
+            color: var(--success);
+        }
+
+        .stat-icon.orange {
+            background-color: #fed7aa;
+            color: var(--warning);
+        }
+
+        .stat-info h3 {
+            font-size: 1.8rem;
+            margin-bottom: 5px;
+        }
+
+        .stat-info p {
+            color: var(--secondary);
+            font-size: 0.9rem;
+        }
+
+        /* Filters */
+        .filters {
+            background-color: white;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            box-shadow: var(--shadow);
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            align-items: center;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+        }
+
+        .filter-label {
+            margin-bottom: 5px;
+            font-size: 0.9rem;
+            color: var(--secondary);
+        }
+
+        .filter-input, .filter-select {
+            padding: 0.5rem 0.75rem;
+            border: 1px solid var(--border);
+            border-radius: 4px;
+            font-size: 0.9rem;
+        }
+
+        .filter-input:focus, .filter-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: background-color 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .btn-primary {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+
+        .btn-secondary {
+            background-color: var(--secondary);
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background-color: #475569;
+        }
+
+        /* Table */
+        .table-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+            margin-bottom: 2rem;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        thead {
+            background-color: var(--primary);
+            color: white;
+        }
+
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border);
+        }
+
+        th {
+            font-weight: 600;
+        }
+
+        tbody tr:hover {
+            background-color: #f8fafc;
+        }
+
+        .status-badge {
+            padding: 4px 8px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+        }
+
+        .status-pending {
+            background-color: #fef3c7;
+            color: #d97706;
+        }
+
+        .status-submitted {
+            background-color: #d1fae5;
+            color: #065f46;
+        }
+
+        .action-cell {
+            display: flex;
+            gap: 8px;
+        }
+
+        .btn-small {
+            padding: 6px 10px;
+            font-size: 0.8rem;
+        }
+
+        .btn-success {
+            background-color: var(--success);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #0da271;
+        }
+
+        .btn-warning {
+            background-color: var(--warning);
+            color: white;
+        }
+
+        .btn-warning:hover {
+            background-color: #d97706;
+        }
+
+        .btn-danger {
+            background-color: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background-color: #dc2626;
+        }
+
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 1.5rem;
+        }
+
+        .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid var(--border);
+            background-color: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+
+        .pagination-btn.active {
+            background-color: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        .pagination-btn:hover:not(.active) {
+            background-color: var(--light);
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 1.5rem;
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .modal-title {
+            font-size: 1.25rem;
+            color: var(--primary-dark);
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--secondary);
+        }
+
+        .detail-item {
+            margin-bottom: 1rem;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--secondary);
+            margin-bottom: 5px;
+        }
+
+        .detail-value {
+            padding: 8px;
+            background-color: var(--light);
+            border-radius: 4px;
+        }
+
+        .video-preview {
+            width: 100%;
+            height: 300px;
+            background-color: #f1f5f9;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-top: 10px;
+        }
+
+        .video-preview iframe {
+            width: 100%;
+            height: 100%;
+            border: none;
+            border-radius: 4px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 2rem;
+            color: var(--secondary);
+        }
+
+        .error-message {
+            background-color: #fee2e2;
+            color: var(--danger);
+            padding: 1rem;
+            border-radius: 4px;
+            margin-bottom: 1.5rem;
+            text-align: center;
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-group {
+                min-width: 100%;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .action-cell {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="dashboard-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <div class="sidebar-header">
+                <div style="background-color: var(--primary); color: white; width: 40px; height: 40px; border-radius: 8px; display: flex; align-items: center; justify-content: center;">
+                    <i class="fas fa-microphone-alt"></i>
+                </div>
+                <h2>Admin Panel</h2>
+            </div>
+            <div class="sidebar-menu">
+                <div class="menu-item active">
+                    <i class="fas fa-home"></i>
+                    <span>Dashboard</span>
+                </div>
+                <div class="menu-item">
+                    <i class="fas fa-users"></i>
+                    <span>Peserta</span>
+                </div>
+                <div class="menu-item">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Statistik</span>
+                </div>
+                <div class="menu-item">
+                    <i class="fas fa-cog"></i>
+                    <span>Pengaturan</span>
+                </div>
+                <div class="menu-item">
+                    <i class="fas fa-sign-out-alt"></i>
+                    <span>Keluar</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <div class="header">
+                <h1>Status Pengumpulan Story Telling</h1>
+                <div class="user-info">
+                    <div class="user-avatar">A</div>
+                    <div>
+                        <div>Administrator</div>
+                        <div style="font-size: 0.8rem; color: var(--secondary);">TIMAC FEST 2025</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Stats Cards -->
+            <div class="stats-container">
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="total-participants">0</h3>
+                        <p>Total Peserta</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon green">
+                        <i class="fas fa-check-circle"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="submitted-count">0</h3>
+                        <p>Telah Mengumpulkan</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon orange">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="pending-count">0</h3>
+                        <p>Belum Mengumpulkan</p>
+                    </div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-icon blue">
+                        <i class="fas fa-percentage"></i>
+                    </div>
+                    <div class="stat-info">
+                        <h3 id="submission-rate">0%</h3>
+                        <p>Tingkat Pengumpulan</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Filters -->
+            <div class="filters">
+                <div class="filter-group">
+                    <label class="filter-label">Cari Peserta</label>
+                    <input type="text" id="search-input" class="filter-input" placeholder="Nama atau sekolah...">
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Status</label>
+                    <select id="status-filter" class="filter-select">
+                        <option value="all">Semua Status</option>
+                        <option value="submitted">Telah Mengumpulkan</option>
+                        <option value="pending">Belum Mengumpulkan</option>
+                    </select>
+                </div>
+                <div class="filter-group">
+                    <label class="filter-label">Urutkan</label>
+                    <select id="sort-select" class="filter-select">
+                        <option value="newest">Terbaru</option>
+                        <option value="oldest">Terlama</option>
+                        <option value="name">Nama A-Z</option>
+                    </select>
+                </div>
+                <div style="display: flex; align-items: flex-end;">
+                    <button id="apply-filters" class="btn btn-primary">
+                        <i class="fas fa-filter"></i> Terapkan
+                    </button>
+                    <button id="reset-filters" class="btn btn-secondary" style="margin-left: 10px;">
+                        <i class="fas fa-redo"></i> Reset
+                    </button>
+                </div>
+            </div>
+
+            <!-- Table -->
+            <div class="table-container">
+                <div id="error-message" class="error-message" style="display: none;"></div>
+                <div id="loading" class="loading">
+                    <i class="fas fa-spinner fa-spin"></i> Memuat data peserta...
+                </div>
+                <table id="results-table" style="display: none;">
+                    <thead>
+                        <tr>
+                            <th>No</th>
+                            <th>Nama Peserta</th>
+                            <th>Sekolah</th>
+                            <th>Judul Video</th>
+                            <th>Link YouTube</th>
+                            <th>Status</th>
+                            <th>Tanggal Submit</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody id="results-body">
+                        <!-- Data akan diisi oleh JavaScript -->
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="pagination" id="pagination" style="display: none;">
+                <!-- Pagination akan diisi oleh JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Detail -->
+    <div id="detail-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Detail Pengumpulan</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div id="modal-body">
+                <!-- Detail akan diisi oleh JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Konfigurasi
+        const API_BASE_URL = 'https://exam-system-backend.timacefest2025.workers.dev';
+        const STORY_TELLING_ENDPOINT = '/api/videos/story_telling';
+        const ITEMS_PER_PAGE = 10;
+        
+        // State aplikasi
+        let currentPage = 1;
+        let totalPages = 1;
+        let allSubmissions = [];
+        let filteredSubmissions = [];
+        
+        // Elemen DOM
+        const resultsTable = document.getElementById('results-table');
+        const resultsBody = document.getElementById('results-body');
+        const loadingElement = document.getElementById('loading');
+        const errorMessage = document.getElementById('error-message');
+        const paginationElement = document.getElementById('pagination');
+        const searchInput = document.getElementById('search-input');
+        const statusFilter = document.getElementById('status-filter');
+        const sortSelect = document.getElementById('sort-select');
+        const applyFiltersBtn = document.getElementById('apply-filters');
+        const resetFiltersBtn = document.getElementById('reset-filters');
+        const detailModal = document.getElementById('detail-modal');
+        const closeModalBtn = document.querySelector('.close-btn');
+        const modalBody = document.getElementById('modal-body');
+        
+        // Statistik
+        const totalParticipantsEl = document.getElementById('total-participants');
+        const submittedCountEl = document.getElementById('submitted-count');
+        const pendingCountEl = document.getElementById('pending-count');
+        const submissionRateEl = document.getElementById('submission-rate');
+        
+        // Fungsi untuk memuat data dari API
+        async function loadSubmissions() {
+            try {
+                showLoading();
+                hideError();
+                
+                console.log('Memuat data dari:', `${API_BASE_URL}${STORY_TELLING_ENDPOINT}`);
+                const response = await fetch(`${API_BASE_URL}${STORY_TELLING_ENDPOINT}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Data diterima:', data);
+                
+                if (data.success) {
+                    allSubmissions = data.submissions || [];
+                    console.log('Total submissions:', allSubmissions.length);
+                    console.log('Contoh data pertama:', allSubmissions[0]);
+                    applyFilters();
+                    updateStats();
+                } else {
+                    throw new Error(data.error || 'Gagal memuat data');
+                }
+            } catch (error) {
+                console.error('Error loading submissions:', error);
+                showError(`Gagal memuat data: ${error.message}`);
+            }
+        }
+        
+        // Fungsi untuk menerapkan filter dan sorting
+        function applyFilters() {
+            let submissions = [...allSubmissions];
+            
+            // Filter berdasarkan pencarian
+            const searchTerm = searchInput.value.toLowerCase();
+            if (searchTerm) {
+                submissions = submissions.filter(submission => 
+                    submission.nama.toLowerCase().includes(searchTerm) || 
+                    submission.sekolah.toLowerCase().includes(searchTerm) ||
+                    (submission.video_title && submission.video_title.toLowerCase().includes(searchTerm))
+                );
+            }
+            
+            // Filter berdasarkan status
+            const statusFilterValue = statusFilter.value;
+            if (statusFilterValue !== 'all') {
+                if (statusFilterValue === 'submitted') {
+                    submissions = submissions.filter(submission => submission.youtube_link);
+                } else if (statusFilterValue === 'pending') {
+                    // Untuk simulasi, anggap yang tidak punya youtube_link adalah pending
+                    submissions = submissions.filter(submission => !submission.youtube_link);
+                }
+            }
+            
+            // Sorting
+            const sortValue = sortSelect.value;
+            submissions.sort((a, b) => {
+                switch (sortValue) {
+                    case 'newest':
+                        return new Date(b.submitted_at) - new Date(a.submitted_at);
+                    case 'oldest':
+                        return new Date(a.submitted_at) - new Date(b.submitted_at);
+                    case 'name':
+                        return a.nama.localeCompare(b.nama);
+                    default:
+                        return new Date(b.submitted_at) - new Date(a.submitted_at);
+                }
+            });
+            
+            filteredSubmissions = submissions;
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+        }
+        
+        // Fungsi untuk merender tabel
+        function renderTable() {
+            if (filteredSubmissions.length === 0) {
+                resultsTable.style.display = 'none';
+                paginationElement.style.display = 'none';
+                showError('Tidak ada data yang sesuai dengan filter yang dipilih.');
+                return;
+            }
+            
+            resultsTable.style.display = 'table';
+            paginationElement.style.display = 'flex';
+            hideError();
+            hideLoading();
+            
+            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+            const endIndex = startIndex + ITEMS_PER_PAGE;
+            const pageSubmissions = filteredSubmissions.slice(startIndex, endIndex);
+            
+            resultsBody.innerHTML = '';
+            
+            pageSubmissions.forEach((submission, index) => {
+                const row = document.createElement('tr');
+                const globalIndex = startIndex + index + 1;
+                
+                // Tentukan status
+                const hasSubmitted = submission.youtube_link && submission.youtube_link.trim() !== '';
+                const statusText = hasSubmitted ? 'Telah Mengumpulkan' : 'Belum Mengumpulkan';
+                const statusClass = hasSubmitted ? 'status-submitted' : 'status-pending';
+                
+                // Format link YouTube
+                let youtubeLink = '-';
+                if (hasSubmitted) {
+                    const videoId = extractYouTubeId(submission.youtube_link);
+                    if (videoId) {
+                        youtubeLink = `<a href="${submission.youtube_link}" target="_blank" style="color: var(--primary); text-decoration: none;">
+                            <i class="fab fa-youtube"></i> Tonton Video
+                        </a>`;
+                    } else {
+                        youtubeLink = `<span style="color: var(--danger);">Link tidak valid</span>`;
+                    }
+                }
+                
+                row.innerHTML = `
+                    <td>${globalIndex}</td>
+                    <td>${submission.nama}</td>
+                    <td>${submission.sekolah}</td>
+                    <td>${submission.video_title || '-'}</td>
+                    <td>${youtubeLink}</td>
+                    <td><span class="status-badge ${statusClass}">${statusText}</span></td>
+                    <td>${formatDate(submission.submitted_at)}</td>
+                    <td class="action-cell">
+                        <button class="btn btn-primary btn-small view-detail" data-index="${startIndex + index}">
+                            <i class="fas fa-eye"></i> Detail
+                        </button>
+                        ${hasSubmitted ? `
+                        <button class="btn btn-success btn-small approve-btn" data-index="${startIndex + index}">
+                            <i class="fas fa-check"></i> Setujui
+                        </button>
+                        ` : ''}
+                    </td>
+                `;
+                
+                resultsBody.appendChild(row);
+            });
+            
+            // Tambahkan event listener untuk tombol detail
+            document.querySelectorAll('.view-detail').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    showDetail(filteredSubmissions[index]);
+                });
+            });
+            
+            // Tambahkan event listener untuk tombol setujui
+            document.querySelectorAll('.approve-btn').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    approveSubmission(filteredSubmissions[index]);
+                });
+            });
+        }
+        
+        // Fungsi untuk menampilkan detail peserta
+        function showDetail(submission) {
+            const hasSubmitted = submission.youtube_link && submission.youtube_link.trim() !== '';
+            const videoId = hasSubmitted ? extractYouTubeId(submission.youtube_link) : null;
+            
+            modalBody.innerHTML = `
+                <div class="detail-item">
+                    <div class="detail-label">Nama Peserta</div>
+                    <div class="detail-value">${submission.nama || 'Tidak tersedia'}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Username</div>
+                    <div class="detail-value">${submission.username || 'Tidak tersedia'}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Sekolah</div>
+                    <div class="detail-value">${submission.sekolah || 'Tidak tersedia'}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Judul Video</div>
+                    <div class="detail-value">${submission.video_title || 'Belum mengumpulkan'}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Link YouTube</div>
+                    <div class="detail-value">${hasSubmitted ? 
+                        `<a href="${submission.youtube_link}" target="_blank">${submission.youtube_link}</a>` : 
+                        'Belum mengumpulkan'}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Status</div>
+                    <div class="detail-value">
+                        <span class="status-badge ${hasSubmitted ? 'status-submitted' : 'status-pending'}">
+                            ${hasSubmitted ? 'Telah Mengumpulkan' : 'Belum Mengumpulkan'}
+                        </span>
+                    </div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Tanggal Submit</div>
+                    <div class="detail-value">${formatDate(submission.submitted_at)}</div>
+                </div>
+                ${hasSubmitted && videoId ? `
+                <div class="detail-item">
+                    <div class="detail-label">Pratinjau Video</div>
+                    <div class="video-preview">
+                        <iframe src="https://www.youtube.com/embed/${videoId}" 
+                                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+                                allowfullscreen>
+                        </iframe>
+                    </div>
+                </div>
+                ` : ''}
+            `;
+            
+            detailModal.style.display = 'flex';
+        }
+        
+        // Fungsi untuk menyetujui pengumpulan
+        function approveSubmission(submission) {
+            if (confirm(`Setujui pengumpulan dari ${submission.nama}?`)) {
+                // Di sini Anda bisa menambahkan logika untuk mengupdate status di database
+                alert(`Pengumpulan dari ${submission.nama} telah disetujui!`);
+                // Refresh data
+                loadSubmissions();
+            }
+        }
+        
+        // Fungsi untuk memperbarui statistik
+        function updateStats() {
+            if (allSubmissions.length === 0) {
+                totalParticipantsEl.textContent = '0';
+                submittedCountEl.textContent = '0';
+                pendingCountEl.textContent = '0';
+                submissionRateEl.textContent = '0%';
+                return;
+            }
+            
+            totalParticipantsEl.textContent = allSubmissions.length;
+            
+            const submittedCount = allSubmissions.filter(s => s.youtube_link && s.youtube_link.trim() !== '').length;
+            const pendingCount = allSubmissions.length - submittedCount;
+            const submissionRate = (submittedCount / allSubmissions.length * 100).toFixed(1);
+            
+            submittedCountEl.textContent = submittedCount;
+            pendingCountEl.textContent = pendingCount;
+            submissionRateEl.textContent = `${submissionRate}%`;
+        }
+        
+        // Fungsi utilitas
+        function extractYouTubeId(url) {
+            if (!url) return null;
+            
+            const regExp = /^.*((youtu.be\/)|(v\/)|(\/u\/\w\/)|(embed\/)|(watch\?))\??v?=?([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[7].length === 11) ? match[7] : null;
+        }
+        
+        function formatDate(dateString) {
+            if (!dateString) return 'Tidak tersedia';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        function showLoading() {
+            loadingElement.style.display = 'block';
+            resultsTable.style.display = 'none';
+            paginationElement.style.display = 'none';
+        }
+        
+        function hideLoading() {
+            loadingElement.style.display = 'none';
+        }
+        
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            hideLoading();
+        }
+        
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+        
+        // Fungsi untuk merender pagination
+        function renderPagination() {
+            totalPages = Math.ceil(filteredSubmissions.length / ITEMS_PER_PAGE);
+            
+            if (totalPages <= 1) {
+                paginationElement.style.display = 'none';
+                return;
+            }
+            
+            paginationElement.innerHTML = '';
+            
+            // Tombol sebelumnya
+            const prevButton = document.createElement('button');
+            prevButton.className = 'pagination-btn';
+            prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>';
+            prevButton.disabled = currentPage === 1;
+            prevButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable();
+                    renderPagination();
+                }
+            });
+            paginationElement.appendChild(prevButton);
+            
+            // Tombol halaman
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, startPage + 4);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
+                pageButton.textContent = i;
+                pageButton.addEventListener('click', () => {
+                    currentPage = i;
+                    renderTable();
+                    renderPagination();
+                });
+                paginationElement.appendChild(pageButton);
+            }
+            
+            // Tombol berikutnya
+            const nextButton = document.createElement('button');
+            nextButton.className = 'pagination-btn';
+            nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>';
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderTable();
+                    renderPagination();
+                }
+            });
+            paginationElement.appendChild(nextButton);
+        }
+        
+        // Event listeners
+        applyFiltersBtn.addEventListener('click', applyFilters);
+        
+        resetFiltersBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            statusFilter.value = 'all';
+            sortSelect.value = 'newest';
+            applyFilters();
+        });
+        
+        closeModalBtn.addEventListener('click', () => {
+            detailModal.style.display = 'none';
+        });
+        
+        window.addEventListener('click', (event) => {
+            if (event.target === detailModal) {
+                detailModal.style.display = 'none';
+            }
+        });
+        
+        // Inisialisasi
+        document.addEventListener('DOMContentLoaded', () => {
+            loadSubmissions();
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,829 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pengumpulan Jawaban Tulis - TIMAC FEST 2025</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+            position: relative;
+            overflow-x: hidden;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+            padding: 40px;
+            max-width: 800px;
+            width: 90%;
+            position: relative;
+            z-index: 10;
+            animation: containerPop 0.8s ease-out;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .header h1 {
+            color: #4A5568;
+            font-size: 28px;
+            margin-bottom: 10px;
+            font-weight: 700;
+        }
+
+        .header p {
+            color: #718096;
+            font-size: 16px;
+        }
+
+        .user-info-card {
+            background: linear-gradient(135deg, #4299E1 0%, #3182CE 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 12px;
+            margin: 20px 0;
+            text-align: center;
+            box-shadow: 0 8px 20px rgba(66, 153, 225, 0.3);
+        }
+
+        .user-name {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 5px;
+        }
+
+        .user-details {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        .upload-section {
+            border: 2px dashed #CBD5E0;
+            border-radius: 12px;
+            padding: 40px 20px;
+            text-align: center;
+            margin-bottom: 30px;
+            transition: all 0.3s ease;
+            background: #FAFBFC;
+            cursor: pointer;
+        }
+
+        .upload-section.active {
+            border-color: #4299E1;
+            background: #EBF8FF;
+        }
+
+        .upload-section:hover {
+            border-color: #4299E1;
+            background: #EBF8FF;
+        }
+
+        .upload-icon {
+            font-size: 48px;
+            margin-bottom: 15px;
+            color: #4299E1;
+        }
+
+        .upload-text h3 {
+            color: #2D3748;
+            margin-bottom: 10px;
+            font-size: 20px;
+        }
+
+        .upload-text p {
+            color: #718096;
+            margin-bottom: 5px;
+            font-size: 14px;
+        }
+
+        .file-input {
+            display: none;
+        }
+
+        .browse-btn {
+            display: inline-block;
+            background: #4299E1;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-top: 15px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            border: none;
+            font-size: 14px;
+        }
+
+        .browse-btn:hover {
+            background: #3182CE;
+            transform: translateY(-2px);
+        }
+
+        .file-list {
+            margin-top: 20px;
+        }
+
+        .file-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 15px;
+            background: #F7FAFC;
+            border: 1px solid #E2E8F0;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            animation: fadeInUp 0.3s ease;
+        }
+
+        .file-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .file-icon {
+            font-size: 20px;
+            color: #4299E1;
+        }
+
+        .file-details {
+            text-align: left;
+        }
+
+        .file-name {
+            font-weight: 600;
+            color: #2D3748;
+            font-size: 14px;
+        }
+
+        .file-size {
+            color: #718096;
+            font-size: 12px;
+        }
+
+        .remove-file {
+            background: #FC8181;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 25px;
+            height: 25px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            transition: all 0.3s ease;
+        }
+
+        .remove-file:hover {
+            background: #F56565;
+            transform: scale(1.1);
+        }
+
+        .info-section {
+            background: #EDF2F7;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 30px;
+        }
+
+        .info-title {
+            color: #2D3748;
+            font-weight: 600;
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .info-list {
+            list-style: none;
+            color: #4A5568;
+            font-size: 14px;
+        }
+
+        .info-list li {
+            margin-bottom: 8px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .info-list li:before {
+            content: "•";
+            color: #4299E1;
+            position: absolute;
+            left: 0;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: #48BB78;
+            color: white;
+            border: none;
+            padding: 16px;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .submit-btn:hover:not(:disabled) {
+            background: #38A169;
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(72, 187, 120, 0.3);
+        }
+
+        .submit-btn:disabled {
+            background: #CBD5E0;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .status-message {
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 20px;
+            text-align: center;
+            font-weight: 600;
+            display: none;
+        }
+
+        .status-success {
+            background: #C6F6D5;
+            color: #22543D;
+            border: 1px solid #9AE6B4;
+        }
+
+        .status-error {
+            background: #FED7D7;
+            color: #742A2A;
+            border: 1px solid #FEB2B2;
+        }
+
+        .status-info {
+            background: #BEE3F8;
+            color: #1A365D;
+            border: 1px solid #90CDF4;
+        }
+
+        /* Security Overlay */
+        .security-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.9);
+            display: none;
+            justify-content: center;
+            align-items: center;
+            z-index: 9999;
+            color: white;
+            text-align: center;
+            flex-direction: column;
+        }
+
+        .security-message {
+            font-size: 24px;
+            margin-bottom: 20px;
+            padding: 20px;
+            background: rgba(255, 0, 0, 0.3);
+            border-radius: 10px;
+            border: 2px solid red;
+        }
+
+        .countdown {
+            font-size: 48px;
+            font-weight: bold;
+            color: #FF6B6B;
+        }
+
+        /* Animations */
+        @keyframes containerPop {
+            0% {
+                opacity: 0;
+                transform: scale(0.9) translateY(30px);
+            }
+            100% {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
+        }
+
+        @keyframes fadeInUp {
+            0% {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 30px 20px;
+            }
+            
+            .header h1 {
+                font-size: 24px;
+            }
+            
+            .upload-section {
+                padding: 30px 15px;
+            }
+            
+            .user-name {
+                font-size: 18px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Security Overlay -->
+    <div class="security-overlay" id="securityOverlay">
+        <div class="security-message">
+            ⚠️ AKSES DI TOLAK ⚠️<br>
+            Anda tidak diizinkan mengakses halaman ini
+        </div>
+        <div class="countdown" id="countdown">5</div>
+        <p style="margin-top: 20px;">Anda akan diarahkan ke halaman utama...</p>
+    </div>
+
+    <div class="container">
+        <div class="header">
+            <h1>📝 Pengumpulan Jawaban Tulis</h1>
+            <p>Upload foto coretan dan jawaban yang telah Anda tulis di kertas</p>
+            
+            <!-- User Info Card -->
+            <div class="user-info-card" id="userInfoCard">
+                <div class="user-name" id="userName">Memuat data peserta...</div>
+                <div class="user-details" id="userDetails">Olimpiade Matematika Tahap 2</div>
+            </div>
+        </div>
+
+        <div class="upload-section" id="uploadArea">
+            <div class="upload-icon">📤</div>
+            <div class="upload-text">
+                <h3>Upload File Jawaban</h3>
+                <p>Klik area ini atau tombol di bawah untuk memilih file</p>
+                <p style="font-size: 12px; color: #A0AEC0;">
+                    Format: JPG, PNG, PDF (Maks. 10MB per file)<br>
+                    Maksimal 10 file
+                </p>
+            </div>
+            <button class="browse-btn" id="browseBtn">Pilih File</button>
+            <input type="file" id="fileInput" class="file-input" multiple accept="image/*,.pdf">
+        </div>
+
+        <div class="file-list" id="fileList"></div>
+
+        <div class="info-section">
+            <div class="info-title">📋 Petunjuk Pengumpulan:</div>
+            <ul class="info-list">
+                <li>Pastikan foto jelas dan terbaca</li>
+                <li>Gunakan pencahayaan yang cukup saat memfoto</li>
+                <li>File akan disimpan dalam folder khusus dengan nama Anda</li>
+                <li>Anda dapat mengupload maksimal 10 file</li>
+                <li>Setiap file maksimal 10MB</li>
+                <li>Pastikan semua jawaban sudah lengkap sebelum dikirim</li>
+            </ul>
+        </div>
+
+        <button class="submit-btn" id="submitBtn" disabled>
+            <span>🚀 Kirim Jawaban Tulis</span>
+        </button>
+
+        <div class="status-message" id="statusMessage"></div>
+    </div>
+
+    <script>
+        const API_BASE = 'https://exam-system-backend.timacefest2025.workers.dev';
+
+        // ==================== SISTEM KEAMANAN ====================
+        function checkValidAccess() {
+            const handwrittenAccess = localStorage.getItem('handwritten_access') === 'granted';
+            const handwrittenUserData = localStorage.getItem('handwritten_user_data');
+            const authOrigin = localStorage.getItem('auth_origin');
+
+            console.log('🔍 Checking access:', {
+                handwrittenAccess,
+                hasUserData: !!handwrittenUserData,
+                authOrigin
+            });
+
+            // Izinkan akses jika dari exam completion dan ada data user
+            const isValidAccess = handwrittenAccess && handwrittenUserData;
+
+            if (!isValidAccess) {
+                console.log('❌ Access denied - redirecting to security overlay');
+                showSecurityOverlay();
+                return false;
+            }
+
+            console.log('✅ Access granted');
+            return true;
+        }
+
+        function showSecurityOverlay() {
+            const overlay = document.getElementById('securityOverlay');
+            const countdown = document.getElementById('countdown');
+
+            overlay.style.display = 'flex';
+
+            let count = 5;
+            const countdownInterval = setInterval(() => {
+                countdown.textContent = count;
+                count--;
+
+                if (count < 0) {
+                    clearInterval(countdownInterval);
+                    redirectToIndex();
+                }
+            }, 1000);
+        }
+
+        function redirectToIndex() {
+            localStorage.removeItem('handwritten_access');
+            localStorage.removeItem('handwritten_user_data');
+            localStorage.removeItem('auth_origin');
+            window.location.href = '../index.html';
+        }
+
+        function blockBackButton() {
+            window.history.pushState(null, null, window.location.href);
+            window.onpopstate = function () {
+                window.history.pushState(null, null, window.location.href);
+                showSecurityWarning('Navigasi kembali diblokir');
+            };
+        }
+
+        function blockCopyPaste() {
+            document.addEventListener('copy', e => e.preventDefault());
+            document.addEventListener('cut', e => e.preventDefault());
+            document.addEventListener('paste', e => e.preventDefault());
+            document.addEventListener('contextmenu', e => e.preventDefault());
+            
+            document.addEventListener('keydown', function (e) {
+                if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I') || 
+                    (e.ctrlKey && e.shiftKey && e.key === 'J') || (e.ctrlKey && e.key === 'u')) {
+                    e.preventDefault();
+                    showSecurityWarning('Akses developer tools dilarang!');
+                }
+            });
+        }
+
+        function showSecurityWarning(message) {
+            const warning = document.createElement('div');
+            warning.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: #ff4444;
+                color: white;
+                padding: 15px 20px;
+                border-radius: 8px;
+                z-index: 10000;
+                font-weight: bold;
+                box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+            `;
+            warning.textContent = `⚠️ ${message}`;
+            document.body.appendChild(warning);
+            setTimeout(() => warning.remove(), 3000);
+        }
+
+        // ==================== FUNGSI TAMPILKAN USER INFO ====================
+        function displayUserInfo() {
+            const userDataStr = localStorage.getItem('handwritten_user_data');
+            console.log('📋 User data from storage:', userDataStr);
+            
+            if (userDataStr) {
+                try {
+                    const userData = JSON.parse(userDataStr);
+                    const userNameElement = document.getElementById('userName');
+                    const userDetailsElement = document.getElementById('userDetails');
+                    
+                    if (userNameElement && userDetailsElement) {
+                        userNameElement.textContent = userData.nama || 'Nama tidak tersedia';
+                        userDetailsElement.innerHTML = `
+                            🏫 ${userData.sekolah || 'Sekolah tidak tersedia'} 
+                            | 📝 ${userData.lomba || 'Olimpiade Matematika Tahap 2'}
+                        `;
+                        console.log('✅ User info displayed successfully');
+                    }
+                } catch (error) {
+                    console.error('❌ Error parsing user data:', error);
+                    showSecurityOverlay();
+                }
+            } else {
+                console.error('❌ No user data found');
+                showSecurityOverlay();
+            }
+        }
+
+        // ==================== FUNGSI UTAMA ====================
+        let selectedFiles = [];
+
+        document.addEventListener('DOMContentLoaded', function () {
+            console.log('🚀 Initializing handwritten submission page...');
+            
+            if (!checkValidAccess()) {
+                console.log('❌ Access validation failed');
+                return;
+            }
+
+            displayUserInfo();
+            blockBackButton();
+            blockCopyPaste();
+            initializeFileUpload();
+            checkExistingSubmission();
+        });
+
+        function initializeFileUpload() {
+            const uploadArea = document.getElementById('uploadArea');
+            const fileInput = document.getElementById('fileInput');
+            const browseBtn = document.getElementById('browseBtn');
+            const submitBtn = document.getElementById('submitBtn');
+
+            console.log('📁 Initializing file upload system...');
+
+            // Click handlers
+            browseBtn.addEventListener('click', function(e) {
+                e.stopPropagation();
+                console.log('🖱️ Browse button clicked');
+                fileInput.click();
+            });
+
+            uploadArea.addEventListener('click', function(e) {
+                console.log('📦 Upload area clicked');
+                fileInput.click();
+            });
+
+            // Drag and drop handlers
+            uploadArea.addEventListener('dragover', function(e) {
+                e.preventDefault();
+                console.log('📦 Drag over upload area');
+                uploadArea.classList.add('active');
+            });
+
+            uploadArea.addEventListener('dragleave', function(e) {
+                e.preventDefault();
+                console.log('📦 Drag leave upload area');
+                uploadArea.classList.remove('active');
+            });
+
+            uploadArea.addEventListener('drop', function(e) {
+                e.preventDefault();
+                console.log('📦 Files dropped');
+                uploadArea.classList.remove('active');
+                handleFiles(e.dataTransfer.files);
+            });
+
+            // File input change
+            fileInput.addEventListener('change', function(e) {
+                console.log('📁 File input changed, files:', e.target.files.length);
+                handleFiles(e.target.files);
+                // Reset input untuk mengizinkan file yang sama dipilih lagi
+                fileInput.value = '';
+            });
+
+            // Submit handler
+            submitBtn.addEventListener('click', submitFiles);
+            
+            console.log('✅ File upload system initialized');
+        }
+
+        function handleFiles(files) {
+            console.log('🔄 Handling files:', files.length);
+            const newFiles = Array.from(files);
+            
+            // Validasi jumlah file
+            if (selectedFiles.length + newFiles.length > 10) {
+                showStatus('❌ Maksimal 10 file yang dapat diupload', 'error');
+                return;
+            }
+
+            let validFilesAdded = 0;
+
+            // Validasi setiap file
+            for (const file of newFiles) {
+                console.log('📄 Processing file:', file.name, file.type, file.size);
+                
+                if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
+                    showStatus(`❌ File ${file.name} harus berupa gambar (JPEG, PNG, JPG) atau PDF`, 'error');
+                    continue;
+                }
+
+                if (file.size > 10 * 1024 * 1024) {
+                    showStatus(`❌ File ${file.name} terlalu besar. Maksimal 10MB.`, 'error');
+                    continue;
+                }
+
+                // Cek duplikat
+                const isDuplicate = selectedFiles.some(f => f.name === file.name && f.size === file.size);
+                if (!isDuplicate) {
+                    selectedFiles.push(file);
+                    validFilesAdded++;
+                    console.log('✅ File added:', file.name);
+                } else {
+                    console.log('⚠️ Duplicate file skipped:', file.name);
+                }
+            }
+
+            if (validFilesAdded > 0) {
+                showStatus(`✅ ${validFilesAdded} file berhasil ditambahkan`, 'success');
+                updateFileList();
+                updateSubmitButton();
+            }
+        }
+
+        function updateFileList() {
+            const fileList = document.getElementById('fileList');
+            fileList.innerHTML = '';
+
+            console.log('📋 Updating file list, total files:', selectedFiles.length);
+
+            if (selectedFiles.length === 0) {
+                fileList.innerHTML = '<div style="text-align: center; color: #718096; padding: 20px;">Belum ada file yang dipilih</div>';
+                return;
+            }
+
+            selectedFiles.forEach((file, index) => {
+                const fileItem = document.createElement('div');
+                fileItem.className = 'file-item';
+                fileItem.innerHTML = `
+                    <div class="file-info">
+                        <div class="file-icon">${getFileIcon(file.type)}</div>
+                        <div class="file-details">
+                            <div class="file-name">${file.name}</div>
+                            <div class="file-size">${formatFileSize(file.size)}</div>
+                        </div>
+                    </div>
+                    <button class="remove-file" onclick="removeFile(${index})">×</button>
+                `;
+                fileList.appendChild(fileItem);
+            });
+        }
+
+        function getFileIcon(fileType) {
+            if (fileType.includes('pdf')) return '📄';
+            if (fileType.startsWith('image/')) return '🖼️';
+            return '📎';
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function removeFile(index) {
+            console.log('🗑️ Removing file at index:', index);
+            if (index >= 0 && index < selectedFiles.length) {
+                const removedFile = selectedFiles.splice(index, 1)[0];
+                console.log('✅ File removed:', removedFile.name);
+                updateFileList();
+                updateSubmitButton();
+                showStatus(`✅ File ${removedFile.name} dihapus`, 'success');
+            }
+        }
+
+        function updateSubmitButton() {
+            const submitBtn = document.getElementById('submitBtn');
+            const hasFiles = selectedFiles.length > 0;
+            submitBtn.disabled = !hasFiles;
+            console.log('🔄 Submit button updated, disabled:', !hasFiles);
+        }
+
+        function showStatus(message, type) {
+            const statusElement = document.getElementById('statusMessage');
+            statusElement.textContent = message;
+            statusElement.className = `status-message status-${type}`;
+            statusElement.style.display = 'block';
+            
+            console.log(`📢 Status: ${type} - ${message}`);
+            
+            if (type === 'success') {
+                setTimeout(() => {
+                    statusElement.style.display = 'none';
+                }, 3000);
+            }
+        }
+
+        async function submitFiles() {
+            const submitBtn = document.getElementById('submitBtn');
+            const userDataStr = localStorage.getItem('handwritten_user_data');
+            
+            if (!userDataStr) {
+                showStatus('❌ Data user tidak ditemukan', 'error');
+                return;
+            }
+
+            const userData = JSON.parse(userDataStr);
+            
+            if (selectedFiles.length === 0) {
+                showStatus('❌ Pilih file terlebih dahulu', 'error');
+                return;
+            }
+
+            console.log('🚀 Starting file submission...');
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>⏳ Mengupload... Jangan tutup halaman!</span>';
+
+            const formData = new FormData();
+            formData.append('user_id', userData.id);
+            formData.append('username', userData.username);
+            formData.append('nama', userData.nama);
+            formData.append('sekolah', userData.sekolah);
+            formData.append('lomba', userData.lomba || 'olimpiade_math_2');
+
+            selectedFiles.forEach(file => {
+                formData.append('answer_files', file);
+            });
+
+            try {
+                console.log('📤 Sending files to server...');
+                const response = await fetch(`${API_BASE}/api/handwritten/submit`, {
+                    method: 'POST',
+                    body: formData
+                });
+
+                const result = await response.json();
+                console.log('📥 Server response:', result);
+
+                if (result.success) {
+                    showStatus(`✅ Berhasil mengupload ${result.total_files} file jawaban tulis!`, 'success');
+                    selectedFiles = [];
+                    updateFileList();
+                    updateSubmitButton();
+                    
+                    // Clear session dan redirect ke halaman utama setelah berhasil
+                    setTimeout(() => {
+                        localStorage.removeItem('handwritten_access');
+                        localStorage.removeItem('handwritten_user_data');
+                        localStorage.removeItem('auth_origin');
+                        window.location.href = '../index.html';
+                    }, 3000);
+                } else {
+                    showStatus(`❌ Gagal: ${result.error}`, 'error');
+                }
+            } catch (error) {
+                console.error('❌ Submission error:', error);
+                showStatus('❌ Terjadi kesalahan saat mengupload. Coba lagi.', 'error');
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = '<span>🚀 Kirim Jawaban Tulis</span>';
+            }
+        }
+
+        async function checkExistingSubmission() {
+            const userDataStr = localStorage.getItem('handwritten_user_data');
+            if (!userDataStr) return;
+
+            try {
+                const userData = JSON.parse(userDataStr);
+                console.log('🔍 Checking existing submission for user:', userData.username);
+                
+                const response = await fetch(
+                    `${API_BASE}/api/handwritten/check?user_id=${userData.id}&lomba=${userData.lomba || 'olimpiade_math_2'}`
+                );
+                const result = await response.json();
+                console.log('📋 Existing submission check result:', result);
+
+                if (result.success && result.has_submitted) {
+                    showStatus(`📝 Anda sudah mengumpulkan jawaban tulis pada ${new Date(result.submission.submitted_at).toLocaleString()}`, 'info');
+                }
+            } catch (error) {
+                console.error('❌ Check submission error:', error);
+            }
+        }
+
+        // Export functions to global scope for onclick handlers
+        window.removeFile = removeFile;
+    </script>
+</body>
+</html>

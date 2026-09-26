@@ -1,0 +1,1031 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Admin - TIMAC FEST 2025</title>
+    <style>
+        :root {
+            --primary-color: #1e88e5;
+            --primary-dark: #1565c0;
+            --primary-light: #64b5f6;
+            --secondary-color: #f5f5f5;
+            --text-color: #333;
+            --light-text: #666;
+            --border-color: #e0e0e0;
+            --success-color: #4caf50;
+            --warning-color: #ff9800;
+            --danger-color: #f44336;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        
+        body {
+            background-color: #f9f9f9;
+            color: var(--text-color);
+            line-height: 1.6;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        header {
+            background-color: white;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            padding: 15px 0;
+            margin-bottom: 30px;
+        }
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .logo {
+            display: flex;
+            align-items: center;
+        }
+        
+        .logo h1 {
+            color: var(--primary-color);
+            font-size: 24px;
+            margin-left: 10px;
+        }
+        
+        .logo-icon {
+            background-color: var(--primary-color);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+        }
+        
+        .admin-info {
+            display: flex;
+            align-items: center;
+        }
+        
+        .admin-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: var(--primary-light);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 10px;
+            font-weight: bold;
+        }
+        
+        .dashboard-title {
+            margin-bottom: 20px;
+            color: var(--primary-dark);
+            border-bottom: 2px solid var(--primary-light);
+            padding-bottom: 10px;
+        }
+        
+        .stats-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            transition: transform 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+        
+        .stat-card.primary {
+            border-top: 4px solid var(--primary-color);
+        }
+        
+        .stat-card.success {
+            border-top: 4px solid var(--success-color);
+        }
+        
+        .stat-card.warning {
+            border-top: 4px solid var(--warning-color);
+        }
+        
+        .stat-card.danger {
+            border-top: 4px solid var(--danger-color);
+        }
+        
+        .stat-value {
+            font-size: 32px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+        
+        .stat-card.primary .stat-value {
+            color: var(--primary-color);
+        }
+        
+        .stat-card.success .stat-value {
+            color: var(--success-color);
+        }
+        
+        .stat-card.warning .stat-value {
+            color: var(--warning-color);
+        }
+        
+        .stat-card.danger .stat-value {
+            color: var(--danger-color);
+        }
+        
+        .stat-label {
+            color: var(--light-text);
+            font-size: 14px;
+        }
+        
+        .filters {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            padding: 20px;
+            margin-bottom: 20px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            align-items: center;
+        }
+        
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            min-width: 200px;
+        }
+        
+        .filter-label {
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: var(--light-text);
+        }
+        
+        .filter-input {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .filter-input:focus {
+            outline: none;
+            border-color: var(--primary-color);
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: background-color 0.3s;
+        }
+        
+        .btn-primary {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background-color: var(--primary-dark);
+        }
+        
+        .btn-secondary {
+            background-color: var(--secondary-color);
+            color: var(--text-color);
+        }
+        
+        .btn-secondary:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .results-table-container {
+            background-color: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        thead {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        
+        th, td {
+            padding: 12px 15px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        th {
+            font-weight: 600;
+        }
+        
+        tbody tr:hover {
+            background-color: #f5f9ff;
+        }
+        
+        .score-cell {
+            font-weight: bold;
+        }
+        
+        .high-score {
+            color: var(--success-color);
+        }
+        
+        .medium-score {
+            color: var(--warning-color);
+        }
+        
+        .low-score {
+            color: var(--danger-color);
+        }
+        
+        .action-cell {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
+            min-height: 60px;
+        }
+        
+        .btn-small {
+            padding: 6px 12px;
+            font-size: 12px;
+            white-space: nowrap;
+            min-width: 60px;
+        }
+        
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+            gap: 10px;
+        }
+        
+        .pagination-btn {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            background-color: white;
+            cursor: pointer;
+            border-radius: 4px;
+        }
+        
+        .pagination-btn.active {
+            background-color: var(--primary-color);
+            color: white;
+            border-color: var(--primary-color);
+        }
+        
+        .pagination-btn:hover:not(.active) {
+            background-color: var(--secondary-color);
+        }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .modal-content {
+            background-color: white;
+            border-radius: 8px;
+            width: 90%;
+            max-width: 800px;
+            max-height: 80vh;
+            overflow-y: auto;
+            padding: 20px;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+        
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 1px solid var(--border-color);
+        }
+        
+        .modal-title {
+            font-size: 20px;
+            color: var(--primary-dark);
+        }
+        
+        .close-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: var(--light-text);
+        }
+        
+        .detail-item {
+            margin-bottom: 15px;
+        }
+        
+        .detail-label {
+            font-weight: bold;
+            color: var(--light-text);
+            margin-bottom: 5px;
+        }
+        
+        .detail-value {
+            padding: 8px;
+            background-color: var(--secondary-color);
+            border-radius: 4px;
+        }
+        
+        .answers-detail {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .answers-detail table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 10px 0;
+            font-size: 14px;
+        }
+        
+        .answers-detail th {
+            background-color: #f5f5f5;
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+            font-weight: 600;
+        }
+        
+        .answers-detail td {
+            padding: 8px;
+            border: 1px solid #ddd;
+            text-align: center;
+        }
+        
+        .answers-detail tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        
+        .answers-detail tr:hover {
+            background-color: #f0f7ff;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 20px;
+            color: var(--light-text);
+        }
+        
+        .error-message {
+            background-color: #ffebee;
+            color: var(--danger-color);
+            padding: 15px;
+            border-radius: 4px;
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .filters {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            
+            .filter-group {
+                min-width: 100%;
+            }
+            
+            table {
+                display: block;
+                overflow-x: auto;
+            }
+            
+            .action-cell {
+                flex-direction: column;
+                gap: 5px;
+            }
+            
+            .btn-small {
+                width: 100%;
+                min-width: auto;
+            }
+            
+            .answers-detail table {
+                font-size: 12px;
+            }
+            
+            .answers-detail th,
+            .answers-detail td {
+                padding: 6px 4px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <div class="logo-icon">TF</div>
+                    <h1>TIMAC FEST 2025</h1>
+                </div>
+                <div class="admin-info">
+                    <div class="admin-avatar">A</div>
+                    <div>
+                        <div>Admin Panel</div>
+                        <div style="font-size: 12px; color: var(--light-text);">Dashboard Hasil Peserta</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </header>
+    
+    <div class="container">
+        <h2 class="dashboard-title">Dashboard Hasil Olimpiade IPA</h2>
+        
+        <div class="stats-cards">
+            <div class="stat-card primary">
+                <div class="stat-label">Total Peserta</div>
+                <div class="stat-value" id="total-participants">0</div>
+                <div class="stat-desc">Semua peserta yang telah mengikuti</div>
+            </div>
+            <div class="stat-card success">
+                <div class="stat-label">Rata-rata Nilai</div>
+                <div class="stat-value" id="average-score">0</div>
+                <div class="stat-desc">Skor rata-rata semua peserta</div>
+            </div>
+            <div class="stat-card warning">
+                <div class="stat-label">Nilai Tertinggi</div>
+                <div class="stat-value" id="highest-score">0</div>
+                <div class="stat-desc">Skor terbaik yang dicapai</div>
+            </div>
+            <div class="stat-card danger">
+                <div class="stat-label">Nilai Terendah</div>
+                <div class="stat-value" id="lowest-score">0</div>
+                <div class="stat-desc">Skor terendah yang dicapai</div>
+            </div>
+        </div>
+        
+        <div class="filters">
+            <div class="filter-group">
+                <label class="filter-label">Cari berdasarkan nama/sekolah</label>
+                <input type="text" id="search-input" class="filter-input" placeholder="Masukkan nama atau sekolah...">
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Urutkan berdasarkan</label>
+                <select id="sort-select" class="filter-input">
+                    <option value="score-desc">Nilai Tertinggi</option>
+                    <option value="score-asc">Nilai Terendah</option>
+                    <option value="time-asc">Waktu Tercepat</option>
+                    <option value="time-desc">Waktu Terlama</option>
+                    <option value="name-asc">Nama A-Z</option>
+                    <option value="name-desc">Nama Z-A</option>
+                </select>
+            </div>
+            <div class="filter-group">
+                <label class="filter-label">Filter berdasarkan nilai</label>
+                <select id="score-filter" class="filter-input">
+                    <option value="all">Semua Nilai</option>
+                    <option value="high">Tinggi (≥80)</option>
+                    <option value="medium">Sedang (60-79)</option>
+                    <option value="low">Rendah (&lt;60)</option>
+                </select>
+            </div>
+            <div style="display: flex; align-items: flex-end;">
+                <button id="apply-filters" class="btn btn-primary">Terapkan Filter</button>
+                <button id="reset-filters" class="btn btn-secondary" style="margin-left: 10px;">Reset</button>
+            </div>
+        </div>
+        
+        <div class="results-table-container">
+            <div id="error-message" class="error-message" style="display: none;"></div>
+            <div id="loading" class="loading">Memuat data peserta...</div>
+            <table id="results-table" style="display: none;">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Nama Peserta</th>
+                        <th>Sekolah</th>
+                        <th>Nilai</th>
+                        <th>Benar</th>
+                        <th>Total Soal</th>
+                        <th>Waktu (detik)</th>
+                        <th>Tanggal Submit</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="results-body">
+                    <!-- Data akan diisi oleh JavaScript -->
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="pagination" id="pagination" style="display: none;">
+            <!-- Pagination akan diisi oleh JavaScript -->
+        </div>
+    </div>
+    
+    <!-- Modal untuk detail hasil -->
+    <div id="detail-modal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 class="modal-title">Detail Hasil Peserta</h3>
+                <button class="close-btn">&times;</button>
+            </div>
+            <div id="modal-body">
+                <!-- Detail akan diisi oleh JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Konfigurasi
+        const API_BASE_URL = 'https://exam-system-backend.timacefest2025.workers.dev'; // Ganti dengan URL API Anda
+        const RESULTS_ENDPOINT = '/api/results/olimpiade_ipa';
+        const ITEMS_PER_PAGE = 10;
+        
+        // State aplikasi
+        let currentPage = 1;
+        let totalPages = 1;
+        let allResults = [];
+        let filteredResults = [];
+        
+        // Elemen DOM
+        const resultsTable = document.getElementById('results-table');
+        const resultsBody = document.getElementById('results-body');
+        const loadingElement = document.getElementById('loading');
+        const errorMessage = document.getElementById('error-message');
+        const paginationElement = document.getElementById('pagination');
+        const searchInput = document.getElementById('search-input');
+        const sortSelect = document.getElementById('sort-select');
+        const scoreFilter = document.getElementById('score-filter');
+        const applyFiltersBtn = document.getElementById('apply-filters');
+        const resetFiltersBtn = document.getElementById('reset-filters');
+        const detailModal = document.getElementById('detail-modal');
+        const closeModalBtn = document.querySelector('.close-btn');
+        const modalBody = document.getElementById('modal-body');
+        
+        // Statistik
+        const totalParticipantsEl = document.getElementById('total-participants');
+        const averageScoreEl = document.getElementById('average-score');
+        const highestScoreEl = document.getElementById('highest-score');
+        const lowestScoreEl = document.getElementById('lowest-score');
+        
+        // Fungsi untuk memuat data dari API
+        async function loadResults() {
+            try {
+                showLoading();
+                hideError();
+                
+                console.log('Memuat data dari:', `${API_BASE_URL}${RESULTS_ENDPOINT}`);
+                const response = await fetch(`${API_BASE_URL}${RESULTS_ENDPOINT}`);
+                
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                
+                const data = await response.json();
+                console.log('Data diterima:', data);
+                
+                if (data.success) {
+                    allResults = data.leaderboard || [];
+                    console.log('Total results:', allResults.length);
+                    console.log('Contoh data pertama:', allResults[0]);
+                    applyFilters();
+                    updateStats();
+                } else {
+                    throw new Error(data.error || 'Gagal memuat data');
+                }
+            } catch (error) {
+                console.error('Error loading results:', error);
+                showError(`Gagal memuat data: ${error.message}`);
+            }
+        }
+        
+        // Fungsi untuk menerapkan filter dan sorting
+        function applyFilters() {
+            let results = [...allResults];
+            
+            // Filter berdasarkan pencarian
+            const searchTerm = searchInput.value.toLowerCase();
+            if (searchTerm) {
+                results = results.filter(result => 
+                    result.nama.toLowerCase().includes(searchTerm) || 
+                    result.sekolah.toLowerCase().includes(searchTerm)
+                );
+            }
+            
+            // Filter berdasarkan nilai
+            const scoreFilterValue = scoreFilter.value;
+            if (scoreFilterValue !== 'all') {
+                results = results.filter(result => {
+                    if (scoreFilterValue === 'high') return result.score >= 80;
+                    if (scoreFilterValue === 'medium') return result.score >= 60 && result.score < 80;
+                    if (scoreFilterValue === 'low') return result.score < 60;
+                    return true;
+                });
+            }
+            
+            // Sorting
+            const sortValue = sortSelect.value;
+            results.sort((a, b) => {
+                switch (sortValue) {
+                    case 'score-desc':
+                        return b.score - a.score;
+                    case 'score-asc':
+                        return a.score - b.score;
+                    case 'time-asc':
+                        return a.time_spent - b.time_spent;
+                    case 'time-desc':
+                        return b.time_spent - a.time_spent;
+                    case 'name-asc':
+                        return a.nama.localeCompare(b.nama);
+                    case 'name-desc':
+                        return b.nama.localeCompare(a.nama);
+                    default:
+                        return b.score - a.score;
+                }
+            });
+            
+            filteredResults = results;
+            currentPage = 1;
+            renderTable();
+            renderPagination();
+        }
+        
+        // Fungsi untuk merender tabel
+        function renderTable() {
+            if (filteredResults.length === 0) {
+                resultsTable.style.display = 'none';
+                paginationElement.style.display = 'none';
+                showError('Tidak ada data yang sesuai dengan filter yang dipilih.');
+                return;
+            }
+            
+            resultsTable.style.display = 'table';
+            paginationElement.style.display = 'flex';
+            hideError();
+            hideLoading();
+            
+            const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
+            const endIndex = startIndex + ITEMS_PER_PAGE;
+            const pageResults = filteredResults.slice(startIndex, endIndex);
+            
+            resultsBody.innerHTML = '';
+            
+            pageResults.forEach((result, index) => {
+                const row = document.createElement('tr');
+                const globalIndex = startIndex + index + 1;
+                
+                // Tentukan kelas untuk nilai
+                let scoreClass = '';
+                if (result.score >= 80) scoreClass = 'high-score';
+                else if (result.score >= 60) scoreClass = 'medium-score';
+                else scoreClass = 'low-score';
+                
+                row.innerHTML = `
+                    <td>${globalIndex}</td>
+                    <td>${result.nama}</td>
+                    <td>${result.sekolah}</td>
+                    <td class="score-cell ${scoreClass}">${result.score.toFixed(2)}</td>
+                    <td>${result.correct_count}</td>
+                    <td>${result.total_questions}</td>
+                    <td>${result.time_spent}</td>
+                    <td>${formatDate(result.submitted_at)}</td>
+                    <td class="action-cell">
+                        <button class="btn btn-primary btn-small view-detail" data-index="${startIndex + index}">Detail</button>
+                    </td>
+                `;
+                
+                resultsBody.appendChild(row);
+            });
+            
+            // Tambahkan event listener untuk tombol detail
+            document.querySelectorAll('.view-detail').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = parseInt(this.getAttribute('data-index'));
+                    showDetail(filteredResults[index]);
+                });
+            });
+        }
+        
+        // Fungsi untuk merender pagination
+        function renderPagination() {
+            totalPages = Math.ceil(filteredResults.length / ITEMS_PER_PAGE);
+            
+            if (totalPages <= 1) {
+                paginationElement.style.display = 'none';
+                return;
+            }
+            
+            paginationElement.innerHTML = '';
+            
+            // Tombol sebelumnya
+            const prevButton = document.createElement('button');
+            prevButton.className = 'pagination-btn';
+            prevButton.textContent = '←';
+            prevButton.disabled = currentPage === 1;
+            prevButton.addEventListener('click', () => {
+                if (currentPage > 1) {
+                    currentPage--;
+                    renderTable();
+                    renderPagination();
+                }
+            });
+            paginationElement.appendChild(prevButton);
+            
+            // Tombol halaman
+            const startPage = Math.max(1, currentPage - 2);
+            const endPage = Math.min(totalPages, startPage + 4);
+            
+            for (let i = startPage; i <= endPage; i++) {
+                const pageButton = document.createElement('button');
+                pageButton.className = `pagination-btn ${i === currentPage ? 'active' : ''}`;
+                pageButton.textContent = i;
+                pageButton.addEventListener('click', () => {
+                    currentPage = i;
+                    renderTable();
+                    renderPagination();
+                });
+                paginationElement.appendChild(pageButton);
+            }
+            
+            // Tombol berikutnya
+            const nextButton = document.createElement('button');
+            nextButton.className = 'pagination-btn';
+            nextButton.textContent = '→';
+            nextButton.disabled = currentPage === totalPages;
+            nextButton.addEventListener('click', () => {
+                if (currentPage < totalPages) {
+                    currentPage++;
+                    renderTable();
+                    renderPagination();
+                }
+            });
+            paginationElement.appendChild(nextButton);
+        }
+        
+        // Fungsi untuk menampilkan detail peserta
+        function showDetail(result) {
+            console.log('Detail result:', result);
+            
+            modalBody.innerHTML = `
+                <div class="detail-item">
+                    <div class="detail-label">Nama Peserta</div>
+                    <div class="detail-value">${result.nama || 'Tidak tersedia'}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Username</div>
+                    <div class="detail-value">${result.username || 'Tidak tersedia'}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Sekolah</div>
+                    <div class="detail-value">${result.sekolah || 'Tidak tersedia'}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Nilai</div>
+                    <div class="detail-value">${result.score?.toFixed(2) || '0.00'}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Jawaban Benar</div>
+                    <div class="detail-value">${result.correct_count || 0} dari ${result.total_questions || 0} soal</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Waktu Pengerjaan</div>
+                    <div class="detail-value">${result.time_spent || 0} detik</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Tanggal Submit</div>
+                    <div class="detail-value">${formatDate(result.submitted_at)}</div>
+                </div>
+                <div class="detail-item">
+                    <div class="detail-label">Detail Jawaban</div>
+                    <div class="detail-value answers-detail" id="answers-detail">
+                        Memuat detail jawaban...
+                    </div>
+                </div>
+            `;
+            
+            // Parse dan tampilkan detail jawaban
+            setTimeout(() => {
+                try {
+                    const answersDetailElement = document.getElementById('answers-detail');
+                    
+                    // Cek apakah answers_detail ada dan valid
+                    if (!result.answers_detail) {
+                        answersDetailElement.innerHTML = `
+                            <p style="color: var(--warning-color);">Data jawaban tidak tersedia</p>
+                            <div style="background: #f8f8f8; padding: 10px; margin-top: 10px; border-radius: 4px; font-size: 12px;">
+                                <strong>Debug Info:</strong><br>
+                                - Field answers_detail: ${result.answers_detail}<br>
+                                - Available fields: ${Object.keys(result).join(', ')}
+                            </div>
+                        `;
+                        return;
+                    }
+                    
+                    const answersDetail = JSON.parse(result.answers_detail);
+                    
+                    if (Object.keys(answersDetail).length === 0) {
+                        answersDetailElement.innerHTML = '<p>Tidak ada data jawaban.</p>';
+                    } else {
+                        // Buat tabel untuk jawaban
+                        const table = document.createElement('table');
+                        
+                        // Header tabel
+                        const thead = document.createElement('thead');
+                        thead.innerHTML = `
+                            <tr>
+                                <th>No Soal</th>
+                                <th>Jawaban</th>
+                            </tr>
+                        `;
+                        table.appendChild(thead);
+                        
+                        // Body tabel
+                        const tbody = document.createElement('tbody');
+                        
+                        // Urutkan berdasarkan nomor soal
+                        const sortedQuestions = Object.keys(answersDetail)
+                            .map(key => parseInt(key))
+                            .sort((a, b) => a - b);
+                        
+                        sortedQuestions.forEach(questionId => {
+                            const row = document.createElement('tr');
+                            const answer = answersDetail[questionId.toString()];
+                            
+                            row.innerHTML = `
+                                <td>${questionId}</td>
+                                <td style="font-weight: bold; text-align: center;">${answer}</td>
+                            `;
+                            
+                            tbody.appendChild(row);
+                        });
+                        
+                        table.appendChild(tbody);
+                        answersDetailElement.innerHTML = '';
+                        answersDetailElement.appendChild(table);
+                        
+                        // Tambahkan summary
+                        const summary = document.createElement('div');
+                        summary.style.marginTop = '15px';
+                        summary.style.padding = '10px';
+                        summary.style.backgroundColor = '#e8f4fd';
+                        summary.style.borderRadius = '4px';
+                        summary.innerHTML = `
+                            <strong>Total Jawaban:</strong> ${sortedQuestions.length} soal<br>
+                            <strong>Jawaban:</strong> ${Object.values(answersDetail).join(', ')}
+                        `;
+                        answersDetailElement.appendChild(summary);
+                    }
+                } catch (e) {
+                    console.error('Error parsing answers:', e);
+                    const answersDetailElement = document.getElementById('answers-detail');
+                    answersDetailElement.innerHTML = 
+                        `<p style="color: var(--danger-color);">Gagal memuat detail jawaban: ${e.message}</p>
+                         <div style="background: #f8f8f8; padding: 10px; margin-top: 10px; border-radius: 4px; font-family: monospace; font-size: 12px;">
+                            <strong>Raw Data:</strong><br>
+                            ${result.answers_detail || 'undefined'}
+                         </div>
+                         <div style="background: #fff3cd; padding: 10px; margin-top: 10px; border-radius: 4px; font-size: 12px;">
+                            <strong>Debug Info:</strong><br>
+                            - Field answers_detail: ${result.answers_detail}<br>
+                            - Type: ${typeof result.answers_detail}<br>
+                            - Available fields: ${Object.keys(result).join(', ')}
+                         </div>`;
+                }
+            }, 100);
+            
+            detailModal.style.display = 'flex';
+        }
+        
+        // Fungsi untuk memperbarui statistik
+        function updateStats() {
+            if (allResults.length === 0) {
+                totalParticipantsEl.textContent = '0';
+                averageScoreEl.textContent = '0';
+                highestScoreEl.textContent = '0';
+                lowestScoreEl.textContent = '0';
+                return;
+            }
+            
+            totalParticipantsEl.textContent = allResults.length;
+            
+            const totalScore = allResults.reduce((sum, result) => sum + (result.score || 0), 0);
+            const averageScore = totalScore / allResults.length;
+            averageScoreEl.textContent = averageScore.toFixed(2);
+            
+            const highestScore = Math.max(...allResults.map(result => result.score || 0));
+            highestScoreEl.textContent = highestScore.toFixed(2);
+            
+            const lowestScore = Math.min(...allResults.map(result => result.score || 0));
+            lowestScoreEl.textContent = lowestScore.toFixed(2);
+        }
+        
+        // Fungsi utilitas
+        function formatDate(dateString) {
+            if (!dateString) return 'Tidak tersedia';
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        function showLoading() {
+            loadingElement.style.display = 'block';
+            resultsTable.style.display = 'none';
+            paginationElement.style.display = 'none';
+        }
+        
+        function hideLoading() {
+            loadingElement.style.display = 'none';
+        }
+        
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.style.display = 'block';
+            hideLoading();
+        }
+        
+        function hideError() {
+            errorMessage.style.display = 'none';
+        }
+        
+        // Event listeners
+        applyFiltersBtn.addEventListener('click', applyFilters);
+        
+        resetFiltersBtn.addEventListener('click', () => {
+            searchInput.value = '';
+            sortSelect.value = 'score-desc';
+            scoreFilter.value = 'all';
+            applyFilters();
+        });
+        
+        closeModalBtn.addEventListener('click', () => {
+            detailModal.style.display = 'none';
+        });
+        
+        window.addEventListener('click', (event) => {
+            if (event.target === detailModal) {
+                detailModal.style.display = 'none';
+            }
+        });
+        
+        // Inisialisasi
+        document.addEventListener('DOMContentLoaded', () => {
+            loadResults();
+        });
+    </script>
+</body>
+</html>
